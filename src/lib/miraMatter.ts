@@ -177,6 +177,7 @@ export interface MatterArc {
 export interface BuildResult {
   particles: MatterParticle[]
   arcs: MatterArc[]
+  nStay: number
   arrive: Arrive
   reveal: { cx: number; cy: number; ignite: number; speed: number }
   ignite: number
@@ -223,6 +224,8 @@ export function buildMatter(
       tRev: reveal.ignite + waveT(Math.hypot(x - reveal.cx, y - reveal.cy), reveal.speed),
     })
   }
+  // (live: `nStay` = jumlah titik yang MENETAP; setelah `last + 0,5 s` hanya ini yang digambar)
+  const nStay = Math.floor(pic.dust.length / 5)
   for (let i = 0; i < pic.dust.length; i += 5) push(pic.dust[i], pic.dust[i + 1], pic.dust[i + 2], pic.dust[i + 3], pic.dust[i + 4], 1)
   for (let i = 0; i < seats.length; i += 5) push(seats[i], seats[i + 1], seats[i + 2], seats[i + 3], seats[i + 4], 0)
 
@@ -262,7 +265,7 @@ export function buildMatter(
   }
   arcs.sort((a, b) => a.t - b.t)
 
-  return { particles, arcs, arrive, reveal, ignite, star: pic.star, lastReveal }
+  return { particles, arcs, arrive, reveal, ignite, star: pic.star, lastReveal, nStay }
 }
 
 /** `LN` — jarak → waktu (dipakai juga oleh reveal) */

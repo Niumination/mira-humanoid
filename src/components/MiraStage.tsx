@@ -688,6 +688,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.clear(gl.COLOR_BUFFER_BIT)
         const t = tick()
         const ramp = rampAt(t)
+        ;(window as any).__MIRA_RAMP = { t, ...ramp }
         const proj = perspective(FOV, pw / ph, NEAR, FAR)
         gl.disable(gl.DEPTH_TEST)
 
@@ -1024,13 +1025,14 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniformMatrix4fv(U(P.matter, 'projectionMatrix'), false, proj)
           gl.uniform1f(U(P.matter, 'uTime'), t)
           gl.uniform1f(U(P.matter, 'uPx'), 1)
-          gl.uniform1f(U(P.matter, 'uSettle'), 0.71089106798172)
-          gl.uniform1f(U(P.matter, 'uLiveT'), 0)
+          // live: uSettle = 0,75 − 0,4·smoothstep(t; 0,9; 6)   (terukur: 0,7106 @1,89 · 0,3608 @5,5)
+          gl.uniform1f(U(P.matter, 'uSettle'), 0.75 - 0.4 * xs(t, 0.9, 6))
+          gl.uniform1f(U(P.matter, 'uLiveT'), t)
           gl.uniform1f(U(P.matter, 'uBright'), 1)
           gl.uniform1f(U(P.matter, 'uMatter'), 1)
           gl.uniform1f(U(P.matter, 'uCoreA'), 0.22)
-          gl.uniform1f(U(P.matter, 'uLag'), 0.025)
-          gl.uniform1f(U(P.matter, 'uTrail'), 0.55)
+          gl.uniform1f(U(P.matter, 'uLag'), 0)
+          gl.uniform1f(U(P.matter, 'uTrail'), 1)
           gl.uniform1f(U(P.matter, 'uDense'), 0.32)
           gl.uniform4f(U(P.matter, 'uCoreT'), 0, 0.9, 0.9, 6)
           gl.uniform3f(U(P.matter, 'uCore'), matter.star.x, matter.star.y, 0.05 * fw)
@@ -1044,7 +1046,19 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform4f(U(P.matter, 'uHeadPose'), 0, 0, 0, 0)
           gl.uniform3f(U(P.matter, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
           gl.uniform1i(U(P.matter, 'uHeadRows'), 0)
-          gl.drawArrays(gl.POINTS, 0, mp.length)
+          // ---- live: SATU salinan utama (lag 0, trail 1) + tiga salinan jejak `eF` ----
+          // eF = [[0.025,0.55],[0.05,0.32],[0.08,0.16]]; setelah `last + 0,5 s` semua jejak disembunyikan
+          // dan geometri dibatasi ke titik yang menetap (`nStay`) — terukur: itulah sebab fase 1,89–5,5
+          // di rebuild jauh lebih gelap, sekaligus sebab 9,5 sedikit terlalu terang.
+          const settled = t > matter.lastReveal + 0.5
+          gl.drawArrays(gl.POINTS, 0, settled ? matter.nStay : mp.length)
+          if (!settled) {
+            for (const [lag, trail] of [[0.025, 0.55], [0.05, 0.32], [0.08, 0.16]]) {
+              gl.uniform1f(U(P.matter, 'uLag'), lag)
+              gl.uniform1f(U(P.matter, 'uTrail'), trail)
+              gl.drawArrays(gl.POINTS, 0, mp.length)
+            }
+          }
         }
 
         // ---- [5] garis ----
