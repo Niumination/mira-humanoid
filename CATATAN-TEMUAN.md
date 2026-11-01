@@ -21,3 +21,10 @@
 - Build lokal lulus: bundle baru `index-DZGcjv2t.js` 401,81 kB (gzip 94,14 kB)
 - Deploy: https://mira-humanoid-niu.vercel.app — sha256 bundle produksi = build lokal (68b1b5e0a7e7b567…), penanda "shock" ada di bundle ✅
 - `docs/PROGRESS.md` & `REBUILD-LOG.md` versi baru → repo Niu-Humanoid (commit terpisah)
+
+## Langkah 3b (paket niu-update-langkah3b.zip, 1 Nov) — DITERAPKAN
+- `src/`: update `MiraStage.tsx` + `miraMatter.ts` (2 file) — tanpa perubahan manual
+- `docs/langkah3/`: build7 tangkapan (6 png, t=0.3→9.5) + `tools/probe-mira-field.js`
+- Build lokal lulus: bundle `index-p8VjQZkw.js` 402,08 kB
+- Deploy: https://mira-humanoid-niu.vercel.app — sha256 produksi = build lokal (d3dc9a0501e0c61d…) ✅
+- `PROGRESS.md` & `REBUILD-LOG.md` versi 3b → repo Niu-Humanoid
