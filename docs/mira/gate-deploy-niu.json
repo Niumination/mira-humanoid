@@ -1,0 +1,151 @@
+{
+ "tanggal": "2026-10-30 (verifikasi susulan)",
+ "url_produksi_sah": "https://mira-humanoid-niu.vercel.app",
+ "catatan_url_lama": "https://mira-humanoid.vercel.app = app MIRA ASLI (ground truth), bukan rebuild; subdomain Vercel didahulukan pemakai lain",
+ "http": {
+  "status": 200,
+  "title": "MIRA Humanoid",
+  "protection": "tidak ada (publik)"
+ },
+ "bundle": {
+  "js": {
+   "file": "/assets/index-CgepBFsa.js",
+   "bytes": 395461,
+   "sha256": "cbecb4dad826122e8bf127f546b13519c04a26bd7e6a064a1b54260556dcc89a"
+  },
+  "repo_head_build_sha256": "cbecb4dad826122e8bf127f546b13519c04a26bd7e6a064a1b54260556dcc89a",
+  "identik": true,
+  "css": {
+   "file": "/assets/index-DGzJsMHS.css",
+   "bytes": 575,
+   "sha256": "083dceb2158ef0242505cd65aecbd7554f7c0a1895898a1fa7cdd05a6ee490ea"
+  }
+ },
+ "penanda_rebuild": {
+  "__MIRA_MATTER": 1,
+  "__MIRA_STRANDS": 1,
+  "__MIRA_WAVES": 1,
+  "mediapipe": 0,
+  "hand_landmarker": 0
+ },
+ "runtime": {
+  "matter": {
+   "particles": 54500,
+   "arcs": 28,
+   "segs": 1960
+  },
+  "strands": {
+   "strands": 47,
+   "used": 47,
+   "verts": 10888,
+   "tris": 10794,
+   "twinkles": 260
+  },
+  "waves": {
+   "ribbons": 3,
+   "segs": 64,
+   "sparks": 168
+  },
+  "err": null,
+  "log": "[mira] humanoid: 47 strands can move, 260 twinkles | traced 3 outline + 81 inner lines, 4500 dust grains"
+ },
+ "gerbang_piksel_1440x900": {
+  "produksi_t9.5_vs_live-t95(GT)": {
+   "gt8": 57.23,
+   "gt32": 17.24,
+   "MAE": 12.53,
+   "mean": [
+    44.8,
+    39.6
+   ]
+  },
+  "produksi_t9.5_vs_build-stage21": {
+   "gt8": 0.14,
+   "gt32": 0.05,
+   "MAE": 0.14,
+   "mean": [
+    44.8,
+    44.8
+   ]
+  },
+  "produksi_t9.5_vs_preview_lokal": {
+   "gt8": 0.11,
+   "gt32": 0.03,
+   "MAE": 0.09
+  },
+  "produksi_t1.89_vs_live-t189": {
+   "MAE": 31.61,
+   "mean": [
+    45.3,
+    21.7
+   ],
+   "sebab": "rambut digambar penuh sejak frame pertama (uBT=100)"
+  },
+  "produksi_idle_vs_live-idle-a": {
+   "MAE": 9.84,
+   "mean": [
+    44.9,
+    38.1
+   ]
+  }
+ },
+ "langkah3_bagian1": {
+  "perubahan": "uBT rambut/helai/bintik = jam build (bukan 100)",
+  "ukur_6_fase": [
+   {
+    "t": 0.3,
+    "MAE": 34.55,
+    "mean": [
+     37.5,
+     3.0
+    ]
+   },
+   {
+    "t": 1.89,
+    "MAE": 25.14,
+    "mean": [
+     38.1,
+     21.7
+    ],
+    "sebelum": 31.61
+   },
+   {
+    "t": 3.5,
+    "MAE": 25.12,
+    "mean": [
+     40.6,
+     23.0
+    ]
+   },
+   {
+    "t": 5.5,
+    "MAE": 27.16,
+    "mean": [
+     40.2,
+     22.5
+    ]
+   },
+   {
+    "t": 6.8,
+    "MAE": 36.52,
+    "mean": [
+     45.4,
+     61.2
+    ]
+   },
+   {
+    "t": 9.5,
+    "MAE": 12.53,
+    "mean": [
+     44.8,
+     39.6
+    ]
+   }
+  ],
+  "temuan": [
+   "t<6,55 live praktis gelap (mean 3,0 di t=0,3) sedangkan rebuild 37,5 → latar medan (field) belum punya ramp build",
+   "t=6,8 live lebih TERANG (61,2) daripada rebuild (45,4) → kilatan ignition + cincin kejut (35/36) belum ada di rebuild",
+   "t=9,5 tidak berubah (12,53) → perubahan tidak merusak kondisi mapan"
+  ]
+ }
+}
