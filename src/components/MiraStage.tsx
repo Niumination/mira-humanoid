@@ -42,6 +42,8 @@ import wavesVert from '../lib/shaders/waves.vert.glsl?raw'
 import wavesFrag from '../lib/shaders/waves.frag.glsl?raw'
 import wavesparkVert from '../lib/shaders/wavespark.vert.glsl?raw'
 import wavesparkFrag from '../lib/shaders/wavespark.frag.glsl?raw'
+import shockVert from '../lib/shaders/shock.vert.glsl?raw'
+import shockFrag from '../lib/shaders/shock.frag.glsl?raw'
 import hairVert from '../lib/shaders/hair.vert.glsl?raw'
 import hairFrag from '../lib/shaders/hair.frag.glsl?raw'
 import hpVert from '../lib/shaders/hp.vert.glsl?raw'
@@ -62,7 +64,7 @@ import { buildHead } from '../lib/miraHead'
 import { buildPicturePoints, quadGeometry, spriteGeometry } from '../lib/miraPicture'
 import { buildWireMesh, pictureToWire } from '../lib/miraWire'
 import { buildMatter, nw } from '../lib/miraMatter'
-import { mulberry32 } from '../lib/miraTimeline'
+import { IGNITE_CFG, mulberry32 } from '../lib/miraTimeline'
 import { AN, EN, TN, strandGeometry } from '../lib/miraHair'
 import { buildWaveRibbons, buildWaveSparks, carveRibbon, updateWaveSparks } from '../lib/miraWaves'
 
@@ -253,6 +255,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           blit: program(gl, blitVert, blitFrag, 'blit'),
           hair: program(gl, hairVert, hairFrag, 'hair'),
           matter: program(gl, matterVert, matterFrag, 'matter'),
+          shock: program(gl, shockVert, shockFrag, 'shock'),
           waves: program(gl, wavesVert, wavesFrag, 'waves'),
           wavespark: program(gl, wavesparkVert, wavesparkFrag, 'wavespark'),
           strands: program(gl, strandsVert, strandsFrag, 'strands'),
@@ -360,6 +363,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       const hairVao = mk(P.hair, [['position', hairQuad.position, 3]], hairQuad.index)
 
       // helai rambut: pita 2 verteks/titik (32.382 indeks live)
+      // cincin kejut: satu kuad besar di bidang gambar (6 verteks, seperti live)
+      const shockVao = mk(P.shock, [['position', new Float32Array([0, 0, 0, fw, 0, 0, 0, fh, 0, fw, fh, 0, fw, 0, 0, 0, fh, 0]), 3]])
+
       // pita & percikan: posisi diperbarui tiap frame (DYNAMIC_DRAW)
       const waveVaos = waveRibbons.map((r) => {
         progNow = P.waves
@@ -599,6 +605,36 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       // ---------- 4. uniform tetap (terukur) ----------
       const star = pic.star
       const reveal = [star.x, star.y, 6.55, fh]
+
+      // ---- ramp build (live `Tw`): seberapa banyak latar medan & materi yang sudah "ada" ----
+      // xs = smoothstep(jendela); bN = selubung strike (arcs) — keduanya disalin dari bundle live.
+      const xs = (v: number, a: number, b: number) => {
+        const n = Math.min(1, Math.max(0, (v - a) / (b - a)))
+        return n * n * (3 - 2 * n)
+      }
+      const bN = (i: number) => (i < 0 ? 0 : i < 0.05 ? 1 : i < 0.09 ? 0.1 : i < 0.16 ? 0.95 : i < 0.2 ? 0.25 : i < 0.32 ? 0.5 * (1 - (i - 0.2) / 0.12) : 0)
+      // `qN` — gelombang kejut ignition: radius tumbuh, kekuatannya meluruh (live, dipakai uShock di 4 shader)
+      const shockAt = (t: number) => {
+        const n = t - reveal[2]
+        if (n < 0 || n > 2.6) return { r: 0, k: 0 }
+        return { r: n * 1500 * (1 - 0.18 * Math.min(1, n / 2)), k: xs(n, 0, 0.04) * Math.exp(-n / 0.9) }
+      }
+      const rampAt = (t: number) => {
+        let ve = 0
+        for (const a of matter.arcs) {
+          const v = bN(t - a.t) * a.strength
+          if (v > ve) ve = v
+        }
+        const oe = Math.min(1, ve)
+        const H = 0.04 + 0.2 * xs(t, IGNITE_CFG.spark[1], IGNITE_CFG.weave[1])     // 0,9 → 6
+        const F = xs(t, reveal[2] + 0.05, reveal[2] + 1.1)                         // ignition 6,55
+        const ge = xs(t, reveal[2] + 0.25, reveal[2] + 1.5)
+        return {
+          waves: Math.max(oe * 0.5, H + (1 - H) * F),
+          matterN: Math.max(oe * 0.4, H * 0.8 + (1 - H * 0.8) * ge),
+          orb: Math.max(oe * 0.25, xs(t, reveal[2], reveal[2] + 1.35)),
+        }
+      }
       const hz = [575.2919921875, 295.4100036621094, 22, 1]
       const hzSkull = [179.9219970703125, 274.79998779296875, 217.0919952392578]
       const hzInner = [158.1479949951172, 302.2799987792969, 136.0260009765625]
@@ -651,6 +687,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.clearColor((window as any).__MIRA_RED ? 1 : 0, (window as any).__MIRA_RED ? 0 : 0, 0, 1)
         gl.clear(gl.COLOR_BUFFER_BIT)
         const t = tick()
+        const ramp = rampAt(t)
         const proj = perspective(FOV, pw / ph, NEAR, FAR)
         gl.disable(gl.DEPTH_TEST)
 
@@ -673,8 +710,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.bindVertexArray(fieldVao.v)
           gl.uniform2f(U(P.field, 'iRes'), fw2, fh2)
           gl.uniform1f(U(P.field, 'iTime'), t)
-          gl.uniform1f(U(P.field, 'iField'), 1)        // terukur: ramp 0→1 dalam 0,35 s lalu tetap 1
-          gl.uniform1f(U(P.field, 'iMatter'), 1)
+          gl.uniform1f(U(P.field, 'iField'), ramp.waves)    // ramp build (live `Tw`), bukan konstanta 1
+          gl.uniform1f(U(P.field, 'iMatter'), ramp.matterN)
           gl.uniform2f(U(P.field, 'iCenter'), 0.5009382963180542, 0.6912000179290771)
           gl.uniform1f(U(P.field, 'iRing'), 0.12385807931423187)
           gl.uniform1f(U(P.field, 'iClear'), 0)
@@ -696,6 +733,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, fieldTex)
           gl.uniform1i(U(P.blit, 'uTex'), 0)
+          gl.uniform1f(U(P.blit, 'uOpacity'), Math.min(1, ramp.waves * 1.6))   // live: canvas opacity = min(1, mira*1.6)
           gl.drawArrays(gl.TRIANGLES, 0, 3)
         }
 
@@ -826,7 +864,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.hair, 'uGain'), 1)
           gl.uniform1f(U(P.hair, 'uOn'), 1)
           gl.uniform4f(U(P.hair, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
-          gl.uniform1f(U(P.hair, 'uBT'), 100)          // ignition rambut sudah lewat (langkah 3 akan memakai jam)
+          // langkah 3: `uBT` = jam build, BUKAN konstanta. Rambut baru muncul setelah gelombang ignition
+          // (ignite 6,55 s + jarak titik) mencapainya — diukur: pada t=1,89 live hanya menampilkan percikan.
+          gl.uniform1f(U(P.hair, 'uBT'), t)
           gl.uniform1f(U(P.hair, 'uUp'), 48)
           gl.uniform1f(U(P.hair, 'uSide'), 120)
           gl.uniform1f(U(P.hair, 'uClock'), t)
@@ -860,7 +900,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.strands, 'uGain'), 1)
           gl.uniform1f(U(P.strands, 'uOn'), 1)
           gl.uniform4f(U(P.strands, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
-          gl.uniform1f(U(P.strands, 'uBT'), 100)
+          gl.uniform1f(U(P.strands, 'uBT'), t)
           gl.uniform1f(U(P.strands, 'uUp'), 48)
           gl.uniform1f(U(P.strands, 'uSide'), 120)
           gl.uniform1f(U(P.strands, 'uClock'), t)
@@ -899,7 +939,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform2f(U(P.twinkles, 'uSize'), HW, HH)
           gl.uniform1f(U(P.twinkles, 'uGain'), 1)
           gl.uniform4f(U(P.twinkles, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
-          gl.uniform1f(U(P.twinkles, 'uBT'), 100)
+          gl.uniform1f(U(P.twinkles, 'uBT'), t)
           gl.uniform1f(U(P.twinkles, 'uUp'), 48)
           gl.uniform1f(U(P.twinkles, 'uSide'), 120)
           gl.uniform1f(U(P.twinkles, 'uClock'), t)
@@ -946,6 +986,21 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform1i(U(P.points, 'uMap'), 1)
         gl.drawArrays(gl.POINTS, 0, pts.count)
 
+        // ---- cincin kejut ignition (35/36): hanya selama 2,6 s setelah ignition ----
+        {
+          const shock = shockAt(t)
+          if (shock.k > 0.001) {
+            gl.useProgram(P.shock)
+            gl.bindVertexArray(shockVao.v)
+            gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+            gl.uniformMatrix4fv(U(P.shock, 'modelViewMatrix'), false, mvPoints)
+            gl.uniformMatrix4fv(U(P.shock, 'projectionMatrix'), false, proj)
+            gl.uniform4f(U(P.shock, 'uShock'), star.x, star.y, shock.r, shock.k)
+            gl.uniform1f(U(P.shock, 'uShockW'), 9)
+            gl.drawArrays(gl.TRIANGLES, 0, 6)
+          }
+        }
+
         // ---- busur inti & mahkota (15/16) ----
         if (!OFF.has('arcs')) {
           gl.useProgram(P.arcs)
@@ -979,7 +1034,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.matter, 'uDense'), 0.32)
           gl.uniform4f(U(P.matter, 'uCoreT'), 0, 0.9, 0.9, 6)
           gl.uniform3f(U(P.matter, 'uCore'), matter.star.x, matter.star.y, 0.05 * fw)
-          gl.uniform4f(U(P.matter, 'uShock'), matter.star.x, matter.star.y, 0, 0)
+          const shockM = shockAt(t)
+          gl.uniform4f(U(P.matter, 'uShock'), matter.star.x, matter.star.y, shockM.r, shockM.k)
           gl.uniform1f(U(P.matter, 'uShockW'), 9)
           gl.uniform4f(U(P.matter, 'uFace'), face[0], face[1], face[2], face[3])
           gl.uniform4f(U(P.matter, 'uFaceA'), 0, 0, 0, 0)
@@ -1021,7 +1077,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform1f(U(P.wire, 'uTaper'), 26)
         // live: `uLiveT` = jam langkah bicara/dengar (0 saat idle) — bukan jam build
         gl.uniform1f(U(P.wire, 'uLiveT'), 0)
-        gl.uniform4f(U(P.wire, 'uShock'), star.x, star.y, 0, 0)
+        const shockW = shockAt(t)
+        gl.uniform4f(U(P.wire, 'uShock'), star.x, star.y, shockW.r, shockW.k)
         gl.uniform1f(U(P.wire, 'uShockW'), 9)
         gl.uniform4f(U(P.wire, 'uHz'), hz[0], hz[1], hz[2], hz[3])
         gl.uniform3f(U(P.wire, 'uHzSkull'), hzSkull[0], hzSkull[1], hzSkull[2])

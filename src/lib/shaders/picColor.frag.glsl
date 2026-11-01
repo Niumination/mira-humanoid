@@ -155,5 +155,8 @@ float luminance( const in vec3 rgb ) {
     float at = revealAt(p), filled = smoothstep(at - 0.04, at + 0.4, uTime);
     c.rgb *= 1.0 + faceLift(p);                     // her own glass lights up from inside while she speaks
     c.rgb *= 1.0 + 0.7 * exp(-max(0.0, uTime - at) * 3.0) + 0.6 * shockAt(p);   // the wave, and the flash behind it
-    gl_FragColor = vec4(c.rgb * uGain * (1.0 - give), c.a * filled * uFill);
+    // live: kanvas figur ber-alpha; browser mengalikan RGB dengan alpha saat menempel ke halaman, jadi
+    // sebelum gelombang reveal mencapai titik ini warnanya TIDAK tampil. Di kanvas tunggal kita lakukan
+    // hal yang sama secara eksplisit: kalikan rgb dengan `filled`.
+    gl_FragColor = vec4(c.rgb * uGain * (1.0 - give) * filled, c.a * filled * uFill);
   }
