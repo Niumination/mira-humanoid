@@ -14,3 +14,10 @@
 - Repo: `Niumination/mira-humanoid` (private), commit awal tanpa perubahan kode
 - Vercel: project `mira-humanoid`, production Ready
 - URL: https://mira-humanoid.vercel.app
+
+## Langkah 3 (paket niu-update-langkah3.zip, 1 Nov) — DITERAPKAN
+- `src/`: shock shader baru (shock.frag/vert.glsl) + update MiraStage, comp, picColor, blit — tanpa perubahan manual
+- `docs/langkah3/`: 12 PNG verifikasi (build6 vs live, t=0.3..9.5) + `docs/mira/gate-deploy-niu.json`
+- Build lokal lulus: bundle baru `index-DZGcjv2t.js` 401,81 kB (gzip 94,14 kB)
+- Deploy: https://mira-humanoid-niu.vercel.app — sha256 bundle produksi = build lokal (68b1b5e0a7e7b567…), penanda "shock" ada di bundle ✅
+- `docs/PROGRESS.md` & `REBUILD-LOG.md` versi baru → repo Niu-Humanoid (commit terpisah)
