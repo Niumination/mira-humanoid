@@ -262,3 +262,17 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 5. MAE terkini vs app asli: 0,3 **3,46** · 1,89 **13,45** · 3,5 **8,55** · 5,5 **13,72** · 6,8 **34,87** · 9,5 **9,89**.
 6. Sisa: (a) 6,8 = kilatan ignition `13/14`/`33/34` (live 61,2 vs kita 36,7); (b) kelebihan terang 9,5
    +7,1 dari lapisan gambar/garis/rambut (cakupan piksel, bukan uniform).
+
+## 2026-11-02 (15) — Pemeriksaan upstream setelah langkah 3c
+
+1. **Repo:** Niu `57d548e` (docs PROGRESS + REBUILD-LOG sesi 14, F-82), mira `4ecc57c` (src langkah 3c +
+   `docs/langkah3/build9-*.png` 7 + `LANGKAH3.md` bagian 3–4 + `tools/probe-mira-field.js`).
+2. **Kode identik 100 %:** `src/` 69/69 berkas sama sha256, **0 beda**; `tools/` 79/79; docs 149/149
+   (kecuali satu, lihat butir 4).
+3. **Produksi sudah ikut:** `index-DjYtq9fQ.js` 402.410 B, sha256 `55940d22f65d8c4d635d…` = build repo HEAD.
+   Gerbang piksel produksi: 1,89 → **13,45** · 6,8 → **34,87** · 9,5 → **9,89**; produksi vs build lokal ≤ 0,17.
+4. **Satu ketidakcocokan docs:** `Niu-Humanoid/docs/verification/langkah3/LANGKAH3.md` masih versi lama
+   (3.052 B, hanya bagian 1–2); versi lengkap (5.035 B, bagian 1–4) ada di `mira-humanoid/docs/langkah3/`
+   dan di workspace. Perlu ditimpa → paket `niu-update-koreksi-docs.zip`.
+5. **Workspace dirampingkan:** 7 PNG `build9` identik dihapus (4,6 MB) + 4 PNG `prod-t` lama diganti
+   `prod3-t` → Kerja-Arena ±24 MB.

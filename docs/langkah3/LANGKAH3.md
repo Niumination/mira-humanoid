@@ -102,3 +102,60 @@ Dibaca dari program materi app asli dengan `tools/probe-mira-field.js` (dua kont
 
 Kelebihan terang pada 9,5 (+7,1) menurut uji `off=…`: gambar 10,0 · garis 6,5 · rambut 5,8 · bloom 4,5 ·
 materi 0,4 · pita 0,8 → soal cakupan/komposisi, bukan nilai uniform.
+
+## Bagian 5 — bug `modelMatrix` pada sprite + haze lebar (F-83, F-84, F-85)
+
+### F-83 — `drawSprite` mengirim skala di matriks yang salah (bug, ditemukan lewat shader)
+
+`src/lib/shaders/sprite.vert.glsl` (three.js `SpriteMaterial`) mengambil **ukuran** dari `modelMatrix`
+(`length(modelMatrix[0].xyz)`, `length(modelMatrix[1].xyz)`) dan **posisi pusat** dari `modelViewMatrix[3]`;
+`USE_SIZEATTENUATION` aktif sehingga skala tidak lagi dikali `−z`. `drawSprite` lama hanya mengirim
+`modelViewMatrix` berisi skala → kuad selalu **1 unit** dan kedua sprite haze praktis tak terlihat
+sejak awal (bukan hilang belakangan). Probe `window.__MIRA_SPR` membuktikan nilai uniform sudah benar
+(`sc 5,041 / 3,024 / 1,232`, `op 1 / 1 / 0,773`, `gl.getError() = 0`) sementara tangkapan layar
+**identik md5** dengan sebelum patch.
+
+Perbaikan: `modelMatrix = [s,0,0,0, 0,s,0,0, 0,0,1,0, tx,ty,0,1]`, `modelViewMatrix = I` dengan kolom 3
+`(tx, ty, −4,8)`. Selain itu blending sprite disamakan dengan three.js `AdditiveBlending` =
+`(SRC_ALPHA, ONE)`; `(ONE, ONE)` membuat inti sprite mentah putih dan `opacity` tak berpengaruh.
+
+### F-84 — haze lebar yang menutupi bingkai (sprite live warna (0,55; 0,3; 1))
+
+Tangkapan live menunjukkan **glow ungu lebar** (radius ≈ 1 lebar gambar) sejak t ≈ 1,5, dan itu
+sumber utama selisih kecerahan: live 21,7 vs rebuild 9,6 pada t = 1,89; live 61,2 vs 36,8 pada t = 6,8.
+Haze dibuat dari sprite smoke dengan warna `(0,55; 0,3; 1)`, skala `lebar gambar · S`, blend
+`(SRC_ALPHA, ONE)`, dan opasitas **berdenyut** — bukan konstan:
+
+`opacity = 1,73·exp(−((t−1,95)/0,75)²) + 3,56·exp(−((t−6,9)/0,75)²)`
+
+Denyut ini diukur, bukan ditebak: live t = 5,5 dan 9,5 justru **lebih gelap** dari rebuild
+(22,5 vs 26,8 · 39,6 vs 46,7), jadi haze konstan pasti merusak keduanya (terbukti: hz konstan 1,6 →
+5,5: 13,72→17,15 · 9,5: 9,89→17,44). Amplitudo tiap denyut dikalibrasi dari selisih kecerahan
+saat itu (−1,73 menghasilkan +9,4 pada 1,89; −3,56 menghasilkan +15,0 pada 6,8 sebelum skala akhir).
+
+### F-85 — kilatan ignition live tidak direproduksi (net-negatif)
+
+Sprite `m` (tekstur `ae`, `diffuse (2,4; 2,1; 2,8)`, `op = max(0,1−Me/1,1)`, `sc = 40+380·min(1,Me/0,25)`)
+sudah diport penuh **dan terverifikasi menyala** setelah F-83, tetapi terukur **menaikkan galat**:
+t = 6,8 → MAE 34,87 (tanpa) · 30,46 (flash dimatikan) · 30,88 (×0,3) · 31,25 (×0,5) · 31,94 (×1).
+Penyebabnya: cahaya live yang setara tidak terpusat di bintang, melainkan menyebar ke **kanan-atas**
+bingkai (kanan-atas: live 28,4 vs rebuild 12,6), sedangkan sprite kita memusatkan terang di
+bawah-tengah (live 157,1 vs rebuild 195,0 → makin jauh bila flash dinyalakan). Kode tetap ada dan
+bisa dinyalakan lewat `?fl=1` (atau `hz`/`hs`/`hy`) sampai posisi/tekstur sprite live terverifikasi.
+
+| t | build9 | **build11** | kecerahan build/live |
+|---|---|---|---|
+| 0,3 | 3,46 | **3,43** | 5,8 / 3,0 |
+| 1,89 | 13,45 | **7,18** | 20,7 / 21,7 |
+| 3,5 | 8,55 | **8,35** | 22,3 / 23,0 |
+| 5,5 | 13,72 | **12,44** | 28,4 / 22,5 |
+| 6,8 | 34,87 | **30,45** | 47,2 / 61,2 |
+| 9,5 | 9,89 | **9,89** | 46,7 / 39,6 |
+| **rata-rata** | 13,99 | **11,96** | |
+
+Regresi terang terbaik `O ≈ a·L` per fase: 1,38 (0,3) · 0,95 (3,5) · 1,08 (5,5) · 1,11 (9,5) →
+sisa galat **bukan** soal level kecerahan global, melainkan sebaran/posisi unsur.
+
+Sisa pekerjaan: sebaran cahaya live yang bergeser ke kanan-atas pada 6,8; pita aurora `kk()`;
+`uSeed` 1,7; kelebihan 5,5 (+5,9) yang menurut uji `off=` bukan berasal dari satu lapisan
+(mematikan bloom/materi/medan justru memperburuk).

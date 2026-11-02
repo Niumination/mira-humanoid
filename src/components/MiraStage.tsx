@@ -89,6 +89,16 @@ const OFF = (() => {
   }
 })()
 
+/** `?hz=` · `?hs=` · `?fl=` — tombol kalibrasi sementara untuk lapisan sprite (dibuang sebelum rilis). */
+const tune = (k: string, d: number) => {
+  try {
+    const v = parseFloat(new URLSearchParams(window.location.search).get(k) || '')
+    return Number.isFinite(v) ? v : d
+  } catch {
+    return d
+  }
+}
+
 const PREFIX_GLOW = [
   [0, 'rgba(255,255,255,1)'],
   [0.25, 'rgba(230,205,255,0.55)'],
@@ -799,25 +809,29 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.useProgram(P.sprite)
         gl.bindVertexArray(spriteVao)
         gl.enable(gl.BLEND)
-        // terukur di live: srcRGB ONE · dstRGB ONE · srcA ZERO · dstA ONE → alpha latar dipertahankan
-        gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
-        const drawSprite = (scale: number, tx: number, ty: number, diffuse: number[], tex: WebGLTexture) => {
+        // live memakai three.js AdditiveBlending = (SRC_ALPHA, ONE): kontribusi = warna·map·alpha·opacity.
+        // (Blend (ONE,ONE) sebelumnya membuat inti sprite terlalu terang dan opacity tak berpengaruh.)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+        const drawSprite = (scale: number, tx: number, ty: number, diffuse: number[], tex: WebGLTexture, opacity = 1) => {
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, tex)
+          // shader SpriteMaterial mengambil UKURAN dari `modelMatrix` (bukan modelViewMatrix) dan
+          // POSISI dari `modelViewMatrix[3]` — tanpa modelMatrix, semua sprite selalu 1 unit (tak terlihat).
+          gl.uniformMatrix4fv(U(P.sprite, 'modelMatrix'), false,
+            new Float32Array([scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 1, 0, tx, ty, 0, 1]))
           gl.uniformMatrix4fv(U(P.sprite, 'modelViewMatrix'), false,
-            new Float32Array([scale, 0, 0, 0, 0, -scale, 0, 0, 0, 0, 1, 0, tx, ty, -4.8, 1]))
+            new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, tx, ty, -4.8, 1]))
           gl.uniformMatrix4fv(U(P.sprite, 'projectionMatrix'), false, proj)
           gl.uniform1f(U(P.sprite, 'rotation'), 0)
           gl.uniform2f(U(P.sprite, 'center'), 0.5, 0.5)
           gl.uniformMatrix3fv(U(P.sprite, 'mapTransform'), false, new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]))
           gl.uniform3f(U(P.sprite, 'diffuse'), diffuse[0], diffuse[1], diffuse[2])
-          gl.uniform1f(U(P.sprite, 'opacity'), 1)
+          gl.uniform1f(U(P.sprite, 'opacity'), opacity)
           gl.uniform1i(U(P.sprite, 'map'), 0)
           gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
         }
-        drawSprite(5.040521144866943, TX, -1.1650768518447876, [0.07934960722923279, 0.04328160360455513, 0.14427201449871063], texSmoke)
-        drawSprite(3.024312734603882, -0.02353944443166256, -1.3037199974060059, [0.28671565651893616, 0.2723798453807831, 0.28671565651893616], texSmoke)
-
+        // Catatan: dua sprite haze konstan (skala 5,04 & 3,02) yang dulu digambar di sini DIHAPUS —
+        // di live keduanya ber-opacity 0 sehingga tidak menyumbang apa pun (F-83, lihat LANGKAH3.md).
         // ---- [2] kuad isi gambar ----
         gl.useProgram(P.fill)
         gl.bindVertexArray(fillVao.v)
@@ -1117,6 +1131,49 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform3f(U(P.wire, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
         gl.uniform1f(U(P.wire, 'uHeadH'), fh)
         if (!OFF.has('lines')) gl.drawElements(gl.TRIANGLES, mesh.indexCount, gl.UNSIGNED_INT, 0)
+
+        // ---- HAZE LEBAR (sprite live warna (0,55; 0,3; 1), skala rx·3,4 ≈ 5× gambar → glow yang
+        // menutupi seluruh bingkai, terukur ada sejak t≈1,5 sampai akhir). Amplitudo dikalibrasi lewat
+        // ?hz= (opasitas) & ?hs= (pengali skala) supaya bisa disapu tanpa build ulang.
+        {
+          const g = (c: number, w: number) => Math.exp(-(((t - c) / w) ** 2))
+          // denyut haze diukur dari live: kuat saat figur muncul (t≈1,95) dan saat orb menyala (t≈6,9),
+          // mendekati nol di antaranya dan sesudahnya (live t=5,5 & 9,5 justru lebih gelap dari kita).
+          const pulse = 1.73 * g(1.95, 0.75) + 3.56 * g(6.9, 0.75)
+          const hz = tune('hz', 1) * pulse
+          if (hz > 0.002) {
+            const hs = tune('hs', 1.0)
+            gl.useProgram(P.sprite)
+            gl.bindVertexArray(spriteVao)
+            gl.enable(gl.BLEND)
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+            // pusat haze bisa digeser ke atas (mendekati kepala) lewat ?hy= (fraksi tinggi gambar)
+            const hy = tune('hy', 0) * pic.height * S
+            drawSprite(pic.width * S * hs, (star.x - pic.width / 2) * S, TY - star.y * S + hy,
+              [0.55, 0.3, 1], texSmoke, hz)
+          }
+        }
+
+        // ---- sprite `m` live: KILATAN IGNITION di bintang (renderOrder 12 → DI ATAS gambar/materi/busur) ----
+        // opacity = max(0, 1 − Me/1,1) · skala = 40 + 380·min(1, Me/0,25) · warna (2,4; 2,1; 2,8) · tekstur ae
+        // (Me = t − 6,55). Terukur di live: pada t=6,8 opacity 0,773, skala 420 satuan gambar.
+        {
+          const me = t - reveal[2]
+          if (me > 0) {
+            const op = Math.max(0, 1 - me / 1.1)
+            if (op > 0.002) {
+              gl.useProgram(P.sprite)
+              gl.bindVertexArray(spriteVao)
+              gl.enable(gl.BLEND)
+              gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+              // skala: live 40→420 satuan gambar; diukur ulang terhadap layar, sebaran cahaya live jauh
+              // lebih luas (mid-tone tinggi di seluruh bingkai) → 1,9× supaya lingkarannya menyebar sama
+              const sc = (40 + 380 * Math.min(1, me / 0.25)) * S * 1.9
+              // posisi memakai konvensi mvPoints (y gambar ke bawah): ty = TY − y·S
+              drawSprite(sc, (star.x - pic.width / 2) * S, TY - star.y * S, [2.4, 2.1, 2.8], texGlow, op * tune('fl', 0))
+            }
+          }
+        }
 
         // ---- bloom (langkah 8): luminansi → 8 mip turun → 8 mip naik → komposit ----
         // `?off=bloom` tetap menjalankan komposit dengan intensitas 0, supaya yang diukur benar-benar
