@@ -656,6 +656,10 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           return null
         }
       })()
+      const fieldPin = 0.15
+      // live memakai jam terpisah untuk rambut/helai/bintik/percikan/wajah: saat `?t=` dipin harganya
+      // 0,045–0,2 (terukur); jadi jam ini SELALU berjalan sendiri, tidak ikut dipin.
+      let animT = 0
       const tick = () => {
         if (pin !== null && Number.isFinite(pin)) return pin
         const now = performance.now()
@@ -688,6 +692,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.clear(gl.COLOR_BUFFER_BIT)
         const t = tick()
         const ramp = rampAt(t)
+        const fieldClock = pin !== null && Number.isFinite(pin) ? fieldPin : t
+        animT += 0.016
+        const animClock = pin !== null && Number.isFinite(pin) ? Math.min(animT, 0.2) : animT
         ;(window as any).__MIRA_RAMP = { t, ...ramp }
         const proj = perspective(FOV, pw / ph, NEAR, FAR)
         gl.disable(gl.DEPTH_TEST)
@@ -710,7 +717,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.useProgram(P.field)
           gl.bindVertexArray(fieldVao.v)
           gl.uniform2f(U(P.field, 'iRes'), fw2, fh2)
-          gl.uniform1f(U(P.field, 'iTime'), t)
+          // live: jam medan nebula BUKAN jam build — saat `?t=` dipin, live memakai 0,15 (terukur di
+          // keempat fase: iTime = 0,150). Saat bermain normal, jam medan berjalan sendiri dari mount.
+          gl.uniform1f(U(P.field, 'iTime'), fieldClock)
           gl.uniform1f(U(P.field, 'iField'), ramp.waves)    // ramp build (live `Tw`), bukan konstanta 1
           gl.uniform1f(U(P.field, 'iMatter'), ramp.matterN)
           gl.uniform2f(U(P.field, 'iCenter'), 0.5009382963180542, 0.6912000179290771)
@@ -762,11 +771,12 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             gl.uniformMatrix4fv(U(P.waves, 'modelViewMatrix'), false, mvWave)
             gl.uniformMatrix4fv(U(P.waves, 'projectionMatrix'), false, proj)
             gl.uniform1f(U(P.waves, 'uTime'), waveClock)
-            gl.uniform1f(U(P.waves, 'uOpacity'), 0.36)
+            gl.uniform1f(U(P.waves, 'uOpacity'), ramp.matterN * 0.3)   // live: matter * waves.opacity(0,3)
             gl.uniform1f(U(P.waves, 'uEnergy'), 0)
             gl.uniform1f(U(P.waves, 'uSeed'), r.seed)
-            gl.uniform2f(U(P.waves, 'uOrbPx'), -9999, -9999)
-            gl.uniform1f(U(P.waves, 'uOrbR'), 1)
+            // live: uOrbPx = iCenter·(w,h) kanvas, uOrbR = iRing·h  → 721,35 / 622,08 / 111,47 @1440×900
+            gl.uniform2f(U(P.waves, 'uOrbPx'), 0.5009382963180542 * cw, 0.6912000179290771 * ch)
+            gl.uniform1f(U(P.waves, 'uOrbR'), 0.12385807931423187 * ch)
             gl.drawElements(gl.TRIANGLES, wv.count, gl.UNSIGNED_SHORT, 0)
           }
           // percikan pita (168 titik, gN)
@@ -870,7 +880,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.hair, 'uBT'), t)
           gl.uniform1f(U(P.hair, 'uUp'), 48)
           gl.uniform1f(U(P.hair, 'uSide'), 120)
-          gl.uniform1f(U(P.hair, 'uClock'), t)
+          gl.uniform1f(U(P.hair, 'uClock'), animClock)
           gl.uniform1f(U(P.hair, 'uMass'), 0.7)
           gl.uniform1f(U(P.hair, 'uEarY'), 343.4100036621094)
           gl.uniform1f(U(P.hair, 'uTop'), 0.6)
@@ -904,8 +914,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.strands, 'uBT'), t)
           gl.uniform1f(U(P.strands, 'uUp'), 48)
           gl.uniform1f(U(P.strands, 'uSide'), 120)
-          gl.uniform1f(U(P.strands, 'uClock'), t)
-          gl.uniform1f(U(P.strands, 'uTime'), t)
+          gl.uniform1f(U(P.strands, 'uClock'), animClock)
+          gl.uniform1f(U(P.strands, 'uTime'), animClock)
           gl.uniform1f(U(P.strands, 'uSway'), 0.6)
           gl.uniform1f(U(P.strands, 'uMass'), 0.7)
           gl.uniform1f(U(P.strands, 'uEarY'), 343.4100036621094)
@@ -933,7 +943,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniformMatrix4fv(U(P.twinkles, 'modelViewMatrix'), false,
             new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
           gl.uniformMatrix4fv(U(P.twinkles, 'projectionMatrix'), false, proj)
-          gl.uniform1f(U(P.twinkles, 'uTime'), t)
+          gl.uniform1f(U(P.twinkles, 'uTime'), animClock)
           gl.uniform1f(U(P.twinkles, 'uPx'), 1)
           gl.uniform1f(U(P.twinkles, 'uOn'), 1)
           gl.uniform1f(U(P.twinkles, 'uSpark'), 0.6)
@@ -1082,7 +1092,10 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform1f(U(P.wire, 'uRest'), 0.15)
         gl.uniform1f(U(P.wire, 'uSettle'), 1)
         gl.uniform1f(U(P.wire, 'uHot'), 3.2)
-        gl.uniform1f(U(P.wire, 'uGain'), 0.95)
+        // live: uGain = 0,95·bright·(1+1,1·q), q = hum.build.surge · b_(t, ignite), b_ = exp(−Δ/1,9)
+        const me = t - reveal[2]
+        const qSurge = me >= 0 && me < 8 ? Math.exp(-me / 1.9) : 0
+        gl.uniform1f(U(P.wire, 'uGain'), 0.95 * (1 + 1.1 * qSurge))
         gl.uniform1f(U(P.wire, 'uIdle'), 0)
         gl.uniform1f(U(P.wire, 'uPulse'), 0.7)
         gl.uniform1f(U(P.wire, 'uPulseSpeed'), 1)
@@ -1098,7 +1111,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform3f(U(P.wire, 'uHzSkull'), hzSkull[0], hzSkull[1], hzSkull[2])
         gl.uniform3f(U(P.wire, 'uHzInner'), hzInner[0], hzInner[1], hzInner[2])
         gl.uniform4f(U(P.wire, 'uFace'), face[0], face[1], face[2], face[3])
-        gl.uniform4f(U(P.wire, 'uFaceA'), 0, 0, 0, 0)
+        gl.uniform4f(U(P.wire, 'uFaceA'), 0, 0, animClock, 0)
         gl.uniform1f(U(P.wire, 'uFaceSize'), 1)
         gl.uniform4f(U(P.wire, 'uHeadPose'), 0, 0, 0, 0)
         gl.uniform3f(U(P.wire, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
