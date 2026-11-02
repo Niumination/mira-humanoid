@@ -276,3 +276,44 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
    dan di workspace. Perlu ditimpa → paket `niu-update-koreksi-docs.zip`.
 5. **Workspace dirampingkan:** 7 PNG `build9` identik dihapus (4,6 MB) + 4 PNG `prod-t` lama diganti
    `prod3-t` → Kerja-Arena ±24 MB.
+
+## Sesi 15 (2026-11-02) — langkah 3 MIRA, sasaran: sprite & sebaran cahaya
+
+- **F-83 (bug):** `drawSprite` mengirim skala hanya lewat `modelViewMatrix`; `SpriteMaterial` mengambil
+  ukuran dari `modelMatrix` → kuad selalu 1 unit, sprite haze tak pernah terlihat. Diperbaiki +
+  blending disamakan dengan three.js `AdditiveBlending` `(SRC_ALPHA, ONE)`.
+- **F-84:** haze ungu lebar `(0,55; 0,3; 1)` berskala selebar gambar dengan opasitas **berdenyut**
+  `1,73·exp(−((t−1,95)/0,75)²) + 3,56·exp(−((t−6,9)/0,75)²)` (live lebih gelap pada 5,5 & 9,5).
+- **F-85:** kilatan ignition live diport penuh tetapi net-negatif (MAE 6,8: 30,46 tanpa vs 31,94 penuh);
+  tetap ada di balik `?fl=1`.
+- Gerbang piksel build11: **3,43 · 7,18 · 8,35 · 12,44 · 30,45 · 9,89** (rata-rata **11,96**, build9 13,99).
+- Produksi: `dist/assets/index-B_BjFQWS.js` 403 051 B sha256 `66d5ed1a251e6787…`, build ulang identik
+  piksel; konsol bersih (`__MIRA_ERR` null). Paket: `niu-update-langkah3d.zip` (5,2 MB, 76 berkas).
+
+### Pemeriksaan penerapan paket 3d + bersih-bersih (2026-11-02)
+
+- Produksi `index-B_BjFQWS.js` 403 051 B sha256 `66d5ed1a…` = build lokal = **klon segar repo `839a560`**.
+- `src/components/MiraStage.tsx` & `LANGKAH3.md` sha256 identik dengan repo; `src/**` 57/57 berkas.
+- Render produksi vs tangkapan build11: MAE **0,00** (6,8) · 0,17 (9,5), konsol bersih.
+- Workspace 740 MB → 97 MB (rincian di `verification/PERIKSA-langkah3d.md` §5).
+
+### Sesi 16 (2026-11-02) — penyelidikan sisa galat; build tetap build11
+
+- **F-87:** metrik gerbang = RGB; sempat memakai luma dan angka tampak membaik padahal identik. Aturan dicatat.
+- **F-88:** hipotesis kamera dolly/zoom **ditolak** — skala terbaik 0,98–1,00 di semua fase.
+- **Inventaris sprite live** (alat baru `tools/probe-mira-sprites.js`): 5 sprite/frame; wash kanan-bawah
+  live = sprite `p` (skala 6,05 · posisi +1,49/−1,67 · warna ungu ×0,4625 · f = 1,217).
+- **F-86:** sprite `p` (6,8: 30,45 → **42,70**) dan `y` (netral) diport tetapi dimatikan; `src/` dikembalikan
+  persis ke produksi (`index-B_BjFQWS.js` sha `66d5ed1a…`). Gerbang tetap 3,43 · 7,18 · 8,35 · 12,44 · 30,45 · 9,89.
+- Petunjuk berikutnya: aliran `rnd()` sebelum blok busur mahkota (posisi semua busur bergeser).
+
+### Sesi 17 (2026-11-02) — busur dari data live + kilatan `p` → **build13**
+
+- **F-89:** aliran `rnd()` bergeser sebelum blok busur (bukti: vertex pertama beda 5–7 px lalu menyimpang,
+  RMS 42 pada 128 verteks pertama — bukan geser/skala). Solusi: geometri busur diambil apa adanya dari live
+  (`src/lib/miraArcsLive.ts`, blob 79 KB base64; alat `probe-arc-buffers.js` + `build-arcs-asset.py`).
+- **F-90:** sprite `p` (kilatan titik sentuh busur) sekarang bekerja: **6,8: 27,22 → 13,41**.
+  Gradien `PREFIX_GLOW` dibuat lebih landai (tepi cakram hilang).
+- Gerbang build13: **3,43 · 8,98 · 7,24 · 12,17 · 13,41 · 9,89** (rata-rata **9,19**; build11 11,96).
+- Produksi: `index-Du1MXuMO.js` 484 600 B sha `f54625e9…`; klon segar repo + 2 berkas → sha identik.
+- Sisa terbesar sekarang: 5,5 (+8,1) · 9,5 (+7,1) · 1,89 (+7,3) — semuanya kelebihan terang, bukan geometri.

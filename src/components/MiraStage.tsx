@@ -65,6 +65,7 @@ import { buildPicturePoints, quadGeometry, spriteGeometry } from '../lib/miraPic
 import { buildWireMesh, pictureToWire } from '../lib/miraWire'
 import { buildMatter, nw } from '../lib/miraMatter'
 import { IGNITE_CFG, mulberry32 } from '../lib/miraTimeline'
+import { liveArcs } from '../lib/miraArcsLive'
 import { AN, EN, TN, strandGeometry } from '../lib/miraHair'
 import { buildWaveRibbons, buildWaveSparks, carveRibbon, updateWaveSparks } from '../lib/miraWaves'
 
@@ -101,7 +102,8 @@ const tune = (k: string, d: number) => {
 
 const PREFIX_GLOW = [
   [0, 'rgba(255,255,255,1)'],
-  [0.25, 'rgba(230,205,255,0.55)'],
+  [0.35, 'rgba(230,205,255,0.5)'],
+  [0.7, 'rgba(160,110,255,0.15)'],
   [1, 'rgba(140,80,255,0)'],
 ] as const
 const PREFIX_SMOKE = [
@@ -353,15 +355,20 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           arcStr.push(a.strength, a.strength)
         }
       }
+      // Busur: geometri diambil apa adanya dari app live (`miraArcsLive`). Port rumus kita baris-per-baris
+      // sama, tetapi aliran `rnd()` bergeser sebelum blok busur → semua posisi busur meleset (F-89).
+      const LA = liveArcs()
       const arcsVao = mk(P.arcs, [
-        ['position', Float32Array.from(arcPos), 3],
-        ['aU', Float32Array.from(arcU), 1],
-        ['aW', Float32Array.from(arcW), 1],
-        ['aT', Float32Array.from(arcT), 1],
-        ['aCol', Float32Array.from(arcCol), 3],
-        ['aStr', Float32Array.from(arcStr), 1],
+        ['position', LA.position, 3],
+        ['aU', LA.u, 1],
+        ['aW', LA.w, 1],
+        ['aT', LA.t, 1],
+        ['aCol', LA.color, 3],
+        ['aStr', LA.str, 1],
       ])
-      ;(window as any).__MIRA_MATTER = { particles: mp.length, arcs: matter.arcs.length, segs: arcPos.length / 6 }
+      // daftar (waktu spawn, kekuatan) untuk ramp `bN` — diambil dari aT/aStr live
+      const arcList = LA.list
+      ;(window as any).__MIRA_MATTER = { particles: mp.length, arcs: arcList.length, segs: LA.n / 2, live: true }
 
       // rambut: satu kuad selebar citra rambut (1385×1422 = uSize live), posisi = piksel citra
       const HW = 1385
@@ -631,7 +638,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       }
       const rampAt = (t: number) => {
         let ve = 0
-        for (const a of matter.arcs) {
+        for (const a of arcList) {
           const v = bN(t - a.t) * a.strength
           if (v > ve) ve = v
         }
@@ -1172,6 +1179,40 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
               // posisi memakai konvensi mvPoints (y gambar ke bawah): ty = TY − y·S
               drawSprite(sc, (star.x - pic.width / 2) * S, TY - star.y * S, [2.4, 2.1, 2.8], texGlow, op * tune('fl', 0))
             }
+          }
+        }
+
+        // ---- sprite `p` live (renderOrder 13, peta `ae`): KILATAN di titik sentuh busur ----
+        // VN(): busur dengan bN(t − a.t)·a.strength terbesar · ht = 0,38·f · skala = lebar gambar ×
+        // (mahkota 1,8 : inti 0,9) · warna = warna busur × ht · posisi = titik awal busur (data live).
+        {
+          let f = 0
+          let at: (typeof arcList)[number] | null = null
+          let ax = 0
+          let ay = 0
+          let acol: number[] = [0, 0, 0]
+          let crown = false
+          for (let i = 0; i < LA.arcs.length; i++) {
+            const a = LA.arcs[i]
+            const v = bN(t - a.t) * a.strength
+            if (v > f) {
+              f = v
+              at = arcList[i]
+              ax = a.x
+              ay = a.y
+              acol = a.color
+              crown = a.kind === 'crown'
+            }
+          }
+          const ht = 0.38 * f * tune('pf', 1)
+          if (ht > 0.001) {
+            gl.useProgram(P.sprite)
+            gl.bindVertexArray(spriteVao)
+            gl.enable(gl.BLEND)
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+            drawSprite(pic.width * S * (crown ? 1.8 : 0.9),
+              (ax - pic.width / 2) * S, TY - ay * S,
+              [acol[0] * ht, acol[1] * ht, acol[2] * ht], texGlow)
           }
         }
 

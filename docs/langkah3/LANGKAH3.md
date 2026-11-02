@@ -159,3 +159,124 @@ sisa galat **bukan** soal level kecerahan global, melainkan sebaran/posisi unsur
 Sisa pekerjaan: sebaran cahaya live yang bergeser ke kanan-atas pada 6,8; pita aurora `kk()`;
 `uSeed` 1,7; kelebihan 5,5 (+5,9) yang menurut uji `off=` bukan berasal dari satu lapisan
 (mematikan bloom/materi/medan justru memperburuk).
+
+## Bagian 6 — penyelidikan sisa galat (hipotesis diuji, bukan ditebak)
+
+### F-87 — metrik wajib RGB, bukan luma (kesalahan pengukuran yang hampir menipu)
+
+Semua angka gerbang dihitung dari `mean(|RGB kita − RGB live|)`. Sempat satu rangkaian uji memakai
+kanal **L** (luma) dan tampak "lonjakan besar" (1,89: 7,18 → 4,37 · 6,8: 30,45 → 26,36); setelah
+dihitung ulang dengan RGB hasilnya **sama persis**. Luma memberi bobot 0,59 G + 0,30 R + 0,11 B
+sehingga selisih warna (mis. sprite ungu) terlihat jauh lebih kecil/besar daripada metrik gerbang.
+**Aturan: setiap klaim MAE harus menyebut metrik RGB.** Alat: `tools/shot.js` + skrip pembanding.
+
+### F-88 — hipotesis "kamera dolly/zoom" DITOLAK
+
+Dugaan dari sesi lalu: live tampak "mengecil" pada 3,5–5,5. Diuji dengan pencarian skala
+(registrasi gambar, tempel terpusat, 0,84–1,08):
+
+| t | skala terbaik kita→live |
+|---|---|
+| 3,5 | 0,98 |
+| 5,5 | 1,00 |
+| 6,8 | 1,00 |
+| 9,5 | 1,00 |
+
+Tidak ada perbedaan skala. Kesimpulan: kesan "mengecil" berasal dari **kecerahan/sebaran**, bukan geometri.
+
+### Inventaris sprite live (diukur dengan `tools/probe-mira-sprites.js`, t = 6,8)
+
+5 sprite per frame; urutannya = urutan gambar:
+
+| # | skala | posisi (view) | diffuse | opacity | tafsir |
+|---|---|---|---|---|---|
+| 0 | 5,04 | (0,00 · −1,16) | hitam | 1 | haze/aura di bintang, **tak menyumbang** (diffuse 0) |
+| 1 | 1,90 | (0,01 · **+0,86**) | putih | **0,066** | aura kepala `g` (jendela ignition, hampir pudar) |
+| 2 | 0,44 | (0,00 · −1,16) | hitam | 1 | inti `y`/`v`, **tak menyumbang** |
+| 3 | 1,23 | (0,00 · −1,16) | (2,4; 2,1; 2,8) | **0,773** | kilatan `m` — cocok dengan port kita |
+| 4 | **6,05** | (**+1,49** · **−1,67**) | (0,3331; 0,1943; **0,4627**) | 1 | **kilatan busur `p`** — inilah "wash" kanan-bawah live |
+
+Sprite #4: `diffuse` = warna ungu `(0,72; 0,42; 1)` × **0,4625** → `ht = hum.strike.flash 0,38 · f`,
+jadi **f = 1,217**; skala 6,05 = `E·1,8` → lebar gambar `E = 3,36` satuan dunia (≈ 1 146 px, cocok
+dengan data recon 1146×1374). Posisi (1,49; −1,67) = **kanan-bawah**, ±(1 081 · 1 180) px gambar.
+
+### F-86 — sprite `p` (kilatan busur) dan `y` (inti) diport tetapi NETRAL/NET-NEGATIF
+
+`p` diport penuh (`VN()` → busur dengan `bN(t−t_a)·strength` terbesar, `skala = lebar gambar × (mahkota 1,8 : inti 0,9)`,
+`warna = warna busur × 0,38·f`) dan `y` (skala `E·(0,04+0,3·xt)·Yt`, warna `(0,95; 0,65; 1,45)·ht`) juga.
+Hasil terukur (**metrik RGB**, semua fase lain tetap):
+
+| t | build11 | dengan `p` | dengan `y` |
+|---|---|---|---|
+| 1,89 | 7,18 | — | 7,18 |
+| 5,5 | 12,44 | **11,95** | 12,54 |
+| 6,8 | 30,45 | **42,70** | 30,45 |
+| 9,5 | 9,89 | 9,89 | 9,89 |
+
+`p` merusak 6,8 (+12,2) karena **titik busur kita bukan titik busur live**: pada t = 6,8 live memilih
+busur mahkota di (±1 081 · 1 180) px, sedangkan kita memilih busur mahkota lain di (766 · 324) px —
+kekuatannya hampir sama (`f` 1,234 vs 1,217) tetapi tempatnya berlawanan arah, sehingga kilatan besar
+kita jatuh di tengah yang sudah terlalu terang. `y` praktis nol (diskanya kecil, ±0,4 satuan).
+Keduanya karena itu **dimatikan** dan sumber `src/` dikembalikan persis ke keadaan produksi
+(sha256 `index-B_BjFQWS.js` = `66d5ed1a…`).
+
+### Petunjuk kuat berikutnya: urutan PRNG busur mahkota
+
+Pemilihan titik busur live: `B = lines.filter(outline).flatMap(pts)`, titik = `B[floor(rnd()*B.length)]`.
+Karena `f` cocok tetapi posisi meleset jauh, hampir pasti **aliran `rnd()` kita sudah bergeser sebelum
+blok busur** (satu panggilan lebih/kurang di bagian partikel), atau urutan `B` kita berbeda. Menutup
+ini akan memperbaiki sekaligus posisi semua busur (kontribusi busur di 6,8 = +4,45 satuan, terukur
+dengan `?off=arcs` di live).
+
+## Bagian 7 — busur: dari data live, bukan dari PRNG (build13)
+
+### F-89 — aliran `rnd()` bergeser sebelum blok busur → geometri busur diambil apa adanya
+
+Bukti numeric (bukan dugaan): buffer geometri busur live diekstrak dengan `tools/probe-arc-buffers.js`
+(6 buffer: `position` 3×3 968 · `aU` · `aW` · `aT` · `color` 3×3 968 · `aStr`) lalu dibandingkan
+vertex-per-vertex dengan milik kita:
+
+| hal | live | kita (generator) |
+|---|---|---|
+| jumlah verteks | 3 968 | 3 920 |
+| vertex pertama | (527,26 · 1 041,15) | (532,10 · 1 047,10) |
+| selisih vertex ke-1..32 | — | geser rata (13,9 · 14,8), sisa RMS **4,0** |
+| selisih pada 128 verteks pertama | — | RMS **42** (menyimpang, bukan geser/skala) |
+
+Jadi bukan soal skala/translasi: **bentuk spline-nya berbeda**. `g0`/`Uw` kita sudah sama baris-per-barang
+dengan live, maka penyebabnya aliran `rnd()` yang sudah bergeser sebelum blok busur. Konsekuensinya
+posisi **semua** busur meleset, dan itu juga yang membuat sprite kilatan `p` jatuh di tempat salah (F-86).
+
+**Perbaikan:** geometri busur diambil langsung dari app asli — `src/lib/miraArcsLive.ts` berisi blob
+base64 terkuantisasi (59 524 bita biner → 79 368 bita base64; posisi 1/16 px int16, warna & `aU` 1/255,
+`aW` bit, `aT` 1/1000, `aStr` 1/10000). Alat pembuatnya ikut dikirim: `tools/probe-arc-buffers.js` +
+`tools/build-arcs-asset.py`. Busur bersifat statis (dibuat sekali; animasi hanya lewat waktu seragam),
+jadi ini menyalin **data**, bukan menebak rumus. `MatterArc` generator tetap dipakai untuk hal lain.
+
+### F-90 — sprite `p` (kilatan titik sentuh busur) kini benar
+
+Dengan posisi busur yang tepat, sprite `p` (port penuh: `VN()`, `ht = 0,38·f`, skala `lebar × 1,8/0,9`,
+warna busur × `ht`) langsung berfungsi: **t = 6,8 → MAE 27,22 menjadi 13,41** (live 61,2 vs kita 65,4).
+Tekstur `PREFIX_GLOW` juga dibuat lebih landai (tambah stop 0,35 → 0,5; 0,7 → 0,15) karena pada skala
+6× lebar gambar tepi gradien lama terlihat sebagai cakram bertepi.
+
+### Gerbang piksel build13 (metrik RGB, 1440×900, `?auto=1&t=`)
+
+| t | build11 | **build13** | kecerahan kita/live |
+|---|---|---|---|
+| 0,3 | 3,43 | **3,43** | 5,8 / 3,0 |
+| 1,89 | 7,18 | 8,98 | 29,0 / 21,7 |
+| 3,5 | 8,35 | **7,24** | 27,3 / 23,0 |
+| 5,5 | 12,44 | **12,17** | 30,6 / 22,5 |
+| 6,8 | 30,45 | **13,41** | 65,4 / 61,2 |
+| 9,5 | 9,89 | **9,89** | 46,7 / 39,6 |
+| **rata-rata** | 11,96 | **9,19** | |
+
+Catatan jujur: 1,89 **naik** 7,18 → 8,98. Dasar tanpa `p` di 1,89 sebenarnya membaik (6,05), tetapi
+kilatan `p` pada busur inti menambah terang di bingkai yang sudah kelebihan +4 satuan. Uji `?pf=0,6`:
+1,89 → 7,73 tetapi 6,8 → 14,91; jadi `pf` tetap 1 (kemenangan terbesar di 6,8). Sisa kelebihan 1,89
+(+7,3) adalah pekerjaan berikutnya, bersama 5,5 (+8,1) dan 9,5 (+7,1).
+
+Produksi: `dist/assets/index-Du1MXuMO.js` 484 600 B sha256 `f54625e9…`; klon segar repo `839a560`
++ 2 berkas ini menghasilkan **sha identik**. Konsol bersih (`__MIRA_ERR` null), tangkapan produksi
+identik per piksel dengan build13.
