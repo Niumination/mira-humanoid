@@ -875,7 +875,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform1f(U(P.pic, 'uFaceSize'), 1)
         gl.uniform4f(U(P.pic, 'uShock'), star.x, star.y, 0, 0)
         gl.uniform1f(U(P.pic, 'uShockW'), 9)
-        gl.uniform1f(U(P.pic, 'uLiveT'), t)
+        // live: `uLiveT` = jam bicara/dengar (0 saat idle & saat dibekukan), BUKAN jam build
+        gl.uniform1f(U(P.pic, 'uLiveT'), 0)
         gl.uniform1i(U(P.pic, 'uMap'), 0)
         if (!OFF.has('picture')) gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
 
@@ -1058,7 +1059,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.matter, 'uPx'), 1)
           // live: uSettle = 0,75 − 0,4·smoothstep(t; 0,9; 6)   (terukur: 0,7106 @1,89 · 0,3608 @5,5)
           gl.uniform1f(U(P.matter, 'uSettle'), 0.75 - 0.4 * xs(t, 0.9, 6))
-          gl.uniform1f(U(P.matter, 'uLiveT'), t)
+          gl.uniform1f(U(P.matter, 'uLiveT'), 0)   // live: 0 saat idle (terukur di 5,5 & 9,5)
           gl.uniform1f(U(P.matter, 'uBright'), 1)
           gl.uniform1f(U(P.matter, 'uMatter'), 1)
           gl.uniform1f(U(P.matter, 'uCoreA'), 0.22)
@@ -1276,7 +1277,11 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1i(U(P.comp, 'e0Map'), 1)
           // F-91: live memakai e0Intensity = 0,9·(1 + 1,6·q), q = e^(−Δ/1,9), Δ = t − 6,55
           // (terukur 2,1625 @6,8 · 1,5713 @8,0 · 1,2048 @9,5 · 1,0801 @10,5)
-          gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * (1 + 1.6 * qSurge * tune('bq', 1)) : 0)
+          // e0Intensity live = 0,9·(1+1,6·q) (terukur). Tetapi sebaran bloom kita hanya ~1/3–1/5 live
+          // (kontribusi bloom: live +6,04/+9,59/+13,53 vs kita +1,15/+2,16/+4,50 pada t=3,5/5,5/9,5),
+          // jadi ditambah pengali terkalibrasi: 2,0 sebelum ignition → 1,5 sesudahnya (F-96, lihat LANGKAH3).
+          const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2))
+          gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * (1 + 1.6 * qSurge * tune('bq', 1)) * bgK : 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
           gl.enable(gl.BLEND)
           gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)   // figur di atas latar, memakai alpha figur
