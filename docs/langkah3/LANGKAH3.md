@@ -280,3 +280,66 @@ kilatan `p` pada busur inti menambah terang di bingkai yang sudah kelebihan +4 s
 Produksi: `dist/assets/index-Du1MXuMO.js` 484 600 B sha256 `f54625e9…`; klon segar repo `839a560`
 + 2 berkas ini menghasilkan **sha identik**. Konsol bersih (`__MIRA_ERR` null), tangkapan produksi
 identik per piksel dengan build13.
+
+## Bagian 8 — pembongkaran sisa galat 9,5 (dan dua temuan yang diparkir)
+
+### F-91 — intensitas bloom live bergerak (terukur tepat), tetapi belum layak dipakai
+
+`e0Intensity` komposit live bukan konstanta 0,9. Terukur di 6 fase:
+
+| t | 0,3 | 1,89 | 5,5 | 6,8 | 8,0 | 9,5 | 10,5 |
+|---|---|---|---|---|---|---|---|
+| `e0Intensity` | 0,9000 | 0,9000 | 0,9000 | **2,1625** | **1,5713** | **1,2048** | **1,0801** |
+
+Cocok persis dengan **0,9·(1 + 1,6·q)**, `q = e^(−Δ/1,9)`, `Δ = t − 6,55` (galat < 0,0005 di keempat titik).
+Sudah dipasang di balik `?bq=1`: **6,8 membaik 13,41 → 12,69, tetapi 9,5 memburuk 9,89 → 10,87**
+(rata-rata 9,19 → 9,23). Karena itu default tetap 0,9; rumusnya disimpan satu baris untuk diaktifkan
+setelah F-93 selesai (dasar kita terlalu terang, jadi bloom ikut berlebih).
+
+### F-92 — dekomposisi terang 9,5 dengan bloom DIMATIKAN di kedua sisi
+
+| komponen | live | kita | selisih |
+|---|---|---|---|
+| dasar total (tanpa bloom) | 26,1 | 42,2 | **+16,1** |
+| gambar | +4,74 | +7,55 | +2,81 |
+| garis | +0,59 | +2,86 | +2,27 |
+| rambut | +4,05 | +5,73 | +1,68 |
+| materi | +0,07 | +0,39 | +0,32 |
+| jumlah lapisan figur | +9,45 | +16,53 | +7,08 |
+| sisa = latar/medan | ≈ +16,6 | +3,05 | **−13,6** |
+
+Artinya: lapisan figur kita menyumbang **± 1,75×** live, sementara latar kita menyumbang **jauh lebih
+kecil** (3,05 vs ± 16,6) walaupun *terlihat* lebih pekat. Ini bukan soal alpha: live menaruh nebula di
+kanvas **1007×630** (diperbesar ke 1440×900 oleh CSS) sehingga sebarannya halus dan menutupi seluruh
+bingkai, sedangkan tekstur medan kita (1008×630 dirender langsung) lebih tajam/berkelompok. Perbaikan
+yang diperlukan: bentuk/redaman tekstur medan, bukan pengali opasitas.
+Sumbangan bloom kita (+5,78) juga masih jauh di bawah live (+13,53) — konsekuensi dasar yang terlalu
+terang: setelah F-93, ambang bloom (0,6) akan menangkap lebih sedikit, jadi bloom dan F-91 harus
+diterapkan bersama.
+
+### F-93 — urutan kerja berikutnya (paling berdampak)
+
+1. **Bentuk tekstur medan** (iField/iSpread/iNear + ukuran render 1008×630 → tiru 1007×630 dan
+   pembesaran halus) supaya latar menyumbang ± 16 satuan seperti live.
+2. Turunkan lapisan figur ke ± 0,57× sumbangan sekarang (garis: `uHalfPx`/`uSoftLine`; gambar & rambut
+   lewat gain-nya sendiri) — jangan menebak: pakai uji `off=` per lapisan seperti tabel F-92.
+3. Aktifkan kembali F-91 (`?bq=1` → default) — diharapkan 6,8 dan 9,5 sama-sama turun.
+
+### Alat yang dipulihkan sesi ini
+
+- `tools/siapkan-alat.sh` — memasang ulang Playwright + chromium + pustaka sistem dan mengunduh 6 tangkapan
+  acuan live ke `Kerja-Arena/recon/live-ref/` (dulu `/tmp/mira/docs/…` selalu hilang saat sesi reset).
+- `tools/probe-bloom.js` — merekam uniform program bloom (threshold/smoothing/e0Intensity/radius) per fase.
+
+### Status paket & repo sesi ini
+
+- Repo upstream sudah memuat paket 3e — commit **`cc09672`** ("mira: langkah 3e — geometri busur live
+  (`miraArcsLive.ts`), sprite kilatan p, PROFILE_GLOW landai; F-89; build13").
+- Produksi menyajikan `assets/index-Du1MXuMO.js` = **f54625e9…**, sama dengan hasil build dari klon segar
+  repo tersebut (diverifikasi ulang sesi ini).
+- `src/` workspace dikembalikan **persis** ke isi paket 3e (sha `746e1f63…`), jadi workspace = repo = produksi.
+- Patch F-91 **tidak dikirim** ke repo; satu barisnya (untuk diaktifkan setelah F-93):
+
+  ```ts
+  gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * (1 + 1.6 * qSurge) : 0)   // q = e^(−Δ/1,9)
+  ```
