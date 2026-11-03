@@ -394,3 +394,62 @@ menggambar sebagian — kandidat berikutnya: jadwal kemunculan lapisan (reveal) 
 
 Produksi: `dist/assets/index-BnGAAagM.js` sha256 `082cd9b3…`; klon segar repo `befe5ab` + `MiraStage.tsx`
 baru → **sha identik**. Konsol bersih.
+
+## Bagian 10 — bloom kita jauh lebih tipis dari live (F-96) → build17
+
+### Diagnosa
+
+Setelah F-94 (blending) semua fase membaik, sisa galat terbesar ada di 3,5 (−2,3) dan 5,5 (−3,0): justru
+kita **kurang** terang, terkonsentrasi di kolom tengah (figur) dan terutama di kanal **biru**
+(3,5: kita [18,8; 13,1; 27,0] vs live [20,5; 13,6; 35,0]).
+
+Uji `off=` (bloom dimatikan) memisahkan penyebabnya:
+
+| t | kontribusi bloom live | kontribusi bloom kita |
+|---|---|---|
+| 3,5 | **+6,04** (kanal 5,22/4,47/8,45) | **+1,15** (1,21/1,20/1,02) |
+| 5,5 | **+9,59** | **+2,16** |
+| 9,5 | **+13,53** | **+4,50** |
+
+Jadi bukan soal luminansi sumber (uniform materi/garis identik), melainkan **sebaran bloom kita hanya
+~1/3–1/5 live**, dan hampir tak berwarna (live jelas biru/ungu). Yang sudah diperiksa dan **sama** dengan
+live: `threshold` 0,6 · `smoothing` 0,9 · `radius` 0,62 · shader upsample (9 tap, `mix(base, c, radius)`)
+· render target RGBA16F · 8 level mip. Yang masih berbeda (belum terpecahkan): live memakai
+`postprocessing` BloomEffect dengan **blendFunction SCREEN** + `resolutionScale 0,5` dan rantai mip
+mulai dari setengah resolusi; komposit kita menambahkan bloom dengan ADD (seharusnya justru lebih terang),
+jadi selisih ini belum ada penjelasan struktural — **masih terbuka (F-97)**.
+
+### Yang dipakai sekarang: pengali terkalibrasi (bukan tebakan rumus)
+
+Karena selisihnya bukan sekadar skala konstan (faktor 5,3× di 3,5 · 4,4× di 5,5 · 3,0× di 9,5), dipakai
+dua konstanta terukur pada satu kurva halus:
+
+```ts
+bgK = 2.0 − 0.5·smoothstep(t; 5.8; 7.2)      // 2,0 sebelum ignition → 1,5 sesudahnya
+e0Intensity = 0.9·(1 + 1.6·q)·bgK
+```
+
+Disapu lewat `?bg=` (1 · 1,5 · 2 · 3) di lima fase; 2,0/1,5 memberi hasil terbaik di hampir semua fase
+(bg=2 merusak 6,8 dan 9,5; bg=1,5 saja merusak 3,5 dan 5,5).
+
+### F-98 — `uLiveT` materi & gambar: live 0 saat dibekukan
+
+Probe program materi menunjukkan `uLiveT` live = **0** (dan 0,05 untuk salinan jejak) sedangkan kita
+mengirim `t` (5,5 · 9,5). Diganti 0 (sesuai live). Efek metrik netral (6,25 → 6,25) tetapi menghapus
+satu perbedaan uniform yang nyata; pada `uLiveT` materi ada faktor kelip `0,65 + 0,35·sin(...)` per titik.
+
+### Gerbang piksel build17
+
+| t | build15 | **build17** | kecerahan kita/live |
+|---|---|---|---|
+| 0,3 | 1,93 | **1,84** | 1,3 / 3,0 |
+| 1,89 | 3,99 | **3,87** | 21,3 / 21,7 |
+| 3,5 | 5,75 | **5,20** | 20,7 / 23,0 |
+| 5,5 | 9,30 | **8,46** | 21,1 / 22,5 |
+| 6,8 | 10,32 | **10,17** | 64,6 / 61,2 |
+| 9,5 | 6,22 | **6,20** | 41,4 / 39,6 |
+| **rata-rata** | 6,25 | **5,96** | |
+
+Produksi: `dist/assets/index-YaZi9R6Q.js` sha256 `61e8f38d…`; klon segar repo `1e08214` + `MiraStage.tsx`
+baru → **sha identik**. Sisa pekerjaan: F-97 (sebaran bloom struktural), lalu 0,3 (kita 1,3 vs live 3,0 —
+bintang awal kita terlalu redup) dan 3,5/5,5 yang masih −2 s.d. −3.

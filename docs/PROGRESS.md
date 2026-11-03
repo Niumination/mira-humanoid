@@ -339,3 +339,12 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Gerbang build15: **1,93 · 3,99 · 5,75 · 9,30 · 10,32 · 6,22** (rata-rata **6,25**; build13 9,19).
 - Produksi: `index-BnGAAagM.js` sha `082cd9b3…`; klon segar repo + berkas baru → sha identik.
 - Sisa: 5,5 & 3,5 kini **kurang** terang (jadwal kemunculan lapisan gambar/garis/rambut di 3–6 s).
+
+### Sesi 20 (2026-11-02) — bloom tipis (F-96) + uLiveT (F-98) → **build17**
+
+- **F-96:** kontribusi bloom kita hanya ~1/3–1/5 live (3,5: +1,15 vs +6,04 · 5,5: +2,16 vs +9,59 ·
+  9,5: +4,50 vs +13,53) dan hampir tanpa warna. Struktur belum terpecahkan (F-97); dipakai pengali
+  terkalibrasi `bgK = 2,0 − 0,5·smoothstep(t; 5,8; 7,2)`.
+- **F-98:** `uLiveT` materi & gambar disamakan dengan live (0 saat dibekukan); netral metrik.
+- Gerbang build17: **1,84 · 3,87 · 5,20 · 8,46 · 10,17 · 6,20** (rata-rata **5,96**; build15 6,25).
+- Produksi: `index-YaZi9R6Q.js` sha `61e8f38d…`; klon segar repo `1e08214` + berkas baru → sha identik.
