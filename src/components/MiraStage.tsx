@@ -1183,6 +1183,48 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           }
         }
 
+        // ---- sprite `y` (renderOrder 8.95, peta `ae`) + `v` (renderOrder 0.05, peta `be`): INTI ----
+        // rumus live (bundle): xt = smoothstep(0.07;0.12) · (1 − 0,6·smoothstep(0,9;6))
+        //   at = smoothstep(0,02;0,12) · (1 − smoothstep(weave1−0,35; weave1+0,2))
+        //   Yt = 0,8 + 0,2·sin(43t)·sin(17t+1) [+ 0,35·f bila busur inti aktif]
+        //   y: skala = E·(0,04+0,3·xt)·Yt · warna (0,95; 0,65; 1,45)·ht · ht = at·(0,4+0,6·xt)·Yt·core
+        //   v: skala = E·1,5 · warna (0,55; 0,3; 1)·(0,16·at·xt·Yt)
+        {
+          const cf = tune('cf', 0.5)
+          const vf = tune('vf', 0.25)
+          const xt = xs(t, 0.07, 0.12) * (1 - 0.6 * xs(t, 0.9, IGNITE_CFG.weave[1]))
+          const at0 = xs(t, 0.02, 0.12) * (1 - xs(t, IGNITE_CFG.weave[1] - 0.35, IGNITE_CFG.weave[1] + 0.2))
+          let fArc = 0
+          for (const a of LA.arcs) {
+            if (a.kind !== 'core') continue
+            const v = bN(t - a.t) * a.strength
+            if (v > fArc) fArc = v
+          }
+          const yt = 0.8 + 0.2 * Math.sin(t * 43) * Math.sin(t * 17 + 1) + 0.35 * fArc
+          const cx0 = (star.x - pic.width / 2) * S
+          const cy0 = TY - star.y * S
+          if (vf > 0.001) {
+            const vk = 0.16 * at0 * xt * yt * vf
+            if (vk > 0.002) {
+              gl.useProgram(P.sprite)
+              gl.bindVertexArray(spriteVao)
+              gl.enable(gl.BLEND)
+              gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
+              drawSprite(pic.width * S * 1.5, cx0, cy0, [0.55 * vk, 0.3 * vk, 1 * vk], texSmoke)
+            }
+          }
+          if (cf > 0.001) {
+            const ht = at0 * (0.4 + 0.6 * xt) * yt * cf
+            if (ht > 0.002) {
+              gl.useProgram(P.sprite)
+              gl.bindVertexArray(spriteVao)
+              gl.enable(gl.BLEND)
+              gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
+              drawSprite(pic.width * S * (0.04 + 0.3 * xt) * yt, cx0, cy0, [0.95 * ht, 0.65 * ht, 1.45 * ht], texGlow)
+            }
+          }
+        }
+
         // ---- sprite `p` live (renderOrder 13, peta `ae`): KILATAN di titik sentuh busur ----
         // VN(): busur dengan bN(t − a.t)·a.strength terbesar · ht = 0,38·f · skala = lebar gambar ×
         // (mahkota 1,8 : inti 0,9) · warna = warna busur × ht · posisi = titik awal busur (data live).
