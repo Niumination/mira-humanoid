@@ -348,3 +348,14 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - **F-98:** `uLiveT` materi & gambar disamakan dengan live (0 saat dibekukan); netral metrik.
 - Gerbang build17: **1,84 · 3,87 · 5,20 · 8,46 · 10,17 · 6,20** (rata-rata **5,96**; build15 6,25).
 - Produksi: `index-YaZi9R6Q.js` sha `61e8f38d…`; klon segar repo `1e08214` + berkas baru → sha identik.
+
+### Sesi 21 (2026-11-02) — SCREEN ditolak, sprite inti y/v diport → **build18**
+
+- **F-97a:** komposit SCREEN (sesuai blendFunction live) diuji dan **ditolak** (semua fase memburuk tipis);
+  shader komposit dikembalikan ke ADD.
+- **F-97b:** angka "kontribusi bloom live" pada sesi 20 **tidak sah** (off=bloom di live tidak mematikan
+  nebula) → kesimpulan "bloom kita terlalu tipis" dicabut; `bgK` tetap dipakai karena terkalibrasi.
+- **F-99:** sprite inti `y` + `v` diport penuh (rumus bundle), pengali `cf=0,5` `vf=0,25`.
+- Gerbang build18: **2,02 · 3,57 · 4,40 · 8,04 · 10,17 · 6,19** (rata-rata **5,73**; build17 5,96).
+- Produksi: `index-DfWtWS5P.js` sha `4e5cd4ce…`; klon segar repo `3272130` + berkas baru → sha identik.
+- Berikutnya: ekstraksi peta sprite live (`ae`/`be`) — pengali 0,5/0,25 hanya menambal perbedaan tekstur.

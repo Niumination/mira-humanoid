@@ -453,3 +453,50 @@ satu perbedaan uniform yang nyata; pada `uLiveT` materi ada faktor kelip `0,65 +
 Produksi: `dist/assets/index-YaZi9R6Q.js` sha256 `61e8f38d…`; klon segar repo `1e08214` + `MiraStage.tsx`
 baru → **sha identik**. Sisa pekerjaan: F-97 (sebaran bloom struktural), lalu 0,3 (kita 1,3 vs live 3,0 —
 bintang awal kita terlalu redup) dan 3,5/5,5 yang masih −2 s.d. −3.
+
+## Bagian 11 — F-97 ditutup sebagian (SCREEN diuji & ditolak), sprite inti `y`/`v` diport (build18)
+
+### F-97a — SCREEN vs ADD: diuji, **ditolak**
+
+Di bundle live, `BloomEffect` dibangun dengan `blendFunction = SCREEN`; rumus SCREEN-nya ada di bundle:
+`c = dst + src − min(dst·src, 1)`. Komposit kita memakai ADD. Shader `comp.frag.glsl` diubah ke SCREEN
+lalu diukur (5 fase, `?bg=1` dan `2`): **tidak ada perbaikan** — 1,89: 3,87→4,03/3,91 · 3,5: 5,20→5,80/5,26
+· 5,5: 8,46→9,27/8,44 · 6,8: 10,17→10,46/10,67 · 9,5: 6,20→6,24/6,29. Perubahan dikembalikan (ADD).
+
+### F-97b — "kontribusi bloom live" tadi **keliru terukur**
+
+Uji `off=bloom` di live TIDAK mematikan seluruh efek: tangkapan "bloom-only" live (semua lapisan
+`off=`) masih memperlihatkan sapuan ungu selebar bingkai (rata 8,74 · sudut kiri-atas 7,7) sedangkan
+milik kita hampir hitam di sudut (0,5). Artinya angka "+6,04/+9,59/+13,53 = kontribusi bloom live" pada
+Bagian 10 sebenarnya **mencampur nebula/latar**, bukan bloom murni. Kesimpulan Bagian 10 soal bloom
+terlalu tipis karena itu **tidak sah** dan dicabut. Yang tetap sah: pengali `bgK` (2,0→1,5) memang
+menurunkan galat (6,25→5,96) — itu hasil kalibrasi, bukan penjelasan.
+
+### F-99 — sprite inti `y` (renderOrder 8,95) & `v` (renderOrder 0,05) diport penuh
+
+Rumus dari bundle (semua terverifikasi): `xt = smoothstep(0,07;0,12)·(1 − 0,6·smoothstep(0,9;6))`
+· `at = smoothstep(0,02;0,12)·(1 − smoothstep(weave₁−0,35; weave₁+0,2))` · `Yt = 0,8 + 0,2·sin(43t)·sin(17t+1)`
+(+0,35·f bila busur inti aktif) · `y`: skala `E·(0,04+0,3·xt)·Yt`, warna `(0,95; 0,65; 1,45)·ht` ·
+`v`: skala `E·1,5`, warna `(0,55; 0,3; 1)·(0,16·at·xt·Yt)`.
+
+Kenapa penting: uji `off=core` di live pada t = 0,3 menunjukkan lapisan ini menyumbang **+1,96** dari
+2,98 (66 % terang bingkai), sedangkan kita **+0,00** — bintang awal kita memang tidak pernah digambar.
+Setelah diport dengan pengali terkalibrasi `cf = 0,5` (sprite `y`) dan `vf = 0,25` (sprite `v`):
+
+| t | build17 | **build18** | perubahan |
+|---|---|---|---|
+| 0,3 | 1,84 | 2,02 | +0,18 (kita 4,9 vs live 3,0 — sedikit kelebihan) |
+| 1,89 | 3,87 | **3,57** | −0,30 |
+| 3,5 | 5,20 | **4,40** | −0,80 |
+| 5,5 | 8,46 | **8,04** | −0,42 |
+| 6,8 | 10,17 | 10,17 | — |
+| 9,5 | 6,20 | 6,19 | — |
+| **rata-rata** | 5,96 | **5,73** | |
+
+Pengali 0,5/0,25 dipilih dari sapuan (`cf` 1 · 0,5 · `vf` 0 · 0,25): `cf = 1` membuat 0,3 melonjak ke
+6,94 (kita 9,8 vs live 3,0) karena tekstur `PREFIX_GLOW` kita jauh lebih pekat daripada peta `ae` live —
+memperkuat kesimpulan F-86 bahwa **peta sprite live belum berhasil diekstrak** (probe `texImage2D` tidak
+menangkap sumbernya). Ini pekerjaan berikutnya yang paling berdampak.
+
+Produksi: `dist/assets/index-DfWtWS5P.js` sha256 `4e5cd4ce…`; klon segar repo `3272130` + `MiraStage.tsx`
+baru → **sha identik**.
