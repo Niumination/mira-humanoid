@@ -1021,7 +1021,13 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform1f(U(P.points, 'uPxPerPic'), 0.5895196795463562)
         gl.uniform1f(U(P.points, 'uBackK'), 0)
         gl.uniform1f(U(P.points, 'uRim'), 0.9)
-        gl.uniform1f(U(P.points, 'uOn'), 0)
+        // F-103: live menyalakan awan titik tubuh setelah ignition+1,6 s:
+        //   uOn    = (t > ignite+1,6 && !head3d) ? 1 : 0
+        //   uGain  = hum.body.bright · breathGlow · bright · (1 + 0,8·q)
+        //   uBackK = KN(yaw,pitch) · xs(t,[ignite+1,6; ignite+2,6])  (pose tenang → 0)
+        // Sebelumnya uOn dipaku 0, jadi lapisan ini tidak pernah muncul.
+        const bodyOn = t > reveal[2] + 1.6 ? tune('bo', 0) : 0
+        gl.uniform1f(U(P.points, 'uOn'), bodyOn)
         gl.uniform1f(U(P.points, 'uZRef'), 164.86306762695312)
         gl.uniform4f(U(P.points, 'uFace'), face[0], face[1], face[2], face[3])
         gl.uniform4f(U(P.points, 'uFaceA'), 0, 0, 0, 0)
@@ -1030,7 +1036,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform4f(U(P.points, 'uHeadPose'), 0, 0, 0, 0)
         gl.uniform3f(U(P.points, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
         gl.uniform2f(U(P.points, 'uSize'), fw, fh)
-        gl.uniform1f(U(P.points, 'uGain'), 1)
+        const qb = t - reveal[2]
+        gl.uniform1f(U(P.points, 'uGain'), bodyOn > 0 ? (1 + 0.8 * (qb >= 0 && qb < 8 ? Math.exp(-qb / 1.9) : 0)) : 1)
         gl.uniform4f(U(P.points, 'uHz'), hz[0], hz[1], hz[2], hz[3])
         gl.uniform3f(U(P.points, 'uHzSkull'), hzSkull[0], hzSkull[1], hzSkull[2])
         gl.uniform3f(U(P.points, 'uHzInner'), hzInner[0], hzInner[1], hzInner[2])

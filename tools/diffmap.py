@@ -15,7 +15,8 @@ ROOT = '/home/user/Kerja-Arena'
 
 
 def load(t):
-    live = f'{ROOT}/recon/live-ref/live-t{t}.png'
+    v2 = f'{ROOT}/recon/live-ref-v2/live-t{t}.png'
+    live = v2 if __import__('os').path.exists(v2) else f'{ROOT}/recon/live-ref/live-t{t}.png'
     cand = sorted(glob.glob(f'{ROOT}/verification/langkah3/build*-{t}.png'),
                   key=lambda p: int(p.rsplit('build', 1)[1].split('-')[0]))
     ours = cand[-1]
@@ -27,6 +28,8 @@ def main():
     gx = int(sys.argv[sys.argv.index('--gx') + 1]) if '--gx' in sys.argv else 12
     gy = int(sys.argv[sys.argv.index('--gy') + 1]) if '--gy' in sys.argv else 8
     L, path = load(t)
+    if '--ours' in sys.argv:
+        path = sys.argv[sys.argv.index('--ours') + 1]
     O = np.asarray(Image.open(path).convert('RGB')).astype(float)
     h, w, _ = L.shape
     d = O - L
