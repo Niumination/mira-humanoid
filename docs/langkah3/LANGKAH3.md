@@ -559,3 +559,51 @@ buruk** (18,8 · 15,8 · 16,1 · 24,7 vs 10,2) → galat 6,8 bukan keterlambatan
 
 Produksi: `dist/assets/index-B0dBMECv.js` sha256 `e7168bb8…`; klon segar repo `3c29f10` + `MiraStage.tsx`
 baru → **sha identik**. Sisa terbesar: 6,8 (8,08) dan 5,5 (7,64) — keduanya masalah **sebaran** ruang.
+
+## Bagian 13 — peta selisih 2D: kilatan ignition `m` (build21)
+
+### Alat baru
+
+`tools/diffmap.py <t>` mencetak selisih bertanda kita−live per blok 12×8 (plus peta |selisih| dan
+lima blok terburuk). Metrik global tidak bisa membedakan "terlalu terang" dari "terang di tempat yang salah";
+peta ini yang dipakai mulai sekarang.
+
+### Diagnosa t = 6,8
+
+Metrik global hampir seimbang (kita 62,5 vs live 61,2) tetapi petanya menunjukkan **dua kesalahan yang
+saling menutupi**: inti kita **terlalu gelap** (−15,1 · −19,0 · −28,4 · −26,5 pada dua baris tengah) sementara
+sisi kiri-tengah **terlalu terang** (+22,1 · +16,3). Melihat tangkapan berdampingan: live punya **kilatan
+putih panas tepat di inti** pada saat ignition, kita tidak. Itu sprite `m` (renderOrder 12, peta `ae`,
+warna 2,4/2,1/2,8) yang selama ini dimatikan (`?fl=0`) karena dulu (tekstur belum benar) ia merugikan.
+
+Rumus live (dari bundle, sudah diverifikasi):
+
+```
+Me = t − ignite                                   (ignite = 6,55)
+opacity = Me > 0 ? max(0, 1 − Me/1,1) : 0         → 0,773 pada t = 6,8
+skala   = 40 + 380·min(1, Me/0,25)                → 420 satuan gambar pada t = 6,8
+posisi  = (star.x, star.y), warna (2,4; 2,1; 2,8), tekstur ae
+```
+
+Sapuan: tanpa kilatan 8,08 · `fl=1,0 fs=1,9` **11,26** · `fl=1,0 fs=1,0` 7,91 · `fl=0,7 fs=1,2` 8,04 ·
+**`fl=0,5 fs=1,0` → 7,60**. Pengali 0,5 dipakai karena setelah kilatan dipasang, kanal kita naik
+(+2,4/+2,1/+4,6) — separuh intensitas membuat peta tengah berubah dari −28 menjadi +10/+8 (sedikit
+kelebihan) tanpa membuat keseluruhan kelebihan.
+
+### Gerbang piksel build21
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² |
+|---|---|---|---|---|---|---|---|
+| build20 | 2,45 | 2,15 | 3,36 | 7,64 | 8,08 | 6,19 | 4,98 |
+| **build21** | 2,45 | 2,15 | 3,36 | 7,64 | **7,60** | 6,19 | **4,90** |
+
+Produksi: `dist/assets/index-BA8NBRA8.js` sha256 `6d20bf9d…`; klon segar repo `9e12bf4` + `MiraStage.tsx`
+baru → **sha identik**.
+
+### Sisa pekerjaan yang sudah terpetakan
+
+- **t = 5,5 (7,64)** — peta menunjukkan kita **lebih gelap** hampir di seluruh tubuh figur (−4 … −12 pada
+  kolom 3–8, baris 2–7), bukan di latar. Ini bukan lagi soal bloom/kilatan: kemungkinan besar bentuk dan
+  jumlah daun busur/garis tubuh (struktur `kk()`/busur) belum sama.
+- **t = 9,5 (6,19)** dan **0,3 (2,45)** — defisit kecil merata; kandidat: `uIdle=1` pada garis (9,5) dan
+  kerapatan bintang awal.

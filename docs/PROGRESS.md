@@ -369,3 +369,12 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Gerbang build20: **2,45 · 2,15 · 3,36 · 7,64 · 8,08 · 6,19** (rata-rata **4,98**; build18 5,73).
 - Uji geser waktu di 6,8 membuktikan galat bukan fase; `?fl=1` tetap merugikan.
 - Produksi: `index-B0dBMECv.js` sha `e7168bb8…`; klon segar repo `3c29f10` + berkas baru → sha identik.
+
+### Sesi 23 (2026-11-02) — peta selisih 2D + kilatan ignition `m` → **build21**
+
+- Alat baru `tools/diffmap.py` (selisih bertanda per blok 12×8) — metrik global saja tidak cukup.
+- **F-102:** di t=6,8 inti kita terlalu gelap (−28) dan sisi kiri terlalu terang (+22). Penyebab: sprite
+  kilatan ignition `m` (renderOrder 12) dimatikan. Dipasang dengan `fl=0,5`, `fs=1,0` (skala live 420).
+- Gerbang build21: **2,45 · 2,15 · 3,36 · 7,64 · 7,60 · 6,19** (rata-rata **4,90**; build20 4,98).
+- Produksi: `index-BA8NBRA8.js` sha `6d20bf9d…`; klon segar repo `9e12bf4` + berkas baru → sha identik.
+- Sisa: 5,5 (kita lebih gelap di seluruh tubuh figur — struktur busur/garis), 9,5 (`uIdle` garis), 0,3.
