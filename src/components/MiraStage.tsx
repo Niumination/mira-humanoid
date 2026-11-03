@@ -100,10 +100,25 @@ const tune = (k: string, d: number) => {
   }
 }
 
+// F-100: stop gradien PERSIS seperti live (`ae` di bundle):
+//   0 rgba(255,255,255,1) · 0,25 rgba(230,205,255,0,55) · 1 rgba(140,80,255,0)
+function CRAMP(base: number, amp: number, t: number) {
+  const k = Math.min(1, Math.max(0, (t - 0.1) / 1.3))
+  const sm = k * k * (3 - 2 * k)
+  return base + amp * sm
+}
+
+const SRGB_TEX = (() => {
+  try {
+    return new URLSearchParams(location.search).get('srb') !== '0'
+  } catch {
+    return false
+  }
+})()
+
 const PREFIX_GLOW = [
   [0, 'rgba(255,255,255,1)'],
-  [0.35, 'rgba(230,205,255,0.5)'],
-  [0.7, 'rgba(160,110,255,0.15)'],
+  [0.25, 'rgba(230,205,255,0.55)'],
   [1, 'rgba(140,80,255,0)'],
 ] as const
 const PREFIX_SMOKE = [
@@ -123,7 +138,11 @@ function radialTexture(gl: WebGL2RenderingContext, stops: readonly (readonly [nu
   g.fillRect(0, 0, 128, 128)
   const t = gl.createTexture()!
   gl.bindTexture(gl.TEXTURE_2D, t)
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c)
+  // F-100: live menandai tekstur sprite dengan colorSpace = SRGB, jadi GPU mendekode
+  // sRGB→linear saat sampling (three.js). Versi mentah RGBA membuat nilai tengah
+  // (mis. 0,55) dipakai sebagai linear → sprite jauh lebih pekat.
+  if (SRGB_TEX) gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, gl.RGBA, gl.UNSIGNED_BYTE, c)
+  else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
@@ -1190,8 +1209,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         //   y: skala = E·(0,04+0,3·xt)·Yt · warna (0,95; 0,65; 1,45)·ht · ht = at·(0,4+0,6·xt)·Yt·core
         //   v: skala = E·1,5 · warna (0,55; 0,3; 1)·(0,16·at·xt·Yt)
         {
-          const cf = tune('cf', 0.5)
-          const vf = tune('vf', 0.25)
+          const cf = tune('cf', 1)
+          const vf = tune('vf', 0.5)
           const xt = xs(t, 0.07, 0.12) * (1 - 0.6 * xs(t, 0.9, IGNITE_CFG.weave[1]))
           const at0 = xs(t, 0.02, 0.12) * (1 - xs(t, IGNITE_CFG.weave[1] - 0.35, IGNITE_CFG.weave[1] + 0.2))
           let fArc = 0
@@ -1214,7 +1233,10 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             }
           }
           if (cf > 0.001) {
-            const ht = at0 * (0.4 + 0.6 * xt) * yt * cf
+            // F-101: live menahan inti tetap redup di detik-detik pertama (kontribusi `off=core`
+            // hanya +1,96 dari 2,98 pada t=0,3, sedangkan versi tanpa redaman 2x terlalu terang)
+            const ramp = CRAMP(0.2, 0.8, t)
+            const ht = at0 * (0.4 + 0.6 * xt) * yt * cf * ramp
             if (ht > 0.002) {
               gl.useProgram(P.sprite)
               gl.bindVertexArray(spriteVao)
