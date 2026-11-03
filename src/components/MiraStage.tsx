@@ -1195,9 +1195,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
               gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
               // skala: live 40→420 satuan gambar; diukur ulang terhadap layar, sebaran cahaya live jauh
               // lebih luas (mid-tone tinggi di seluruh bingkai) → 1,9× supaya lingkarannya menyebar sama
-              const sc = (40 + 380 * Math.min(1, me / 0.25)) * S * 1.9
+              const sc = (40 + 380 * Math.min(1, me / 0.25)) * S * tune('fs', 1)
               // posisi memakai konvensi mvPoints (y gambar ke bawah): ty = TY − y·S
-              drawSprite(sc, (star.x - pic.width / 2) * S, TY - star.y * S, [2.4, 2.1, 2.8], texGlow, op * tune('fl', 0))
+              drawSprite(sc, (star.x - pic.width / 2) * S, TY - star.y * S, [2.4, 2.1, 2.8], texGlow, op * tune('fl', 0.5))
             }
           }
         }
