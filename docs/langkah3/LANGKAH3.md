@@ -343,3 +343,54 @@ diterapkan bersama.
   ```ts
   gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * (1 + 1.6 * qSurge) : 0)   // q = e^(−Δ/1,9)
   ```
+
+## Bagian 9 — akar masalah sebenarnya: faktor blending (F-94) → build15
+
+### F-94 — semua material figur memakai preset `vr`, yaitu **SRC_ALPHA · ONE**, bukan ONE · ONE
+
+Di bundle live, material figur tidak memakai `AdditiveBlending` bawaan three.js melainkan **CustomBlending**
+lewat satu preset bersama:
+
+```js
+vr = { blending:5 /*Custom*/, blendEquation:100 /*FUNC_ADD*/,
+       blendSrc:204 /*SRC_ALPHA*/, blendDst:201 /*ONE*/,
+       blendSrcAlpha:200 /*ZERO*/, blendDstAlpha:201 /*ONE*/ }
+```
+
+Preset ini dipakai oleh **16 material**: garis (`iF/rF`), busur (`qw/Yw`), gambar (`jw/sF`), rambut
+(`rk/sk`), helai (`ok/ak`), bintik (`lk/uk`), materi (`Jk/$k`), shock (`tF/nF`), dan kelima sprite.
+
+Kode kita menulis `(ONE, ONE, ZERO, ONE)` untuk sembilan pass dan `(SRC_ALPHA, ONE, ONE, ONE)` untuk
+sprite. Akibatnya, **setiap fragmen dengan alpha < 1 menjadi terlalu terang** (garis: alpha = rest+heat+pulse
+yang jarang 1) **dan alpha render-target figur menumpuk sampai 1** sehingga latar medan tertutup.
+Inilah sebab sebenarnya dari "figur kita 1,75× terlalu terang dan latar kita hilang" (F-92) — bukan
+bentuk tekstur medan: medan sendirian terukur **18,16** (kita) vs **16,41** (live), praktis sama.
+
+Perbaikan: 9 pass → `(SRC_ALPHA, ONE, ZERO, ONE)`, 4 sprite → `(SRC_ALPHA, ONE, ZERO, ONE)`.
+
+### F-95 — dua tombol yang dulu diparkir kini berbalik arah (dan dipakai)
+
+| tombol | sebelum F-94 | sesudah F-94 | keputusan |
+|---|---|---|---|
+| `?bq=1` (F-91: `e0Intensity = 0,9·(1+1,6·q)`) | net-negatif (9,19 → 9,23) | 6,8: 13,66 → **12,43** · 9,5: 6,30 → **6,22** | **diaktifkan (default 1)** |
+| `?hz=` (amplitudo haze) | terbaik 1,0 | 1,0 → 0,45 → 0,25 → **0,20** (1,89: 8,19 → 3,99 · 6,8: 12,43 → 10,32) | **default 0,2** |
+
+### Gerbang piksel build15 (metrik RGB, 1440×900)
+
+| t | build13 | **build15** | kecerahan kita/live |
+|---|---|---|---|
+| 0,3 | 3,43 | **1,93** | 1,2 / 3,0 |
+| 1,89 | 8,98 | **3,99** | 21,0 / 21,7 |
+| 3,5 | 7,24 | **5,75** | 19,6 / 23,0 |
+| 5,5 | 12,17 | **9,30** | 19,6 / 22,5 |
+| 6,8 | 13,41 | **10,32** | 62,0 / 61,2 |
+| 9,5 | 9,89 | **6,22** | 40,9 / 39,6 |
+| **rata-rata** | 9,19 | **6,25** | |
+
+Kecerahan kini cocok di 4 dari 6 fase (1,89 · 6,8 · 9,5 · 0,3 dalam ±1,8 satuan). Sisa galat bukan lagi
+soal level terang: 5,5 (−2,9) dan 3,5 (−3,4) sekarang **kurang** terang (sebelumnya kelebihan), dan
+uji `off=` di 5,5 menunjukkan lapisan gambar/garis/rambut belum menyumbang apa pun sementara live sudah
+menggambar sebagian — kandidat berikutnya: jadwal kemunculan lapisan (reveal) di rentang 3–6 s.
+
+Produksi: `dist/assets/index-BnGAAagM.js` sha256 `082cd9b3…`; klon segar repo `befe5ab` + `MiraStage.tsx`
+baru → **sha identik**. Konsol bersih.
