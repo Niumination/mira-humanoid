@@ -378,3 +378,19 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Gerbang build21: **2,45 · 2,15 · 3,36 · 7,64 · 7,60 · 6,19** (rata-rata **4,90**; build20 4,98).
 - Produksi: `index-BA8NBRA8.js` sha `6d20bf9d…`; klon segar repo `9e12bf4` + berkas baru → sha identik.
 - Sisa: 5,5 (kita lebih gelap di seluruh tubuh figur — struktur busur/garis), 9,5 (`uIdle` garis), 0,3.
+
+### Sesi 24 (2026-11-03) — app live diperbarui, metrik v2 (UI disembunyikan), acuan baru → **build22**
+
+- **Target bergerak:** live kini `index-Bv2XtaLJ.js` (sha `ae79a3d1…`), acuan kita `recon/mira.js`
+  (`8fe5c2f2…`). Konstanta inti tidak berubah; bundel baru disimpan sebagai `recon/mira-2026-11-03.js`.
+- **Metrik v1 tidak sah:** selisih acuan lama vs live baru hanya di sudut layar (+11,5 kiri-atas, −8
+  kiri-bawah), sama di semua fase, rerata kanal 0 → itu chrome DOM, bukan panggung. Live sendiri
+  deterministik (dua muat: MAE 0,12 / 0,00).
+- **Metrik v2:** `shot.js` dapat `UIHIDE=1` (sembunyikan DOM selain kanvas) + acuan baru
+  `recon/live-ref-v2/` (6 fase dari live terbaru). Baseline build22: **2,42 · 2,13 · 3,32 · 7,61 · 7,38 ·
+  5,53 = 4,73** (v1 4,90; selisihnya koreksi pengukuran).
+- **F-103 ditolak:** awan titik tubuh (`uOn` setelah ignition+1,6) diuji penuh/50 %/30 % → selalu lebih
+  buruk (5,53 → 10,48 / 7,86 / 6,66). Sebaran titik kita salah; lapisan tetap mati, kode gerbangnya ada.
+- Produksi: `index-CDFKFb7u.js` sha `88a56596…`; klon segar repo `d7e0efb` + berkas baru → sha identik.
+- Arah berikutnya (dari peta v2): t=5,5 defisit −12,1/−10,4 di tubuh atas-kiri; t=9,5 −11,7/−12,8 di
+  bawah-tengah; t=3,5 defisit merata 1–7. Semua di **dalam** tubuh → sebaran materi/titik, bukan bloom.

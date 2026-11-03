@@ -607,3 +607,77 @@ baru → **sha identik**.
   jumlah daun busur/garis tubuh (struktur `kk()`/busur) belum sama.
 - **t = 9,5 (6,19)** dan **0,3 (2,45)** — defisit kecil merata; kandidat: `uIdle=1` pada garis (9,5) dan
   kerapatan bintang awal.
+
+## Bagian 14 — app live DIPERBARUI dan metrik v1 tidak sah (build22)
+
+### Temuan 1 — target bergerak
+
+`https://mira-humanoid.vercel.app/` mengganti bundelnya: **`index-Bv2XtaLJ.js`** (sha256 `ae79a3d1…`,
+1.188.605 B) sedangkan acuan kerja kita `recon/mira.js` = `8fe5c2f2…` (1.185.514 B, +3 KB beda).
+Konstanta inti (spark `[0;0,9]`, weave `[0,9;6]`, `coreArcs 18`, `crownArcs 10`, bloom threshold/smoothing/radius)
+**tidak berubah**; yang berubah adalah sekitarnya (kemungkinan besar lapisan UI/DOM, lihat temuan 2).
+
+### Temuan 2 — selisih acuan lama vs live sekarang: hanya di SUDUT layar
+
+Membandingkan acuan lama dengan tangkapan baru pada 4 fase:
+
+| t | MAE acuan-lama vs live-baru | blok yang berubah |
+|---|---|---|
+| 0,3 | 0,95 | kiri-atas **+11,5/+8,1**, kiri-bawah **−8,0/−5,7**, kanan-bawah −3,5/−5,5 |
+| 1,89 | 0,95 | pola sama |
+| 3,5 | 0,98 | pola sama |
+| 5,5 | 1,04 | pola sama |
+
+Rata-rata per kanal = **0,00**, dan polanya **identik di semua fase** → itu bukan isi panggung, melainkan
+**lapisan UI di DOM** (label/panel) yang berbeda antara versi lama dan baru. Karena rebuild kita punya
+chrome sendiri yang berbeda, seluruh angka MAE v1 (build11–build21) memuat ±0,9 galat yang **tidak ada
+hubungannya dengan panggung MIRA**.
+
+Bukti bahwa live sendiri deterministik: dua muat terpisah pada t=5,5 memberi MAE **0,12**, t=9,5 **0,00**.
+
+### Metrik v2 — hanya piksel panggung
+
+`tools/shot.js` mendapat `UIHIDE=1`: sebelum tangkapan, semua elemen DOM selain kanvas disembunyikan.
+Acuan baru `recon/live-ref-v2/live-t*.png` (6 fase, live terbaru, 1440×900) dibuat dengan cara ini.
+
+| t | MAE v1 (build21) | **MAE v2 (build22)** | kecerahan kita/live |
+|---|---|---|---|
+| 0,3 | 2,45 | **2,42** | 4,7 / 2,4 |
+| 1,89 | 2,15 | **2,13** | 21,9 / 21,2 |
+| 3,5 | 3,36 | **3,32** | 21,8 / 22,5 |
+| 5,5 | 7,64 | **7,61** | 21,0 / 21,9 |
+| 6,8 | 7,60 | **7,38** | 63,3 / 61,5 |
+| 9,5 | 6,19 | **5,53** | 41,1 / 42,8 |
+| **rata-rata** | 4,90 | **4,73** | |
+
+Catatan jujur: perbaikan 4,90 → 4,73 **bukan** perbaikan gambar, melainkan **koreksi pengukuran**
+(chrome DOM ikut terukur, dan chrome kita berbeda dari live). Angka v2 inilah yang dipakai mulai sekarang;
+angka v1 tidak boleh dibandingkan langsung dengan v2.
+
+### F-103 — awan titik tubuh (`uOn` setelah ignition+1,6 s): diuji, **ditolak**
+
+Di bundle, `ie.pts` (renderOrder 1,2) menyala saat `t > ignite+1,6` dengan
+`uGain = hum.body.bright · breathGlow · bright · (1+0,8q)` dan `uPxPerPic = X.k·Fe.sx·(H/2/xd)·ce`.
+Sebelumnya kita memaku `uOn = 0`, jadi lapisan ini tidak pernah muncul. Setelah dipasang:
+
+| t=9,5 | MAE |
+|---|---|
+| tanpa awan tubuh | **5,53** (kita 41,1 / live 42,8) |
+| `bo = 1,0` (penuh) | 10,48 (kita 49,2) |
+| `bo = 0,5` | 7,86 (kita 45,9) |
+| `bo = 0,3` | 6,66 (kita 44,2) |
+
+Menaikkan beratnya selalu memperburuk → **sebaran** titik kita berbeda, bukan hanya terangnya. Lapisan
+tetap mati (`bo = 0`), tetapi jalur kodenya kini ada (gerbang + `uGain` sesuai rumus live) sehingga
+kalibrasi `uPxPerPic` bisa dikerjakan terpisah nanti.
+
+### Peta selisih v2 (bukti arah pekerjaan berikutnya)
+
+- **t = 3,5**: hampir seluruh tubuh kita lebih gelap 1–7 (tidak ada blok positif besar).
+- **t = 5,5**: defisit terpusat di tubuh atas-kiri: kolom 4 baris 2 **−12,1**, kolom 4 baris 6 **−10,4**,
+  kolom 7 baris 4 −6,5; satu blok positif +5,8 di atas kepala.
+- **t = 6,8**: campuran tanda (+20,8 di kiri-tengah, −9,3 di kanan-atas) → bentuk sebaran, bukan level.
+- **t = 9,5**: kini kita yang lebih gelap (−11,7 / −12,8 di bawah-tengah).
+
+Produksi: `dist/assets/index-CDFKFb7u.js` sha256 `88a56596…`; klon segar repo `d7e0efb` + `MiraStage.tsx`
+baru → **sha identik**.
