@@ -802,7 +802,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.bindVertexArray(sparksVao.v)
           gl.bindBuffer(gl.ARRAY_BUFFER, sparksVao.pb)
           gl.bufferSubData(gl.ARRAY_BUFFER, 0, waveSparks.position)
-          gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
           gl.uniformMatrix4fv(U(P.wavespark, 'modelViewMatrix'), false, mvWave)
           gl.uniformMatrix4fv(U(P.wavespark, 'projectionMatrix'), false, proj)
           gl.uniform1f(U(P.wavespark, 'uTime'), waveClock)
@@ -818,7 +818,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.enable(gl.BLEND)
         // live memakai three.js AdditiveBlending = (SRC_ALPHA, ONE): kontribusi = warna·map·alpha·opacity.
         // (Blend (ONE,ONE) sebelumnya membuat inti sprite terlalu terang dan opacity tak berpengaruh.)
-        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
         const drawSprite = (scale: number, tx: number, ty: number, diffuse: number[], tex: WebGLTexture, opacity = 1) => {
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, tex)
@@ -857,7 +857,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         // ---- [3] kuad warna gambar ----
         gl.useProgram(P.pic)
         gl.bindVertexArray(picVao.v)
-        gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
         gl.uniformMatrix4fv(U(P.pic, 'modelViewMatrix'), false, mvQuad)
         gl.uniformMatrix4fv(U(P.pic, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.pic, 'uFill'), 1)
@@ -883,7 +883,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         if (!OFF.has('hair')) {
           gl.useProgram(P.hair)
           gl.bindVertexArray(hairVao.v)
-          gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
           gl.activeTexture(gl.TEXTURE1)
           gl.bindTexture(gl.TEXTURE_2D, texRows)
           gl.activeTexture(gl.TEXTURE0)
@@ -920,7 +920,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         if (!OFF.has('strands')) {
           gl.useProgram(P.strands)
           gl.bindVertexArray(strandsVao.v)
-          gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, texRows)
           gl.activeTexture(gl.TEXTURE1)
@@ -958,7 +958,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         if (!OFF.has('twinkles') && twinklesPx.length) {
           gl.useProgram(P.twinkles)
           gl.bindVertexArray(twinklesVao.v)
-          gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, texRows)
           gl.uniformMatrix4fv(U(P.twinkles, 'modelViewMatrix'), false,
@@ -1024,7 +1024,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           if (shock.k > 0.001) {
             gl.useProgram(P.shock)
             gl.bindVertexArray(shockVao.v)
-            gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
             gl.uniformMatrix4fv(U(P.shock, 'modelViewMatrix'), false, mvPoints)
             gl.uniformMatrix4fv(U(P.shock, 'projectionMatrix'), false, proj)
             gl.uniform4f(U(P.shock, 'uShock'), star.x, star.y, shock.r, shock.k)
@@ -1037,7 +1037,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         if (!OFF.has('arcs')) {
           gl.useProgram(P.arcs)
           gl.bindVertexArray(arcsVao.v)
-          gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
           gl.uniformMatrix4fv(U(P.arcs, 'modelViewMatrix'), false, mvPoints)
           gl.uniformMatrix4fv(U(P.arcs, 'projectionMatrix'), false, proj)
           gl.uniform1f(U(P.arcs, 'uTime'), t)
@@ -1051,7 +1051,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.bindVertexArray(matterVao.v)
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, texRows)
-          gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
           gl.uniformMatrix4fv(U(P.matter, 'modelViewMatrix'), false, mvPoints)
           gl.uniformMatrix4fv(U(P.matter, 'projectionMatrix'), false, proj)
           gl.uniform1f(U(P.matter, 'uTime'), t)
@@ -1095,7 +1095,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         // ---- [5] garis ----
         gl.useProgram(P.wire)
         gl.bindVertexArray(wireVao.v)
-        gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ZERO, gl.ONE)
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
         gl.uniformMatrix4fv(U(P.wire, 'projectionMatrix'), false, proj)
         gl.uniformMatrix4fv(U(P.wire, 'modelViewMatrix'), false, mvPoints)
         gl.uniform1i(U(P.wire, 'uHeadRows'), 0)
@@ -1147,13 +1147,13 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           // denyut haze diukur dari live: kuat saat figur muncul (t≈1,95) dan saat orb menyala (t≈6,9),
           // mendekati nol di antaranya dan sesudahnya (live t=5,5 & 9,5 justru lebih gelap dari kita).
           const pulse = 1.73 * g(1.95, 0.75) + 3.56 * g(6.9, 0.75)
-          const hz = tune('hz', 1) * pulse
+          const hz = tune('hz', 0.2) * pulse
           if (hz > 0.002) {
             const hs = tune('hs', 1.0)
             gl.useProgram(P.sprite)
             gl.bindVertexArray(spriteVao)
             gl.enable(gl.BLEND)
-            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
             // pusat haze bisa digeser ke atas (mendekati kepala) lewat ?hy= (fraksi tinggi gambar)
             const hy = tune('hy', 0) * pic.height * S
             drawSprite(pic.width * S * hs, (star.x - pic.width / 2) * S, TY - star.y * S + hy,
@@ -1172,7 +1172,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
               gl.useProgram(P.sprite)
               gl.bindVertexArray(spriteVao)
               gl.enable(gl.BLEND)
-              gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+              gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
               // skala: live 40→420 satuan gambar; diukur ulang terhadap layar, sebaran cahaya live jauh
               // lebih luas (mid-tone tinggi di seluruh bingkai) → 1,9× supaya lingkarannya menyebar sama
               const sc = (40 + 380 * Math.min(1, me / 0.25)) * S * 1.9
@@ -1209,7 +1209,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             gl.useProgram(P.sprite)
             gl.bindVertexArray(spriteVao)
             gl.enable(gl.BLEND)
-            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE)
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
             drawSprite(pic.width * S * (crown ? 1.8 : 0.9),
               (ax - pic.width / 2) * S, TY - ay * S,
               [acol[0] * ht, acol[1] * ht, acol[2] * ht], texGlow)
@@ -1274,7 +1274,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.bindTexture(gl.TEXTURE_2D, acc.tex)
           gl.uniform1i(U(P.comp, 'inputBuffer'), 0)
           gl.uniform1i(U(P.comp, 'e0Map'), 1)
-          gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 : 0)
+          // F-91: live memakai e0Intensity = 0,9·(1 + 1,6·q), q = e^(−Δ/1,9), Δ = t − 6,55
+          // (terukur 2,1625 @6,8 · 1,5713 @8,0 · 1,2048 @9,5 · 1,0801 @10,5)
+          gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * (1 + 1.6 * qSurge * tune('bq', 1)) : 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
           gl.enable(gl.BLEND)
           gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)   // figur di atas latar, memakai alpha figur
