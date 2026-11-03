@@ -359,3 +359,13 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Gerbang build18: **2,02 · 3,57 · 4,40 · 8,04 · 10,17 · 6,19** (rata-rata **5,73**; build17 5,96).
 - Produksi: `index-DfWtWS5P.js` sha `4e5cd4ce…`; klon segar repo `3272130` + berkas baru → sha identik.
 - Berikutnya: ekstraksi peta sprite live (`ae`/`be`) — pengali 0,5/0,25 hanya menambal perbedaan tekstur.
+
+### Sesi 22 (2026-11-02) — F-100 tekstur sprite live prosedural + sRGB → **build19/20**
+
+- **F-100:** peta sprite live dibuat runtime (`createRadialGradient` 128×128), bukan aset. Stop glow kita
+  salah (ada stop 0,7 tambahan) dan `colorSpace = SRGB` tidak ditiru → tekstur kini `SRGB8_ALPHA8` + stop
+  persis live; pengali `cf`/`vf` kembali 1 / 0,5.
+- **F-101:** redaman inti `0,2 + 0,8·smoothstep((t−0,1)/1,3)` untuk t sangat awal.
+- Gerbang build20: **2,45 · 2,15 · 3,36 · 7,64 · 8,08 · 6,19** (rata-rata **4,98**; build18 5,73).
+- Uji geser waktu di 6,8 membuktikan galat bukan fase; `?fl=1` tetap merugikan.
+- Produksi: `index-B0dBMECv.js` sha `e7168bb8…`; klon segar repo `3c29f10` + berkas baru → sha identik.

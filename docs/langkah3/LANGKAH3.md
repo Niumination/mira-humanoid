@@ -500,3 +500,62 @@ menangkap sumbernya). Ini pekerjaan berikutnya yang paling berdampak.
 
 Produksi: `dist/assets/index-DfWtWS5P.js` sha256 `4e5cd4ce…`; klon segar repo `3272130` + `MiraStage.tsx`
 baru → **sha identik**.
+
+## Bagian 12 — F-100: peta sprite live ternyata **prosedural**, bukan aset tertanam (build19/build20)
+
+### Temuan
+
+Dugaan lama (F-86) bahwa peta `ae`/`be` adalah aset biner yang gagal diekstrak **salah**. Di bundle, kedua
+peta dibuat saat runtime dengan `createRadialGradient` pada kanvas 128×128:
+
+```
+ae (glow):  0 rgba(255,255,255,1) · 0,25 rgba(230,205,255,0,55) · 1 rgba(140,80,255,0)   → colorSpace = SRGB
+be (smoke): 0 rgba(200,150,255,0,8) · 0,3 rgba(150,80,255,0,32) · 0,65 rgba(110,50,230,0,08) · 1 rgba(90,30,200,0)
+```
+
+Dua hal yang salah di versi kita:
+
+1. **Stop glow berbeda** — kita punya stop tambahan `0,7 rgba(160,110,255,0,15)` dan stop 0,35 dengan
+   alfa 0,5, sehingga sprite kita jauh lebih pekat di cincin tengah. Diganti stop persis live.
+2. **`colorSpace = SRGB` tidak ditiru** — live memakai `SRGBColorSpace`, jadi GPU **mendekode sRGB→linear**
+   saat sampling dan aditif terjadi di ruang linear, lalu dikodekan kembali di output. Kita mengunggah RGBA
+   mentah, sehingga nilai tengah (mis. 0,55) dipakai sebagai linear → pita luar sprite terlalu terang.
+   Diperbaiki dengan format internal `SRGB8_ALPHA8` (bisa dimatikan lewat `?srb=0` untuk pembanding).
+
+Ini juga menjelaskan temuan Bagian 11 (pengali `cf=0,5`/`vf=0,25` "menambal tekstur"): dengan stop yang
+benar + sRGB, pengali itu **tidak lagi perlu** — `cf = 1`, `vf = 0,5` (0,5 hanya pada sprite `v`).
+
+### Efek terukur (stop benar + sRGB + cf=1/vf=1 dibanding build18)
+
+| t | build18 | stop+sRGB, cf=1 vf=1 |
+|---|---|---|
+| 0,3 | 2,02 | 5,24 |
+| 1,89 | 3,57 | **2,62** |
+| 3,5 | 4,40 | **2,85** |
+| 5,5 | 8,04 | **7,25** |
+| 6,8 | 10,17 | **8,08** |
+
+### F-101 — inti terlalu terang di detik pertama
+
+Dengan tekstur yang sudah benar, 0,3 justru melebihi live (6,1 vs 3,0). Redaman waktu dipasang:
+`ramp = 0,2 + 0,8·smoothstep((t−0,1)/1,3)` pada intensitas sprite `y` → 0,3 turun ke 5,3 (MAE 3,20 → **2,45**)
+tanpa mengubah fase lain. Ini kalibrasi, bukan rumus live.
+
+### Gerbang piksel build20
+
+| t | build18 | build19 | **build20** | kecerahan kita/live |
+|---|---|---|---|---|
+| 0,3 | 2,02 | 3,20 | **2,45** | 5,3 / 3,0 |
+| 1,89 | 3,57 | 2,15 | **2,15** | 22,4 / 21,7 |
+| 3,5 | 4,40 | 3,36 | **3,36** | 22,3 / 23,0 |
+| 5,5 | 8,04 | 7,64 | **7,64** | 21,6 / 22,5 |
+| 6,8 | 10,17 | 8,08 | **8,08** | 62,5 / 61,2 |
+| 9,5 | 6,19 | 6,19 | **6,19** | 41,4 / 39,6 |
+| **rata-rata** | 5,73 | 5,10 | **4,98** | |
+
+Uji tambahan: menggeser waktu kita ke 6,6/6,7/6,9/7,0 saat dibandingkan dengan live 6,8 **selalu lebih
+buruk** (18,8 · 15,8 · 16,1 · 24,7 vs 10,2) → galat 6,8 bukan keterlambatan fase, melainkan struktur
+(bentuk sebaran kilatan). `?fl=1` (kilatan titik sentuh busur) masih merugikan (11,26) → tetap mati.
+
+Produksi: `dist/assets/index-B0dBMECv.js` sha256 `e7168bb8…`; klon segar repo `3c29f10` + `MiraStage.tsx`
+baru → **sha identik**. Sisa terbesar: 6,8 (8,08) dan 5,5 (7,64) — keduanya masalah **sebaran** ruang.
