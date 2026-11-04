@@ -1152,14 +1152,20 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         const me = t - reveal[2]
         const qSurge = me >= 0 && me < 8 ? Math.exp(-me / 1.9) : 0
         gl.uniform1f(U(P.wire, 'uGain'), 0.95 * (1 + 1.1 * qSurge))
-        gl.uniform1f(U(P.wire, 'uIdle'), 0)
+        // F-106: live menyalakan cahaya yang berjalan di sepanjang garis setelah `idle`
+        //   uIdle = smoothstep(t; idle−0,6; idle+0,6), idle = ignite + 1,4 = 7,95
+        //   (shader: c += vec3(1,0,94,1)·pulse·2,0, pulse dari kepala cahaya yang bergerak)
+        // Di build kita nilai ini dipaku 0, jadi lapisan itu tidak pernah muncul.
+        const wireIdle = xs(t, reveal[2] + 0.8, reveal[2] + 2.0) * tune('idl', 1)
+        gl.uniform1f(U(P.wire, 'uIdle'), wireIdle)
         gl.uniform1f(U(P.wire, 'uPulse'), 0.7)
         gl.uniform1f(U(P.wire, 'uPulseSpeed'), 1)
         gl.uniform1f(U(P.wire, 'uSketchBright'), 1)
         gl.uniform1f(U(P.wire, 'uFade'), 1)
         gl.uniform1f(U(P.wire, 'uTaper'), 26)
-        // live: `uLiveT` = jam langkah bicara/dengar (0 saat idle) — bukan jam build
-        gl.uniform1f(U(P.wire, 'uLiveT'), 0)
+        // live: `uLiveT` = jam langkah bicara/dengar (0 saat idle) — bukan jam build.
+        // `?wl=` memakai jam build sebagai pengganti (untuk menyapu posisi kepala cahaya).
+        gl.uniform1f(U(P.wire, 'uLiveT'), tune('wl', 0) * t)
         const shockW = shockAt(t)
         gl.uniform4f(U(P.wire, 'uShock'), star.x, star.y, shockW.r, shockW.k)
         gl.uniform1f(U(P.wire, 'uShockW'), 9)
@@ -1323,6 +1329,24 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.hp, 'threshold'), 0.6)
           gl.uniform1f(U(P.hp, 'smoothing'), 0.9)
           gl.drawArrays(gl.TRIANGLES, 0, 3)
+          // 1b) F-107: latar/nebula di app asli adalah mesh DI DALAM scene, jadi ikut di-bloom
+          // (uji `off=bloom` di live: bingkai turun +2,72 pada t=9,5; build kita +0,00 karena latar
+          // diblit ke kanvas sesudah pass bloom). Di sini medan ditambahkan ke citra luminansi
+          // (di-decode sRGB→linear dulu), tanpa mengubah jalur tampilan latar itu sendiri.
+          const fbK = tune('fb', 0)
+          if (fbK > 0.001 && !OFF.has('field')) {
+            gl.enable(gl.BLEND)
+            gl.blendFunc(gl.ONE, gl.ONE)
+            gl.useProgram(P.blit)
+            gl.bindVertexArray(blitVao.v)
+            gl.activeTexture(gl.TEXTURE0)
+            gl.bindTexture(gl.TEXTURE_2D, fieldTex)
+            gl.uniform1i(U(P.blit, 'uTex'), 0)
+            gl.uniform1f(U(P.blit, 'uOpacity'), fbK)
+            gl.uniform1f(U(P.blit, 'uDecode'), 1)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+            gl.disable(gl.BLEND)
+          }
           // 2) turun (19/20): 12 tap, texelSize = 1/ukuran sumber
           gl.useProgram(P.down)
           gl.bindVertexArray(downVaoF)
