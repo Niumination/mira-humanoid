@@ -162,10 +162,22 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string, tag: str
   return s
 }
 
-function program(gl: WebGL2RenderingContext, vs: string, fs: string, tag: string) {
+function program(gl: WebGL2RenderingContext, vs: string, fs: string, tag: string, defines: string[] = []) {
+  // F-108: `defines` meniru `material.defines` postprocessing. Tanpa ini shader luminansi bloom
+  // berjalan tanpa `COLOR`/`THRESHOLD`, sehingga bloom kita abu-abu (bukan berwarna) dan tanpa ambang.
+  const pre = defines.map((d) => `#define ${d} 1\n`).join('')
+  const inject = (src: string) => {
+    if (!pre) return src
+    const lines = src.split('\n')
+    // WAJIB tepat setelah `#version` — kalau ditaruh setelah baris '#' terakhir, definenya
+    // jatuh SESUDAH blok `#ifdef` dan tidak berpengaruh apa pun (kesalahan pertama F-108).
+    const v = lines.findIndex((l) => l.trim().startsWith('#version'))
+    lines.splice(v + 1, 0, pre.trimEnd())
+    return lines.join('\n')
+  }
   const p = gl.createProgram()!
-  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, vs, tag + '.vert'))
-  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fs, tag + '.frag'))
+  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, inject(vs), tag + '.vert'))
+  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, inject(fs), tag + '.frag'))
   gl.linkProgram(p)
   if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(`${tag} link: ${(gl.getProgramInfoLog(p) || '').slice(0, 400)}`)
   return p
@@ -300,6 +312,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           strands: program(gl, strandsVert, strandsFrag, 'strands'),
           twinkles: program(gl, twinklesVert, twinklesFrag, 'twinkles'),
           arcs: program(gl, arcsVert, arcsFrag, 'arcs'),
+          // F-108 (ditolak): mengira shader luminansi kita kehilangan defines COLOR/THRESHOLD.
+          // Ternyata `hp.frag.glsl` sudah memuat `#define COLOR 1` + `#define THRESHOLD 1` (baris 37–38),
+          // jadi menambahkan defines tidak mengubah satu piksel pun. Tidak dipakai.
           hp: program(gl, hpVert, hpFrag, 'hp'),
           down: program(gl, downVert, downFrag, 'down'),
           up: program(gl, upVert, upFrag, 'up'),
@@ -787,7 +802,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, fieldTex)
           gl.uniform1i(U(P.blit, 'uTex'), 0)
-          gl.uniform1f(U(P.blit, 'uOpacity'), Math.min(1, ramp.waves * 1.6))   // live: canvas opacity = min(1, mira*1.6)
+          // live: canvas opacity = min(1, mira*1.6) — `?fk=` untuk menyapu kecerahan nebula
+          gl.uniform1f(U(P.blit, 'uOpacity'), Math.min(1, ramp.waves * 1.6) * tune('fk', 1))
           gl.drawArrays(gl.TRIANGLES, 0, 3)
         }
 
@@ -1180,6 +1196,26 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform1f(U(P.wire, 'uHeadH'), fh)
         if (!OFF.has('lines')) gl.drawElements(gl.TRIANGLES, mesh.indexCount, gl.UNSIGNED_INT, 0)
 
+        // ---- F-110: sprite `g` live (renderOrder 0,1, tekstur `be`) — AURA VIOLET DI BELAKANG KEPALA ----
+        // rumus live: posisi = titik kepala (rotasi nol saat diam) [head.x·E, head.y·w] = [575,3; 318,8],
+        //   skala = head.rx·E·3,4 = 0,166·1146·3,4 = 647 px, opasitas =
+        //   min(1, hum.aura(0,8)·0,6·xs(t; ignite; ignite+1,35)·(1+0,6q))
+        // Lapisan ini belum pernah ada di build kita, padahal pada t=9,5 opasitasnya ≈ 0,54
+        // dan menutupi seluruh kepala — di peta selisih, kepala kita memang lebih gelap.
+        {
+          const au = tune('au', 0)   // diukur: membantu di 6,8 (6,97→6,76) tapi merugikan di 9,5 (5,20→5,77) → mati
+          const qa = t >= reveal[2] ? Math.exp(-(t - reveal[2]) / 1.9) : 0
+          const op = Math.min(1, 0.8 * 0.6 * xs(t, reveal[2], reveal[2] + 1.35) * (1 + 0.6 * qa) * au)
+          if (op > 0.002) {
+            gl.useProgram(P.sprite)
+            gl.bindVertexArray(spriteVao)
+            gl.enable(gl.BLEND)
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
+            drawSprite(0.166 * pic.width * S * 3.4 * tune('as', 1),
+              (0.502 * pic.width - pic.width / 2) * S, TY - 0.232 * pic.height * S, [1, 1, 1], texSmoke, op)
+          }
+        }
+
         // ---- HAZE LEBAR (sprite live warna (0,55; 0,3; 1), skala rx·3,4 ≈ 5× gambar → glow yang
         // menutupi seluruh bingkai, terukur ada sejak t≈1,5 sampai akhir). Amplitudo dikalibrasi lewat
         // ?hz= (opasitas) & ?hs= (pengali skala) supaya bisa disapu tanpa build ulang.
@@ -1326,8 +1362,11 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, figure.tex)
           gl.uniform1i(U(P.hp, 'inputBuffer'), 0)
-          gl.uniform1f(U(P.hp, 'threshold'), 0.6)
-          gl.uniform1f(U(P.hp, 'smoothing'), 0.9)
+          // F-109: ambang bloom. Di app asli ambang 0,6 bekerja pada nilai HDR yang JAUH lebih besar
+          // dari 1 (inti bisa 5–10), sedangkan nilai kita kebanyakan 0,2–0,6 → sebagian besar figur
+          // tidak pernah melewati ambang, jadi bloom kita hanya menangkap inti. Disapu lewat ?bt=/?bs=.
+          gl.uniform1f(U(P.hp, 'threshold'), tune('bt', 0.6))
+          gl.uniform1f(U(P.hp, 'smoothing'), tune('bs', 0.9))
           gl.drawArrays(gl.TRIANGLES, 0, 3)
           // 1b) F-107: latar/nebula di app asli adalah mesh DI DALAM scene, jadi ikut di-bloom
           // (uji `off=bloom` di live: bingkai turun +2,72 pada t=9,5; build kita +0,00 karena latar
