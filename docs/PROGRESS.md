@@ -394,3 +394,16 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Produksi: `index-CDFKFb7u.js` sha `88a56596…`; klon segar repo `d7e0efb` + berkas baru → sha identik.
 - Arah berikutnya (dari peta v2): t=5,5 defisit −12,1/−10,4 di tubuh atas-kiri; t=9,5 −11,7/−12,8 di
   bawah-tengah; t=3,5 defisit merata 1–7. Semua di **dalam** tubuh → sebaran materi/titik, bukan bloom.
+
+### Sesi 25 (2026-11-03) — F-104 saringan debu terbalik + F-105 inti terlalu besar → **build23–25**
+
+- **Geometri materi kini 100,00 % identik dengan live** (54.492/54.492 titik, sebelumnya 0 %). Penyebab:
+  saringan butir debu di `extractLines` dibalik (memilih piksel yang justru gagal uji kontras).
+  Efek: t=5,5 7,61 → **2,84**; t=3,5 3,32 → **1,93**.
+- **F-105:** inti (`y`/`v`) terlalu besar & redup di detik awal (kontribusi off=core live 1,96 vs kita
+  0,46). Koreksi bergantung waktu `cs/cb` (0,5/2,0 → 1,0/1,0 antara 0,9–1,6 s): t=0,3 2,42 → **1,29**.
+- **Metrik v3** (`tools/metric.py`): MAE mentah + blur4 + blur10 untuk memisahkan struktur dari tekstur titik.
+- Gerbang build25: **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,37 = 3,42** (blur4 2,89 · blur10 2,58).
+  Sebelum sesi ini 4,73.
+- Produksi: `index-CeJUy6tv.js` sha `8b729496…`; klon segar repo `eae396b` + 2 berkas baru → sha identik.
+- Sisa: 6,8 (bentuk sebaran kilatan, blur10 5,09) dan 9,5 (−1,8 terpusat di bawah-tengah).

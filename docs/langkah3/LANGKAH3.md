@@ -681,3 +681,75 @@ kalibrasi `uPxPerPic` bisa dikerjakan terpisah nanti.
 
 Produksi: `dist/assets/index-CDFKFb7u.js` sha256 `88a56596…`; klon segar repo `d7e0efb` + `MiraStage.tsx`
 baru → **sha identik**.
+
+## Bagian 15 — geometri materi 100 % sama dengan live, + dua bug nyata (build23–build25)
+
+### F-104 — saringan butir debu terbalik (bug, bukan selisih desain)
+
+`extractLines` (SN) di bundle menyaring debu dengan **dua langkah**:
+
+```js
+if (!E[we] || N[we]) continue              // di luar siluet / sudah dipakai garis → buang
+if (S[we] > 70 && S[we] - V[we] > 16) te.push(we)   // sisipkan bila KONTRAS cukup
+```
+
+Versi kita menuliskan kondisi kedua dengan `continue` (membalik artinya), sehingga 4.500 butir debu
+menempel pada piksel yang justru **tidak** lulus uji kontras. Akibatnya semua butir debu berada di
+tempat yang salah — dan itu tampak di layar sebagai kabut yang salah bentuk.
+
+Bukti sebelum/sesudah (buffer materi, 163.476 angka = 54.492 titik):
+
+| | sebelum (build22) | sesudah (build23) |
+|---|---|---|
+| jumlah titik | 54.500 | **54.492** |
+| angka identik pada indeks yang sama | **0 / 54.492 (0 %)** | **54.492 / 54.492 (100,00 %)** |
+| irisan himpunan titik | 47.758 | 52.243 (selisih hanya pembulatan 2 desimal) |
+
+Jadi **seluruh geometri partikel materi kita sekarang identik dengan live**, bukan "mirip". Semua sisa
+selisih di layar berasal dari shader/parameter/waktu, bukan dari posisi titik.
+
+### F-105 — inti (sprite `y`/`v`) terlalu besar dan terlalu redup di detik-detik awal
+
+Uji `off=core` di t=0,3: live kehilangan **1,96 dari 2,39** (82 % cahaya layar), kita hanya **0,46 dari
+4,72** — dan dengan semua lapisan dimatikan, bingkai kita masih **4,28** sedangkan live **0,42**. Artinya
+"inti" kita bukan titik panas, melainkan gumpalan lebar yang redup. Tangkapan berdampingan (live kiri)
+memperlihatkan bedanya jelas: live = titik putih kecil dengan halo tipis, kita = balon ungu besar.
+
+Sapuan `cs` (ukuran) × `cb` (terang) pada t=0,3:
+
+| cs | cb | MAE | kita/live |
+|---|---|---|---|
+| 1,0 | 1,0 | 2,42 | 4,7 / 2,4 |
+| 0,5 | 2,0 | **1,29** | 1,8 / 2,4 |
+| 0,35 | 3,0 | 1,54 | 1,2 / 2,4 |
+| 0,6 | 2,2 | 1,22 | 2,3 / 2,4 |
+
+Namun koreksi ukuran yang sama **merugikan** di 1,89–5,5 (di sana inti sudah menyusut sendiri karena
+`xt` turun 1 → 0,4 di live, dan cahaya inti masih dibutuhkan). Jadi koreksinya dibuat bergantung waktu:
+`cs = 0,5 + 0,5·smoothstep(t; 0,9; 1,6)`, `cb = 2 − 1·smoothstep(t; 0,9; 1,6)` — hanya menyentuh
+t < ~1,6 s, tepat di mana inti adalah satu-satunya sumber cahaya.
+
+### Metrik v3 — memisahkan struktur dari tekstur titik
+
+`tools/metric.py` melaporkan MAE mentah, MAE setelah blur 4 px, dan blur 10 px. Alasannya: pada panggung
+berisi ~54.000 titik kecil, dua implementasi berbeda **selalu** berbeda di tingkat titik meskipun
+strukturnya sama — MAE mentah menyesatkan kalau dipakai sendirian.
+
+| t | build22 (v2) | build23 (F-104) | **build25 (F-104+F-105)** | blur4 | blur10 |
+|---|---|---|---|---|---|
+| 0,3 | 2,42 | 2,42 | **1,29** | 1,27 | 1,25 |
+| 1,89 | 2,13 | 2,13 | **2,13** | 2,02 | 1,93 |
+| 3,5 | 3,32 | **1,93** | **1,93** | 1,71 | 1,61 |
+| 5,5 | 7,61 | **2,84** | **2,84** | 1,93 | 1,80 |
+| 6,8 | 7,38 | **6,97** | **6,97** | 6,16 | 5,09 |
+| 9,5 | 5,53 | **5,37** | **5,37** | 4,24 | 3,82 |
+| **rata-rata** | 4,73 | 3,61 | **3,42** | 2,89 | 2,58 |
+
+Produksi: `dist/assets/index-CeJUy6tv.js` sha256 `8b729496…`; klon segar repo `eae396b` +
+`MiraStage.tsx` & `src/lib/miraLines.ts` baru → **sha identik**.
+
+### Sisa galat (semua struktural, bukan geometri titik)
+
+- **t = 6,8 (6,97)** — metrik blur-10 masih 5,09: bentuk sebaran kilatan ignition, bukan level.
+- **t = 9,5 (5,37)** — kita lebih gelap −1,8 rata-rata, terpusat di bawah-tengah.
+- **t = 3,5 / 5,5** — sudah 1,93 / 2,84 dengan blur4 1,71 / 1,93 → praktis cocok secara struktur.
