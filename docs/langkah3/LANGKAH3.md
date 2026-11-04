@@ -809,3 +809,69 @@ dicoba: `bg` 1 … 3).
 
 Produksi: `dist/assets/index-C2v91iDz.js` sha256 `622d6240…`; klon segar repo `398e9f1` +
 `MiraStage.tsx` & `src/lib/shaders/blit.frag.glsl` → **sha identik**.
+
+## Bagian 17 — t = 6,8 dibedah: lima percobaan, satu peta selisih yang akhirnya menjelaskan
+
+Fase 6,8 adalah penyumbang galat terbesar (MAE 6,97 dari rata-rata 3,39). Sesi ini seluruhnya diarahkan
+ke sana. Hasilnya **bukan** perbaikan angka, melainkan **penjelasan yang bisa dipakai** — dan itu
+disertai lima percobaan yang diukur lalu ditolak.
+
+### Peta selisih setelah blur 8 px (`verification/langkah3/selisih-6.8-blur.jpg`)
+
+Tiga panel: live · kita · peta selisih (merah = kita terlalu terang, biru = kita terlalu gelap).
+Polanya sangat tegas:
+
+- **cincin MERAH** tepat di lingkaran bola ignition → garis/lingkar kita **terlalu terang** (± +40 tingkat
+  pada tepinya);
+- **bagian dalam bola BIRU** → interior kita **terlalu gelap**;
+- **kepala BIRU** → area kepala/pundak kita lebih gelap.
+
+Jadi di app asli, ignition adalah **isi yang menyala dari dalam dengan tepi lembut**, sedangkan build kita
+menggambar **cincin tajam yang terang** dengan interior gelap. Ini soal distribusi, bukan level.
+
+### Kontribusi per lapisan pada t = 6,8 (uji `off=`, terukur)
+
+| lapisan | live | kita |
+|---|---|---|
+| pic/picture | −1,82 | +0,19 |
+| matter | +0,59 | +2,40 |
+| lines | +2,72 | +4,53 |
+| hair | −1,65 | +0,16 |
+| strands | −1,72 | +0,10 |
+| bloom | +23,79 | +8,86 |
+
+(live menurunkan bingkai saat lapisan gambar/rambut dimatikan karena kilatan di app asli tersebar lewat
+bloom; kita tidak.)
+
+### Lima percobaan (semua diukur, semua ditolak)
+
+| percobaan | hasil pada 6,8 | 9,5 |
+|---|---|---|
+| **F-107** latar ikut di-bloom (dua cara: ke render target figur, atau disuntik ke luminansi) | 7,84 / 11,03 | 8,69 / 11,03 |
+| **F-108** menambah `defines COLOR`/`THRESHOLD` pada shader luminansi | **tanpa perubahan satu piksel** (shader kita sudah memuat `#define COLOR 1` di baris 37) — percobaan ini ternyata sia-sia | — |
+| **F-109** menurunkan ambang bloom (`?bt=0,3 · 0,15 · 0,05`) | 8,50 · 9,78 · 11,38 | 5,81 · 7,51 · 9,16 |
+| **F-110** menaikkan kecerahan nebula (`?fk=0,7 · 1,25`) | 7,85 · 8,47 | 9,24 · 7,08 |
+| **F-111** memindahkan terang ke bloom (`?fl=0&hz=0`, lalu `bg=2,6`) | 7,85 · 9,20 | — |
+| **F-112** sprite aura kepala (layer live `g`, renderOrder 0,1) — belum pernah ada di build kita | membantu: 6,97 → **6,76** (`au=1`) | **merugikan**: 5,20 → 5,77 (au=1) · 6,21 (au=0,7, skala 1,4) · 7,44 (au=0,55, skala 1,9) |
+
+Catatan penting dari F-108: build26 dan build27 menghasilkan PNG yang **identik byte-per-byte**
+(md5 `92289288…` untuk t=6,8 pada build26, build27, dan ulangan) → mesin render kita **deterministik**,
+jadi setiap perubahan angka memang berasal dari kode, bukan dari noise.
+
+### Kenapa tidak ada perbaikan angka sesi ini
+
+Semua cara "menambah/mengurangi cahaya" gagal karena masalahnya **bentuk**: cincin terang + interior gelap.
+Yang dibutuhkan adalah perubahan struktur lapisan ignition (bagaimana garis bola, materi di dalamnya, dan
+kilatan berbagi terang), bukan pengali. Itu pekerjaan paket berikutnya, dan sekarang arahnya jelas dari
+peta selisih — bukan tebakan.
+
+### Gerbang piksel build27
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² | blur4 | blur10 |
+|---|---|---|---|---|---|---|---|---|---|
+| build26 | 1,29 | 2,13 | 1,93 | 2,84 | 6,97 | 5,20 | 3,39 | 2,86 | 2,54 |
+| **build27** | 1,29 | 2,13 | 1,93 | 2,84 | 6,97 | 5,20 | **3,39** | 2,86 | 2,54 |
+
+Build27 = build26 secara tampilan; yang bertambah hanya tombol riset (`?au= ?as= ?bt= ?bs= ?fk=` yang
+semuanya default netral) dan komentar penjelasan. Produksi: `dist/assets/index-48aN0FDY.js` sha256
+`c70c361a…`; klon segar repo `cad9eab` + `MiraStage.tsx` → **sha identik**.

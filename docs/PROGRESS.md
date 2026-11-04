@@ -418,3 +418,16 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   vs kita +8,86 → terang harus dipindahkan dari lapisan langsung ke bloom, bukan ditambah.
 - Gerbang build26: **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,20 = 3,39** (blur4 2,86 · blur10 2,54; build25 3,42).
 - Produksi: `index-C2v91iDz.js` sha `622d6240…`; klon segar repo `398e9f1` + 2 berkas → sha identik.
+
+### Sesi 27 (2026-11-04) — bedah t=6,8: 5 percobaan ditolak, peta selisih memberi arah → **build27**
+
+- **Peta selisih blur-8** (`selisih-6.8-blur.jpg`): cincin MERAH di bola ignition (kita terlalu terang),
+  interior BIRU (kita terlalu gelap), kepala BIRU. Masalah = bentuk, bukan level.
+- Kontribusi lapisan 6,8 (live/kita): pic −1,82/+0,19 · matter +0,59/+2,40 · lines +2,72/+4,53 ·
+  hair −1,65/+0,16 · strands −1,72/+0,10 · bloom +23,79/+8,86.
+- Ditolak dengan angka: F-107 (latar ikut bloom, dua cara), F-109 (`bt` 0,3/0,15/0,05), F-110 (`fk`
+  0,7/1,25), F-111 (pindah terang ke bloom), F-112 (aura kepala: membantu 6,8 tapi merugikan 9,5).
+- F-108 ternyata **sia-sia**: shader luminansi kita sudah punya `#define COLOR 1`; build26 dan build27
+  menghasilkan PNG identik (md5 sama) → mesin render deterministik.
+- Gerbang tetap **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,20 = 3,39**; produksi `index-48aN0FDY.js`
+  sha `c70c361a…`; klon segar repo `cad9eab` + berkas baru → sha identik.
