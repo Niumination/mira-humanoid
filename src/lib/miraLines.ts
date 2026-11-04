@@ -400,8 +400,12 @@ export function extractLines(
   for (let Y = 2; Y < v - 2; Y++)
     for (let ce = 2; ce < g - 2; ce++) {
       const we = Y * g + ce
-      if (!E[we] || N[we] || (S[we] > 70 && S[we] - W[we] > 16)) continue
-      te.push(we)
+      // F-104: live menyaring `!E || k` LALU menambahkan bila lulus uji kontras
+      //   if(!E[we] || k[we]) continue; if(_[we] > 70 && _[we] - V[we] > 16) push(we)
+      // Versi lama membalik uji kontras itu (melewati justru piksel yang lulus) sehingga
+      // seluruh 4500 butir debu kita menempel di piksel yang SALAH.
+      if (!E[we] || N[we]) continue
+      if (S[we] > 70 && S[we] - W[we] > 16) te.push(we)
     }
   const ae = Math.min(r, te.length)
   const be = new Float32Array(ae * 5)

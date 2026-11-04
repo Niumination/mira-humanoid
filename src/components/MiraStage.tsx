@@ -241,6 +241,14 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       const seats = nw(maskPx, fw, fh, 36000, seatRnd)
       const hairSeats = nw(hairPx.px, hairPx.w, hairPx.h, 14000, seatRnd, { minLum: 0.12, dx: -120, dy: -48 })
       const matter = buildMatter(pic, seats.concat(hairSeats), 7)
+      // jejak diagnosis: komposisi titik (dipakai untuk membandingkan dengan live)
+      ;(window as unknown as Record<string, unknown>).__MIRA_COUNTS = {
+        seats: seats.length / 5,
+        hairSeats: hairSeats.length / 5,
+        dust: pic.dust.length / 5,
+        lines: pic.lines.length,
+        particles: matter.particles.length,
+      }
 
       // pita `waves`: 3 pita melintasi pemandangan (Qy=3) + 168 percikan (56/pita)
       const waveRibbons = buildWaveRibbons()
@@ -1218,6 +1226,16 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         {
           const cf = tune('cf', 1)
           const vf = tune('vf', 0.5)
+          // F-105: ukuran & terang inti. Inti live tampak sebagai titik putih kecil yang panas,
+          // milik kita gumpalan lebar yang redup (kontribusi off=core: live +1,96 vs kita +0,46).
+          // F-105: ukuran/terang inti bergantung waktu. Sebelum figur terisi (t < ~2 s) inti adalah
+          // SATU-SATUNYA sumber cahaya di layar; di live bentuknya titik panas kecil (kontribusi
+          // off=core +1,96 dari 2,39), milik kita gumpalan lebar yang redup. Setelah 3,5 s inti
+          // menyusut sendiri di live (`xt` turun 1 → 0,4) dan ukuran kita sudah cocok, jadi
+          // koreksi ini dilepas bertahap antara 0,9 s dan 1,6 s.
+          const cMix = xs(t, 0.9, 1.6)
+          const cs = tune('cs', 0.5 + 0.5 * cMix)
+          const cb = tune('cb', 2.0 - 1.0 * cMix)
           const xt = xs(t, 0.07, 0.12) * (1 - 0.6 * xs(t, 0.9, IGNITE_CFG.weave[1]))
           const at0 = xs(t, 0.02, 0.12) * (1 - xs(t, IGNITE_CFG.weave[1] - 0.35, IGNITE_CFG.weave[1] + 0.2))
           let fArc = 0
@@ -1236,7 +1254,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
               gl.bindVertexArray(spriteVao)
               gl.enable(gl.BLEND)
               gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
-              drawSprite(pic.width * S * 1.5, cx0, cy0, [0.55 * vk, 0.3 * vk, 1 * vk], texSmoke)
+              drawSprite(pic.width * S * 1.5 * cs, cx0, cy0, [0.55 * vk, 0.3 * vk, 1 * vk], texSmoke)
             }
           }
           if (cf > 0.001) {
@@ -1249,7 +1267,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
               gl.bindVertexArray(spriteVao)
               gl.enable(gl.BLEND)
               gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
-              drawSprite(pic.width * S * (0.04 + 0.3 * xt) * yt, cx0, cy0, [0.95 * ht, 0.65 * ht, 1.45 * ht], texGlow)
+              drawSprite(pic.width * S * (0.04 + 0.3 * xt) * yt * cs, cx0, cy0, [0.95 * ht * cb, 0.65 * ht * cb, 1.45 * ht * cb], texGlow)
             }
           }
         }
