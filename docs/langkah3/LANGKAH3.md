@@ -753,3 +753,59 @@ Produksi: `dist/assets/index-CeJUy6tv.js` sha256 `8b729496…`; klon segar repo 
 - **t = 6,8 (6,97)** — metrik blur-10 masih 5,09: bentuk sebaran kilatan ignition, bukan level.
 - **t = 9,5 (5,37)** — kita lebih gelap −1,8 rata-rata, terpusat di bawah-tengah.
 - **t = 3,5 / 5,5** — sudah 1,93 / 2,84 dengan blur4 1,71 / 1,93 → praktis cocok secara struktur.
+
+## Bagian 16 — peta kontribusi per lapisan tuntas; F-106 diterima, F-107 (latar ikut bloom) ditolak
+
+### F-106 — cahaya yang berjalan di garis setelah `idle` (diterima)
+
+Di bundle: `uIdle = xs(t; idle−0,6; idle+0,6)` dengan `idle = ignite + 1,4 = 7,95`, dan shader menambahkan
+`vec3(1; 0,94; 1)·pulse·2,0`. Build kita memaku `uIdle = 0`, jadi lapisan itu tidak pernah muncul.
+Dipasang dengan `xs(t; ignite+0,8; ignite+2,0)`: **t=9,5 MAE 5,37 → 5,20** (blur4 4,24 → 4,05), fase lain
+tidak tersentuh karena jendelanya di atas 7,9 s. (Menyetel `uLiveT` = jam build tidak menambah apa pun:
+5,27 vs 5,20 — posisi kepala cahaya belum bisa dicocokkan, jadi tetap 0 seperti live saat idle.)
+
+### F-107 — latar/nebula ikut bloom: **dua cara dicoba, keduanya ditolak**
+
+Fakta yang diukur (uji `off=bloom`, semua 1440×900, metrik v2):
+
+| t | kontribusi bloom live | kontribusi bloom kita |
+|---|---|---|
+| 3,5 | +6,04 | +1,15 |
+| 5,5 | +9,59 | +2,16 |
+| 6,8 | **+23,79** (37,70 → 61,49) | **+8,86** (54,45 → 63,31) |
+| 9,5 | **+13,48** | +2,11 |
+
+Di app asli, nebula adalah **mesh di dalam scene** (renderOrder 0,5) sehingga ikut di-bloom: dengan semua
+lapisan mati kecuali latar, mematikan bloom menurunkan bingkai **+2,72** (t=9,5) — pada build kita **+0,00**,
+karena latar diblit langsung ke kanvas sesudah pass bloom.
+
+Dua perbaikan dicoba, dua-duanya **memperburuk**:
+
+| cara | t=3,5 | t=5,5 | t=9,5 |
+|---|---|---|---|
+| dasar (build25) | 1,93 | 2,84 | 5,37 |
+| (a) latar digambar ke render target figur | 2,82 | 3,33 | 8,69 |
+| (b) latar disuntikkan ke citra luminansi bloom (`?fb=1`) | 7,84 | 7,99 | 11,03 |
+
+(catatan: (a) tanpa decode sRGB→linear malah jauh lebih buruk lagi — 25,29 · 16,93 · 43,37 — karena latar
+masuk dua kali dalam pengodean). Kesimpulan: **mesin bloom kita menyebarkan cahaya di tempat yang salah**;
+menambah bahan tidak menolong. Jalur `?fb=` ditinggalkan di kode dengan nilai 0 (untuk riset lanjutan).
+
+### Mengapa 6,8 tetap 6,97 — sekarang ada angkanya
+
+Sebelum bloom (off=bloom), bingkai kita **54,45** sedangkan live **37,70**: kita sudah terlalu terang
+**+16,8 tanpa bloom**, sementara bloom live menyumbang **+23,79** dan kita hanya **+8,86**. Artinya di
+app asli kilatan ignition adalah inti kecil yang sangat terang lalu **disebar oleh bloom**, sedangkan kita
+menaruh cahaya itu **langsung di layar** (sprite kilatan + haze + isi gambar). Memindahkan terang dari
+lapisan langsung ke bloom adalah pekerjaan berikutnya; menaikkan `e0Intensity` saja tidak cukup (sudah
+dicoba: `bg` 1 … 3).
+
+### Gerbang piksel build26
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² | blur4 | blur10 |
+|---|---|---|---|---|---|---|---|---|---|
+| build25 | 1,29 | 2,13 | 1,93 | 2,84 | 6,97 | 5,37 | 3,42 | 2,89 | 2,58 |
+| **build26** | 1,29 | 2,13 | 1,93 | 2,84 | 6,97 | **5,20** | **3,39** | **2,86** | **2,54** |
+
+Produksi: `dist/assets/index-C2v91iDz.js` sha256 `622d6240…`; klon segar repo `398e9f1` +
+`MiraStage.tsx` & `src/lib/shaders/blit.frag.glsl` → **sha identik**.

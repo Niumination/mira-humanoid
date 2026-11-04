@@ -407,3 +407,14 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   Sebelum sesi ini 4,73.
 - Produksi: `index-CeJUy6tv.js` sha `8b729496…`; klon segar repo `eae396b` + 2 berkas baru → sha identik.
 - Sisa: 6,8 (bentuk sebaran kilatan, blur10 5,09) dan 9,5 (−1,8 terpusat di bawah-tengah).
+
+### Sesi 26 (2026-11-04) — peta kontribusi per lapisan tuntas; F-106 diterima, F-107 ditolak → **build26**
+
+- **F-106:** `uIdle` garis (cahaya berjalan setelah `idle` = ignite+1,4) dipasang: t=9,5 5,37 → **5,20**.
+- **F-107 ditolak (dua cara):** latar ikut bloom. Fakta: bloom live +13,48 @9,5 dan +23,79 @6,8, kita
+  +2,11 / +8,86; latar live memberi +2,72 pada bloom, kita +0,00. Tetapi (a) latar ke render target figur
+  → 8,69 @9,5, (b) latar disuntik ke luminansi bloom → 11,03 @9,5. Mesin bloom kita menyebar di tempat salah.
+- **Diagnosis 6,8:** tanpa bloom kita 54,45 vs live 37,70 (+16,8 terlalu terang LANGSUNG), bloom live +23,79
+  vs kita +8,86 → terang harus dipindahkan dari lapisan langsung ke bloom, bukan ditambah.
+- Gerbang build26: **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,20 = 3,39** (blur4 2,86 · blur10 2,54; build25 3,42).
+- Produksi: `index-C2v91iDz.js` sha `622d6240…`; klon segar repo `398e9f1` + 2 berkas → sha identik.
