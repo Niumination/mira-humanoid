@@ -875,3 +875,97 @@ peta selisih — bukan tebakan.
 Build27 = build26 secara tampilan; yang bertambah hanya tombol riset (`?au= ?as= ?bt= ?bs= ?fk=` yang
 semuanya default netral) dan komentar penjelasan. Produksi: `dist/assets/index-48aN0FDY.js` sha256
 `c70c361a…`; klon segar repo `cad9eab` + `MiraStage.tsx` → **sha identik**.
+
+---
+
+## Bagian 18 — Akar masalah cincin ignition ditemukan: `reveal.speed` dipakai sebagai jari-jari (build28)
+
+Bagian 17 berhenti dengan diagnosis: cincin kita **terlalu jauh** (puncak r≈165 px vs live r≈145 px) dan
+halo 200–280 px terlalu terang, interior bola terlalu gelap. Sesi 27 mencoba menambal dengan pengali dan
+gagal semua. Bagian ini menutupnya dengan **satu baris rumus**.
+
+### 18.1 Pembacaan ulang pemanggilan di bundle live
+
+Di bundle live, gelombang kejut build dipanggil sebagai
+
+```js
+const Zt = Zk(Y, M.ignite, e.reveal.speed)      // argumen ketiga = KECEPATAN, bukan konstanta
+```
+
+`Zk(n, t0, speed)` menghitung `n = t − t0` lalu `r = n · speed · (1 − 0,18·min(1, n/2))`.
+Port kita selama ini menulis `r = n · 1500 · (1 − 0,18·min(1, n/2))` — **angka 1500 itu konstanta bawaan
+(default) parameter fungsi**, sedangkan live selalu mengisinya dengan `reveal.speed`.
+
+Di app asli `reveal.speed` = **tinggi gambar** (`pic.height`, ≈718 px), jadi jari-jari cincin live
+= `n · 718`, bukan `n · 1500`. Akibatnya cincin kita meleset **±14 %** lebih jauh — persis angka yang
+diukur profil radial di Bagian 17 (+18 pada r 160–190, live memuncak di r≈145). Kesalahan radius ini
+juga menyeret seluruh halo keluar, sehingga r 260–280 tampak terlalu terang (+29): itu bukan halo
+terpisah, itu **cincin kita yang tumpah ke luar**.
+
+### 18.2 Perbaikan (F-113 diterima, versi build sahaja)
+
+```ts
+// live memanggil `Zk(Y, M.ignite, e.reveal.speed)` — jadi kecepatan = tinggiGambar,
+// BUKAN 1500 seperti konstanta bawaan fungsi di bundle.
+const bR = n * reveal[3] * (1 - 0.18 * Math.min(1, n / 2)) * tune('sbs', 1)
+const bK = xs(n, 0, 0.04) * Math.exp(-n / 0.9) * tune('sh', 0.85)
+```
+
+- Radius: `1500 → reveal[3]` (tinggi gambar).
+- Kekuatan: **`sh = 0,85`**, yaitu taksiran bus gain `hum.build.shock` di live (kopling `Zt.k · zt("hum.build.shock")`).
+  Kalibrasi: `sh` 1,00 → 3,59 · 0,85 → **3,42** · 0,80 → 3,47 · 0,75 → 3,54 · 0,70 → 3,64 (MAE t=6,8).
+- Varian **gelombang sentuh** (`jk`, `hum.touch.wave`, lebar 42) tetap ada di kode tapi **default `tsk = 0`**:
+  dengan `e = pic.height` hasilnya +50…+68 terlalu terang di r 90–260 (lihat 18.4).
+
+### 18.3 Bukti: profil radial t=6,8 sesudah perbaikan
+
+Pusat bola (771, 662). "sebelum" = build27, "sesudah" = build28.
+
+| radius px | live | build27 | build28 |
+|---|---|---|---|
+| 140–150 | 182,4 | 190,4 (+8,0) | **183,2 (+0,8)** |
+| 160–170 | 166,6 | 176,6 (+10,1) | **169,6 (+3,0)** |
+| 180–190 | 149,9 | 159,1 (+9,2) | **152,7 (+2,8)** |
+| 250–260 | 136,7 | 140,5 (+3,8) | 134,3 (−2,5) |
+| 260–270 | 118,0 | 121,2 (+3,2) | 116,6 (−1,4) |
+
+Puncak cincin kini **di radius yang benar**; sisa galat hanya ±3 pada kaki cincin dan −2 pada halo.
+Halo luar yang tadinya **+29,0** di r 260–270 sekarang **−1,4** — hilang sama sekali, karena memang
+itu ekor cincin yang salah radius.
+
+### 18.4 Yang diuji dan ditolak (angka)
+
+| percobaan | hasil |
+|---|---|
+| **F-113a** gelombang sentuh `jk` dengan `e = pic.height` (`?tsk=1`) | profil radial +50…+68 di r 90–260 → **ditolak**, default `tsk=0` |
+| **F-113b** `sbs = 0,94` (radius diperkecil 6 %) | cincin jadi terlalu dekat: 240–260 −7,4 / −14,1 → **ditolak** |
+| **F-113c** `sh = 1,00` (tanpa gain bus) | 3,59 vs 3,42 → gain 0,85 dipakai |
+
+### 18.5 Lapisan lain: dua pengukuran yang mengoreksi catatan lama
+
+1. **Kunci `off=` di build kita berbeda dari live.** Build kita memakai `picture`, live memakai `pic`;
+   `core` dan `lights` tidak ada di build kita. Semua pengukuran "kontribusi lapisan" lama yang memakai
+   `off=pic` pada build kita sebenarnya **no-op** (selisih 0,00). Sudah dikoreksi di sesi ini.
+2. **Live `off=core` dan `off=lights` = 0,00** pada t=6,8 dan t=9,5 → dua lapisan itu tidak menyumbang
+   apa pun di fase ini; jangan dikejar lagi.
+3. **Bloom kita pada 6,8 justru lebih kuat dari live** (bloom-saja: kita 72,5 vs live 49,2; r 40–140
+   kita 218 vs live 150). Jadi kekurangan terang di interior **bukan** karena bloom kurang — sumber
+   interiornya (isi bola) yang kurang terang. Ini kebalikan dari catatan Bagian 17 dan menjadi pekerjaan
+   berikutnya.
+4. `?bq` (pengali intensitas bloom) pada 9,5: 1,5 → 5,15 · 2,5 → 5,15 (dasar 5,20) → **bukan pengali**.
+   Sisa galat 9,5 (−5…−10 terpusat di tubuh, sementara lapisan gambar kita justru 1,7× lebih lebar dari
+   live: kontribusi `pic` 51/47/40 vs live 27/31/8 pada r<40/40–140/>140) = **bentuk kuad gambar**,
+   berikutnya.
+
+### 18.6 Gerbang piksel build28
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² | blur4 | blur10 |
+|---|---|---|---|---|---|---|---|---|---|
+| build27 | 1,29 | 2,13 | 1,93 | 2,84 | 6,97 | 5,20 | 3,39 | 2,86 | 2,54 |
+| **build28** | 1,29 | 2,13 | 1,93 | 2,84 | **3,42** | 5,20 | **2,80** | **2,30** | **2,12** |
+
+t=6,8 turun **6,97 → 3,42** (−51 %), rata-rata **3,39 → 2,80** (−17 %), blur4 2,86 → 2,30, blur10 2,54 → 2,12.
+Lima fase lain **identik sampai ke byte** (perubahan hanya menyentuh gelombang kejut, yang nol di fase itu).
+
+Bukti visual: `banding-build28.jpg` (live · kita · peta |selisih|×3 untuk enam fase) dan
+`radial.py 6.8` (tabel 18.3).

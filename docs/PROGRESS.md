@@ -431,3 +431,18 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   menghasilkan PNG identik (md5 sama) → mesin render deterministik.
 - Gerbang tetap **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,20 = 3,39**; produksi `index-48aN0FDY.js`
   sha `c70c361a…`; klon segar repo `cad9eab` + berkas baru → sha identik.
+
+### Sesi 28 (2026-11-04) — akar cincin ignition: `reveal.speed`, bukan 1500 → **build28**
+
+- Baca ulang bundle: live memanggil `Zk(Y, M.ignite, e.reveal.speed)`; konstanta 1500 hanyalah **default
+  parameter**. Port kita memakai 1500 → cincin meleset +14 % radius, dan itu yang selama ini tampak
+  sebagai "cincin terlalu jauh + halo terlalu terang" (bagian 18).
+- **F-113 DITERIMA:** `bR = n · reveal[3] · (1 − 0,18·min(1,n/2))`, kekuatan `sh = 0,85` (bus gain
+  `hum.build.shock`; kalibrasi 1,00→3,59 · 0,85→**3,42** · 0,75→3,54 · 0,70→3,64).
+- **Ditolak:** varian gelombang sentuh (`tsk`, +50…+68 terlalu terang), `sbs=0,94`, `sh=1,00`.
+- Profil radial 6,8: cincin 140–190 dari +8…+10 → **+0,8…+3,0**; halo 250–270 dari **+3,8/+3,2** → **−2,5/−1,4**.
+- Koreksi pengukuran: kunci `off=` build kita = `picture` (live: `pic`) — semua pengukuran lama `off=pic`
+  pada build kita adalah no-op. `off=core`/`off=lights` di live = 0,00 pada 6,8 & 9,5.
+- Gerbang build28: **1,29 · 2,13 · 1,93 · 2,84 · 3,42 · 5,20 = 2,80** (blur4 2,30 · blur10 2,12; build27 3,39).
+- Berikutnya: (a) interior bola 6,8 masih −10…−17 — bloom kita justru 1,5× live, jadi tambah terang di
+  **isi bola**, bukan bloom; (b) 9,5 −5…−10 terpusat di tubuh: kuad gambar kita 1,7× lebih lebar dari live.

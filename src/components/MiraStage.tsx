@@ -673,10 +673,26 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       }
       const bN = (i: number) => (i < 0 ? 0 : i < 0.05 ? 1 : i < 0.09 ? 0.1 : i < 0.16 ? 0.95 : i < 0.2 ? 0.25 : i < 0.32 ? 0.5 * (1 - (i - 0.2) / 0.12) : 0)
       // `qN` — gelombang kejut ignition: radius tumbuh, kekuatannya meluruh (live, dipakai uShock di 4 shader)
+      // F-113: live punya DUA gelombang kejut yang berjalan bersamaan dan mengambil yang terkuat
+      //   (a) build  `Zk`: r = n·1500·(1 − 0,18·min(1, n/2)) · k = smoothstep(0;0,04)·e^(−n/0,9) · lebar 9
+      //   (b) touch  `jk`: r = n·0,7·tinggiGambar · k = 2,4·smoothstep(0;0,03)·e^(−n/0,8)   · lebar 42
+      //       (config live `tv` = {speed 0,7 · strength 2,4 · settle 0,8 · width 42})
+      // Di app asli (b) selalu menang pada detik-detik pertama: pada n = 0,25 → k 1,75 vs 0,76, dan
+      // jari-jarinya lebih pendek tapi bercincin lebar. Build kita dulu hanya memport (a), sehingga
+      // cincin kita jatuh ~90 px lebih jauh dan terlalu tipis — itu "cincin merah" pada peta selisih.
       const shockAt = (t: number) => {
         const n = t - reveal[2]
-        if (n < 0 || n > 2.6) return { r: 0, k: 0 }
-        return { r: n * 1500 * (1 - 0.18 * Math.min(1, n / 2)), k: xs(n, 0, 0.04) * Math.exp(-n / 0.9) }
+        if (n < 0 || n > 2.6) return { r: 0, k: 0, w: 9 }
+        // live memanggil `Zk(Y, M.ignite, e.reveal.speed)` — jadi kecepatan = reveal.speed = tinggiGambar,
+        // BUKAN 1500 seperti konstanta bawaan fungsi di bundle. Ini yang membuat cincin kita ~3 % terlalu jauh.
+        const bR = n * reveal[3] * (1 - 0.18 * Math.min(1, n / 2)) * tune('sbs', 1)
+        const bK = xs(n, 0, 0.04) * Math.exp(-n / 0.9) * tune('sh', 0.85)
+        // gelombang sentuh (`jk(ht, w)`) hanya jalan bila ada sentuhan; pada `?auto` nilainya nol.
+        const tR = n * 0.7 * pic.height * tune('sts', 1)
+        const tK = 2.4 * xs(n, 0, 0.03) * Math.exp(-n / 0.8) * tune('tsk', 0)
+        return tK > bK
+          ? { r: tR, k: tK, w: tune('tsw', 42) }
+          : { r: bR, k: bK, w: 9 }
       }
       const rampAt = (t: number) => {
         let ve = 0
@@ -1079,7 +1095,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             gl.uniformMatrix4fv(U(P.shock, 'modelViewMatrix'), false, mvPoints)
             gl.uniformMatrix4fv(U(P.shock, 'projectionMatrix'), false, proj)
             gl.uniform4f(U(P.shock, 'uShock'), star.x, star.y, shock.r, shock.k)
-            gl.uniform1f(U(P.shock, 'uShockW'), 9)
+            gl.uniform1f(U(P.shock, 'uShockW'), shock.w)
             gl.drawArrays(gl.TRIANGLES, 0, 6)
           }
         }
@@ -1184,7 +1200,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform1f(U(P.wire, 'uLiveT'), tune('wl', 0) * t)
         const shockW = shockAt(t)
         gl.uniform4f(U(P.wire, 'uShock'), star.x, star.y, shockW.r, shockW.k)
-        gl.uniform1f(U(P.wire, 'uShockW'), 9)
+        gl.uniform1f(U(P.wire, 'uShockW'), shockW.w)
         gl.uniform4f(U(P.wire, 'uHz'), hz[0], hz[1], hz[2], hz[3])
         gl.uniform3f(U(P.wire, 'uHzSkull'), hzSkull[0], hzSkull[1], hzSkull[2])
         gl.uniform3f(U(P.wire, 'uHzInner'), hzInner[0], hzInner[1], hzInner[2])
