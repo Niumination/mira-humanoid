@@ -446,3 +446,20 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Gerbang build28: **1,29 · 2,13 · 1,93 · 2,84 · 3,42 · 5,20 = 2,80** (blur4 2,30 · blur10 2,12; build27 3,39).
 - Berikutnya: (a) interior bola 6,8 masih −10…−17 — bloom kita justru 1,5× live, jadi tambah terang di
   **isi bola**, bukan bloom; (b) 9,5 −5…−10 terpusat di tubuh: kuad gambar kita 1,7× lebih lebar dari live.
+- Paket: `niu-update-langkah4a.zip` (4,4 MB, 16 berkas) — `src/components/MiraStage.tsx` +
+  `docs/…` + `build28-*.png` + `banding-build28.jpg` + `BACA-DULU.md`. Lokal: `dist/assets/index-BUSc4wVj.js`
+  sha `4b7e0a37…`, `MiraStage.tsx` sha `e3f5c9fe…`.
+
+### Sesi 29 (2026-11-04) — penerapan 4a terverifikasi; anatomi 9,5; F-114 diterima → **build29**
+
+- Terverifikasi: produksi `index-BUSc4wVj.js`, repo `e52df4c`, blob `MiraStage.tsx` `144215495f0ca980` =
+  lokal; build ulang lokal = `index-BUSc4wVj.js` yang sama.
+- Anatomi 9,5 (kunci `off` benar): gambar kita 45,7 vs live 27,3 (r<120); **bloom kita 4,4 vs live 46,5**;
+  rambut 11,8 vs 12,3; garis 4,3 vs 4,0. Live menaruh ~50 % cahaya figur di bloom, kita 7 %.
+- **F-114 DITERIMA:** gain figur `fg=1,10` (gambar+rambut+helai+twinkle) → 9,5 5,20 → **4,81**.
+  Kalibrasi 1,00→5,20 · 1,10→4,81 · 1,15→4,85 · 1,20→5,08 · 1,30→6,06.
+- **Ditolak:** F-115 (`pg`=2/4: 9,90/22,41), F-116 (`bq`=3: 42,6 total; `pg`0,6+`bq`6/12: 8,02/7,55;
+  `pg`0,8+`bq`6: 6,34). Bloom kita terlalu sempit — menaikkan intensitasnya membakar inti.
+- Fakta terkunci: geometri rambut tepat (pusat massa 709,6 vs 710,0), nebula sejajar (20,5 vs 20,5),
+  `lines`/`matter`/`waves` dalam ±1 dari live. Sisa selisih 9,5 sebagian dari **posisi pita nebula panjang**.
+- Gerbang build29: **1,29 · 2,13 · 1,93 · 2,84 · 3,43 · 4,81 = 2,74** (blur4 2,24 · blur10 2,06).

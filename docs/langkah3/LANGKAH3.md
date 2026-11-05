@@ -969,3 +969,69 @@ Lima fase lain **identik sampai ke byte** (perubahan hanya menyentuh gelombang k
 
 Bukti visual: `banding-build28.jpg` (live · kita · peta |selisih|×3 untuk enam fase) dan
 `radial.py 6.8` (tabel 18.3).
+
+---
+
+## Bagian 19 — Anatomi t=9,5: bloom kita hanya membawa 7 % cahaya figur (live 50 %) (build29)
+
+Pemeriksaan penerapan paket 4a: produksi menyajikan `index-BUSc4wVj.js`, blob `MiraStage.tsx` di repo
+(`e52df4c`) = **`144215495f0ca980`**, identik dengan lokal; build ulang lokal menghasilkan `index-BUSc4wVj.js`
+yang sama → **paket 4a terverifikasi**.
+
+Fokus sesi ini: t=9,5 (5,20), fase terburuk yang tersisa.
+
+### 19.1 Dua koreksi pengukuran yang mengubah gambaran
+
+1. **Kunci `off=` build kita = `picture`** (live: `pic`). Semua angka "kontribusi lapisan" sebelum ini yang
+   memakai `off=pic` pada build kita adalah **no-op**. Diukur ulang (t=9,5, r<120 / 120–260 / 260+):
+
+   | lapisan | live | kita (kunci benar) |
+   |---|---|---|
+   | gambar (`pic`/`picture`) | 27,3 / 31,3 / 8,2 | **45,7 / 38,0 / 4,2** |
+   | rambut (`hair`) | 12,3 / 24,9 / 7,8 | 11,8 / 23,3 / 7,5 |
+   | garis (`lines`) | 4,0 / 3,0 / 2,0 | 4,3 / 3,9 / 2,0 |
+   | **bloom** | **46,5 / 43,1 / 13,4** | **4,4 / 7,7 / 1,2** |
+   | twinkles | — | 0,14 / 0,29 / 0,10 |
+
+2. **`off=core` dan `off=lights` di live = 0,00** pada t=6,8 maupun 9,5 → dua lapisan itu tidak menyumbang
+   apa pun; tidak perlu dikejar.
+
+Kesimpulan besar: pada 9,5 live memindahkan hampir separuh cahaya figur ke **bloom** (46 dari total 108),
+sedangkan kita hanya 4 (dari 103). Gambar langsung kita **1,7× lebih terang** dari live dan bloom kita
+**10× lebih lemah**. Bentuk totalnya mirip (103 vs 108) tetapi pembagian tugasnya salah.
+
+### 19.2 Yang dicoba dan ditolak (semua diukur pada t=9,5)
+
+| percobaan | hasil | putusan |
+|---|---|---|
+| **F-115a** gain gambar `pg=2` (HDR di render target) | 9,90 (kita 137,7 vs live 108,6 di r<120) | ditolak — gambar langsung jebol, bloom tidak ikut naik |
+| **F-115b** `pg=4` / `pg=4&bq=0,5` | 22,41 / 20,94 | ditolak |
+| **F-116a** `bq=3` (intensitas bloom 3×) | bloom jadi 6,3/10,8/1,8 (dari 4,4/7,7/1,2) — sublinear; total 42,6, MAE lebih buruk | ditolak |
+| **F-116b** `pg=0,6 + bq=6` dan `+bq=12` | 8,02 / 7,55 | ditolak — bloom kita terlalu sempit: menaikkannya membakar inti, bukan menyebar |
+| **F-116c** `pg=0,8 + bq=6` | 6,34 | ditolak |
+| **F-114** gain figur `fg=1,10` (gambar + rambut + helai + twinkle) | 9,5 **5,20 → 4,81**; lima fase lain bergeser ≤ 0,02 | **DITERIMA** |
+
+Kalibrasi `fg` (t=9,5): 1,00 → 5,20 · **1,10 → 4,81** · 1,15 → 4,85 · 1,20 → 5,08 · 1,30 → 6,06.
+Angka 1,10 masuk akal: kontribusi rambut kita memang ~5 % di bawah live (11,8/23,3/7,5 vs 12,3/24,9/7,8).
+
+### 19.3 Fakta lain yang dikunci sesi ini
+
+- **Geometri rambut benar.** Overlay `hair`-only (live vs kita) memberi pusat massa 709,6 vs 710,0 dan
+  siluet yang sama; kekurangan hanya pada kecerahan (rata-rata 13,5 vs 30,6 karena bidang nebula di
+  bingkai live ikut terukur — dengan `off` semua lapisan lain selisihnya tinggal 25,9 vs 30,6).
+- **Nebula sudah sejajar**: pojok kiri-atas 20,5 vs 20,5, tengah-atas 28,1 vs 30,9.
+- **Pantulan/kilau garis** (`lines`), `matter`, `waves` sudah dalam ±1 dari live di semua radius.
+- **Latar** sudah sama; selisih t=9,5 bukan soal latar.
+- Yang belum tersentuh dan tampak di peta selisih 10 px: **posisi pita nebula panjang** (lengkung tipis
+  merah/biru berselang-seling di langit) — energinya sama, tempatnya bergeser. Ini urusan geometri
+  `waves`/`field`, bukan kecerahan, dan menjadi kandidat kuat berikutnya.
+
+### 19.4 Gerbang piksel build29
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² | blur4 | blur10 |
+|---|---|---|---|---|---|---|---|---|---|
+| build27 | 1,29 | 2,13 | 1,93 | 2,84 | 6,97 | 5,20 | 3,39 | 2,86 | 2,54 |
+| build28 | 1,29 | 2,13 | 1,93 | 2,84 | 3,42 | 5,20 | 2,80 | 2,30 | 2,12 |
+| **build29** | 1,29 | 2,13 | 1,93 | 2,84 | 3,43 | **4,81** | **2,74** | **2,24** | **2,06** |
+
+Bukti visual: `banding-build29.jpg`.
