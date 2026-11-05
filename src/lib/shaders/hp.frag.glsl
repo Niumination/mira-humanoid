@@ -154,7 +154,10 @@ uniform vec2 range;
 #elif defined(THRESHOLD)
 uniform float threshold;uniform float smoothing;
 #endif
-varying vec2 vUv;void main(){vec4 texel=texture2D(inputBuffer,vUv);float l=luminance(texel.rgb);float mask=1.0;
+uniform float uLin;   // F-122: hitung ambang di ruang linear (1) atau di ruang layar (0)
+varying vec2 vUv;void main(){vec4 texel=texture2D(inputBuffer,vUv);
+if(uLin>0.5){texel.rgb=pow(max(texel.rgb,vec3(0.0)),vec3(2.2));}
+float l=luminance(texel.rgb);float mask=1.0;
 #ifdef RANGE
 float low=step(range.x,l);float high=step(l,range.y);mask=low*high;
 #elif defined(THRESHOLD)
@@ -162,6 +165,7 @@ mask=smoothstep(threshold,threshold+smoothing,l);
 #endif
 #ifdef COLOR
 gl_FragColor=texel*mask;
+if(uLin>0.5){gl_FragColor.rgb=pow(max(gl_FragColor.rgb,vec3(0.0)),vec3(1.0/2.2));}
 #else
 gl_FragColor=vec4(l*mask);
 #endif

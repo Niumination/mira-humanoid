@@ -1097,3 +1097,78 @@ penambahan/pengurangan cahaya per lapisan memperburuk salah satu fase lain.
 
 Knob riset baru (semua default netral/kalibrasi): `?bl= ?ur= ?bo= ?bog= ?gm= ?lg= ?mg=`.
 Bukti visual: `banding-build30.jpg`.
+
+---
+
+## Bagian 21 — Delapan jalan buntu diukur, satu kalibrasi tipis diterima, dan batas resolusi pekerjaan (build31)
+
+Pemeriksaan penerapan 4c: produksi `index-CJC1GFCh.js`; repo `a3e77b9`; blob `MiraStage.tsx`
+`a1c3e404bf383a69` (80 123 B) dan `comp.frag.glsl` `1f7cfc72358744c1` = lokal → **paket 4c terverifikasi**.
+
+### 21.1 Di mana sisa galat t=6,8 sebenarnya berada (bukan di lapisan yang bisa di-off)
+
+Kotak kepala (y 112–336, x 600–960), t=6,8, kontribusi lapisan diukur dengan kunci `off` yang sah:
+
+| lapisan | live | kita |
+|---|---|---|
+| matter (awan titik) | 12,94 | **12,95** |
+| lines (garis) | 0,67 | 1,32 |
+| hair, pic, strands | ±0,1 | ±0,09 |
+| **total kotak kepala** | **53,5** | **47,4** |
+
+Selisih −6,1 itu **tidak dimiliki lapisan mana pun yang bisa dimatikan**. Sisa yang tidak bisa diablasi di
+live = **bloom** (karena `off=bloom` mematikan seluruh composer — Bagian 20.2). Jadi defisit kepala adalah
+soal sebaran bloom, bukan soal lapisan gambar.
+
+### 21.2 Delapan percobaan — semuanya diukur, semuanya ditolak
+
+| percobaan | knob | hasil |
+|---|---|---|
+| **F-122a** ambang bloom diturunkan | `bt=0,45` / `0,35` | 6,8 → 3,14 / 3,49 · **9,5 → 5,51 / 6,46** (merusak) |
+| **F-122b** kabut zona panas | `hz=0,7` / `0,5` | 9,5 tidak berubah sama sekali (lapisan itu nol di fase itu); 6,8 → 4,80 / 4,15 |
+| **F-122c** redam gambar | `pg=0,85` / `0,92` | 9,5 → 5,34 / 5,00 · 6,8 → 3,19 / 3,18 |
+| **F-123** ambang dihitung di ruang linear | `lb=1` | 6,8 → 3,17 · 9,5 → **5,13** → ditolak |
+| **F-124** headroom HDR untuk bloom | `hg=2` / `3` | 6,8 → 10,00 / 13,44 · 9,5 → 16,09 / 27,65 → ditolak keras |
+| **F-125** awan titik tubuh dinyalakan | `bo=1`, berbagai `bog`/`pp` | 6,8 **tidak berubah** (live pun baru menyalakannya di ignite+1,6 = 8,15); 9,5 → 5,03 (`bog=0,2·pp=0,25`), 6,00 (`bog=0,2·pp=1`), 10,73 (`bog=1`) → sebarannya salah |
+| **F-126** geser kuad gambar | `qdy=±10 px`, `qdx=−8 px` | 9,5 → **8,48 / 8,44 / 9,21** (dasar 4,76) → **penempatan gambar sudah tepat** |
+| **F-127** kurva/intensitas lain | `gm=0,9/1,1` (Bagian 20) | sudah ditolak |
+
+F-126 penting sebagai **bukti negatif yang kuat**: menggeser gambar 10 px saja membuat galat naik 78 %.
+Artinya kuad, skala, dan pusat gambar sudah benar; sisa galat adalah **detail tingkat tekstur**, bukan tata letak.
+
+### 21.3 Kalibrasi yang diterima (F-128)
+
+`bb` (pengali dasar intensitas bloom) **1,00 → 0,90** dan `bq` (pengali lonjakan) **0,70 → 0,85**.
+
+Alasannya bukan selera: sebaran bloom kita sedikit lebih lebar dari live, sehingga dasar yang sedikit
+lebih rendah dengan lonjakan yang sedikit lebih kuat memberi hasil lebih baik **di semua fase sekaligus**:
+
+| t | build30 | bb=0,9 saja | bb=0,8/bq=1,0 | **bb=0,9/bq=0,85** |
+|---|---|---|---|---|
+| 0,3 | 1,29 | – | 1,28 | **1,28** |
+| 1,89 | 2,13 | 2,07 | 2,02 | **2,07** |
+| 3,5 | 1,93 | – | 1,94 | **1,91** |
+| 5,5 | 2,84 | 2,84 | 2,91 | **2,84** |
+| 6,8 | 3,18 | 3,36 | 3,20 | **3,18** |
+| 9,5 | 4,76 | 4,68 | 4,66 | **4,71** |
+| rata² | 2,688 | – | 2,669 | **2,666** |
+
+Tidak ada fase yang memburuk (6,8 dan 5,5 tetap).
+
+### 21.4 Batas yang dicapai
+
+`blur10` build31 = **1,99** — struktur besar (tata letak, siluet, sebaran cahaya) sudah dalam ±2 satuan
+dari app asli. Yang tersisa di MAE mentah (2,67) adalah **detail frekuensi tinggi**: butir titik, kilau
+helai, dan tekstur garis. Dua bukti bahwa ini bukan lagi soal "pengali": (a) semua penyapu per-lapisan
+berhenti di titik optimum, (b) menggeser gambar 10 px memperburuk 78 %.
+
+### 21.5 Gerbang piksel build31
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² | blur4 | blur10 |
+|---|---|---|---|---|---|---|---|---|---|
+| build29 | 1,29 | 2,13 | 1,93 | 2,84 | 3,43 | 4,81 | 2,74 | 2,24 | 2,06 |
+| build30 | 1,29 | 2,13 | 1,93 | 2,84 | 3,18 | 4,76 | 2,69 | 2,19 | 2,02 |
+| **build31** | **1,28** | **2,07** | **1,91** | 2,84 | 3,18 | **4,71** | **2,67** | **2.17** | **1,99** |
+
+Bukti visual: `banding-build31.jpg`. Knob riset baru (semua default netral):
+`?lb= ?hg= ?pp= ?qdx= ?qdy= ?bb=`.

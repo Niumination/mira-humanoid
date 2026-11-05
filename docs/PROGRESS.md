@@ -476,3 +476,15 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   F-119 (`bo`/`bog` → 5,6–10,7), F-120 (`gm` 0,9/1,1 → 6,37/5,70; 6,8 → 8,14/5,71), F-121 (`mg` 0,75 → rata² 2,78).
 - **Diterima:** `bq` 1,00 → **0,70** (6,8: 3,43 → 3,18) dan `fg` 1,10 → **1,15** (9,5: 4,78 → 4,76).
 - Gerbang build30: **1,29 · 2,13 · 1,93 · 2,84 · 3,18 · 4,76 = 2,69** (blur4 2,19 · blur10 2,02).
+
+### Sesi 31 (2026-11-04) — delapan jalan buntu, satu kalibrasi tipis → **build31**; batas tekstur tercapai
+
+- Terverifikasi: produksi `index-CJC1GFCh.js`, repo `a3e77b9`, blob `MiraStage` `a1c3e404…` + `comp.frag` `1f7cfc72…` = lokal.
+- **Defisit kepala t=6,8 (−6,1) bukan milik lapisan mana pun**: matter 12,94 (live) vs 12,95 (kita), hair/pic/strands ±0,1,
+  lines 0,67 vs 1,32. Sisa yang tak bisa diablasi di live = bloom → ini soal sebaran bloom.
+- Ditolak (angka): `bt` 0,45/0,35 (9,5 → 5,51/6,46) · `hz` 0,7/0,5 (9,5 nol, 6,8 → 4,80/4,15) · `pg` 0,85/0,92 · `lb=1` (9,5 → 5,13)
+  · `hg` 2/3 (6,8 → 10,00/13,44; 9,5 → 16,09/27,65) · awan titik tubuh semua ukuran/gain (9,5 → 5,03…10,73; 6,8 tidak berubah karena
+  live baru menyalakannya di 8,15) · **geser kuad gambar ±10 px (9,5 → 8,44/8,48; dasar 4,76)**.
+- **Diterima:** `bb` 1,00 → 0,90 dan `bq` 0,70 → 0,85 (semua fase membaik/tertahan; 2,688 → 2,666).
+- Gerbang build31: **1,28 · 2,07 · 1,91 · 2,84 · 3,18 · 4,71 = 2,67** (blur4 2,17 · blur10 1,99).
+- Kesimpulan: sisa galat = detail frekuensi tinggi (butir/kilau/tekstur). `blur10` 1,99 = struktur besar sudah dekat.
