@@ -463,3 +463,16 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Fakta terkunci: geometri rambut tepat (pusat massa 709,6 vs 710,0), nebula sejajar (20,5 vs 20,5),
   `lines`/`matter`/`waves` dalam ±1 dari live. Sisa selisih 9,5 sebagian dari **posisi pita nebula panjang**.
 - Gerbang build29: **1,29 · 2,13 · 1,93 · 2,84 · 3,43 · 4,81 = 2,74** (blur4 2,24 · blur10 2,06).
+
+### Sesi 30 (2026-11-04) — pustaka bloom dibaca ulang; 6 hipotesis ditolak; 2 kalibrasi → **build30**
+
+- Terverifikasi: produksi `index-Dkk8FSYS.js`, repo `073732f`, blob `1d7cdbce82f026e1` = lokal.
+- **Temuan metodologis:** di app asli bloom dibungkus `!off.has("bloom") && <EffectComposer>` → `off=bloom`
+  mematikan SELURUH composer (kontribusinya bahkan negatif di inti). Semua perbandingan bloom lama tidak sah;
+  aturan baru: acuan hanya `off` lapisan non-pembungkus.
+- Pustaka bloom live = port kita (down 12-tap, up 9-tap+support, radius 0,62, 8 level, skala 0,5, ADD,
+  intensitas 0,9·(1+1,6·P_), P_ = exp(−Δ/1,9)); **satu-satunya beda: luminancePass live di resolusi penuh**.
+- Ditolak dengan angka: F-117 (`bl=1` → 5,00), F-118 (`ur` 0,85/1,0 → 8,45/14,87; + figur redup → 6,2–8,9),
+  F-119 (`bo`/`bog` → 5,6–10,7), F-120 (`gm` 0,9/1,1 → 6,37/5,70; 6,8 → 8,14/5,71), F-121 (`mg` 0,75 → rata² 2,78).
+- **Diterima:** `bq` 1,00 → **0,70** (6,8: 3,43 → 3,18) dan `fg` 1,10 → **1,15** (9,5: 4,78 → 4,76).
+- Gerbang build30: **1,29 · 2,13 · 1,93 · 2,84 · 3,18 · 4,76 = 2,69** (blur4 2,19 · blur10 2,02).

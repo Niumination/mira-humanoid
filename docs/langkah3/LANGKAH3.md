@@ -1035,3 +1035,65 @@ Angka 1,10 masuk akal: kontribusi rambut kita memang ~5 % di bawah live (11,8/23
 | **build29** | 1,29 | 2,13 | 1,93 | 2,84 | 3,43 | **4,81** | **2,74** | **2,24** | **2,06** |
 
 Bukti visual: `banding-build29.jpg`.
+
+---
+
+## Bagian 20 — Bloom: satu temuan metodologis, lima hipotesis ditolak, dua kalibrasi diterima (build30)
+
+Pemeriksaan penerapan 4b: produksi menyajikan `index-Dkk8FSYS.js`; repo `073732f`; blob `MiraStage.tsx`
+`1d7cdbce82f026e1` = lokal (78 487 B) → **paket 4b terverifikasi**.
+
+### 20.1 Pembacaan ulang pustaka bloom di bundle live (bukan tebakan)
+
+| hal | nilai live (dari bundle) | build kita |
+|---|---|---|
+| shader down 12-tap | `WEIGHT_INNER 0.125`, `WEIGHT_OUTER 0.05556`, `clampToBorder` | **identik** |
+| shader up 9-tap + support | tent 0,0625/0,125/0,25 lalu `mix(support, c, radius)` | **identik** |
+| `radius` (up) | 0,62 (`hum.glow.radius` def .62) | 0,62 |
+| `levels` / `resolutionScale` | 8 / 0,5 | 8 / 0,5 |
+| fungsi campur | `blendFunction: sn.ADD` | ADD (`blend0`) |
+| intensitas | `0.9·(1 + 1.6·P_(t, ignite))`, `P_ = exp(−Δ/1,9)` untuk Δ∈[0,8), 0 di luar | sama (`?bq=` pengali) |
+| **resolusi pass luminansi** | **resolusi penuh** (1440×900), lalu 13-tap menurunkan ke mip 0 (720×450) | mip 0 (720×450) langsung |
+
+### 20.2 Temuan metodologis: `off=bloom` di app asli BUKAN ablasi bloom
+
+Di app asli, efek bloom dibungkus `!Ur.has("bloom") && <EffectComposer>…` — mematikan bloom berarti
+**seluruh EffectComposer tidak dipasang**, jadi jalur render-nya berubah total, bukan sekadar "tanpa bloom".
+Buktinya angka: kontribusi `off=bloom` di live **negatif** di sekitar inti (−2,9 pada r 30–60) dan memuncak
+di r 180–240 (+21), sementara build kita monoton turun dari inti. Semua perbandingan "bloom live vs kita"
+sebelum Bagian 20 ini karena itu **tidak sah** — dan itu menjelaskan kenapa lima percobaan sebelumnya
+(F-107, F-109, F-111, F-115, F-116) selalu gagal.
+**Aturan baru: jangan pakai `off=bloom` di live sebagai acuan; acuan hanya `off` pada lapisan yang
+bukan pembungkus composer (pic, hair, lines, matter, strands, waves, arcs).**
+
+### 20.3 Lima hipotesis bloom — semuanya diukur, semuanya ditolak
+
+| hipotesis | knob | hasil t=9,5 | putusan |
+|---|---|---|---|
+| **F-117** luminansi di resolusi penuh (seperti live) | `?bl=1` | 5,00 (dasar 4,81); bloom naik +2,8 rata bingkai | ditolak — menambah terang, bukan bentuk; default `bl=0`, knob disimpan |
+| **F-118a** radius up 0,85 / 1,00 (bloom lebih lebar) | `?ur=` | 8,45 / 14,87 | ditolak |
+| **F-118b** bloom lebar + figur diredupkan | `ur=0,85·fg=0,6` dsb. | 8,85 / 7,21 / 6,22 | ditolak |
+| **F-119a** awan titik tubuh (`points`) dinyalakan | `?bo=1` | 10,73 | ditolak |
+| **F-119b** awan titik tubuh diredupkan | `?bog=0,15/0,3/0,5` | 5,62 / 6,68 / 7,96 | ditolak (sebarannya salah, bukan levelnya) |
+| **F-120** kurva nada komposit | `?gm=0,9/1,1` | 6,37 / 5,70 (6,8: 8,14 / 5,71) | ditolak — kurva kita **sudah** sama dengan live |
+| **F-121** redam materi | `?mg=0,75/0,85` | 1,89 2,12 · 6,8 3,38 · 9,5 4,80 **tetapi** 3,5 1,94 · 5,5 3,13 | ditolak — rata² memburuk (2,78 vs 2,74) |
+
+Kesimpulan jujur: untuk struktur lapisan yang ada sekarang, kita **sudah di titik optimum**; semua
+penambahan/pengurangan cahaya per lapisan memperburuk salah satu fase lain.
+
+### 20.4 Dua kalibrasi yang diterima
+
+1. **`bq` (pengali lonjakan bloom) 1,00 → 0,70.** Penyapuan: 6,8 → 3,43 · 0,85 → 3,23 · **0,70 → 3,18** ·
+   0,55 → 3,38; 9,5 → 4,81 · 0,85 → 4,79 · **0,70 → 4,78** · 0,55 → 4,76.
+2. **`fg` (gain figur) 1,10 → 1,15.** Dengan `bq=0,70`: 9,5 4,78 → **4,76**; 6,8 tetap 3,18.
+
+### 20.5 Gerbang piksel build30
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² | blur4 | blur10 |
+|---|---|---|---|---|---|---|---|---|---|
+| build28 | 1,29 | 2,13 | 1,93 | 2,84 | 3,42 | 5,20 | 2,80 | 2,30 | 2,12 |
+| build29 | 1,29 | 2,13 | 1,93 | 2,84 | 3,43 | 4,81 | 2,74 | 2,24 | 2,06 |
+| **build30** | 1,29 | 2,13 | 1,93 | 2,84 | **3,18** | **4,76** | **2,69** | **2,19** | **2,02** |
+
+Knob riset baru (semua default netral/kalibrasi): `?bl= ?ur= ?bo= ?bog= ?gm= ?lg= ?mg=`.
+Bukti visual: `banding-build30.jpg`.

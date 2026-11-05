@@ -593,6 +593,10 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         return { tex, fbo, w, h }
       }
       let figure = mkTarget(1, 1)
+      // F-117: pass luminansi live berjalan di RESOLUSI PENUH (luminancePass.setSize(i,e) dengan ukuran
+      // dasar composer), baru sesudah itu 13-tap menurunkannya ke mip 0 (setengah). Port kita menghitung
+      // luminansi LANGSUNG di mip 0 (setengah) → garis tipis terang rata-rata hilang sebelum diambang.
+      let lum = mkTarget(1, 1)
       const LEVELS = 8
       let mips: ReturnType<typeof mkTarget>[] = []
       let ups: ReturnType<typeof mkTarget>[] = []
@@ -602,6 +606,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         if (chainFor === key) return
         chainFor = key
         if (figure.w !== cw || figure.h !== ch) figure = mkTarget(cw, ch)
+        if (lum.w !== cw || lum.h !== ch) lum = mkTarget(cw, ch)
         mips = []
         ups = []
         let w = Math.max(1, Math.round(cw * 0.5))   // resolutionScale 0,5 (terukur: 720×450)
@@ -920,7 +925,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniformMatrix4fv(U(P.pic, 'modelViewMatrix'), false, mvQuad)
         gl.uniformMatrix4fv(U(P.pic, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.pic, 'uFill'), 1)
-        gl.uniform1f(U(P.pic, 'uGain'), tune('fg', 1.1) * tune('pg', 1))
+        gl.uniform1f(U(P.pic, 'uGain'), tune('fg', 1.15) * tune('pg', 1))
         gl.uniform2f(U(P.pic, 'uSize'), fw, fh)
         gl.uniform1f(U(P.pic, 'uTime'), t)
         gl.uniform1f(U(P.pic, 'uHeadOn'), 0)
@@ -953,7 +958,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
           gl.uniformMatrix4fv(U(P.hair, 'projectionMatrix'), false, proj)
           gl.uniform2f(U(P.hair, 'uSize'), HW, HH)
-          gl.uniform1f(U(P.hair, 'uGain'), tune('fg', 1.1))
+          gl.uniform1f(U(P.hair, 'uGain'), tune('fg', 1.15))
           gl.uniform1f(U(P.hair, 'uOn'), 1)
           gl.uniform4f(U(P.hair, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
           // langkah 3: `uBT` = jam build, BUKAN konstanta. Rambut baru muncul setelah gelombang ignition
@@ -989,7 +994,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
           gl.uniformMatrix4fv(U(P.strands, 'projectionMatrix'), false, proj)
           gl.uniform2f(U(P.strands, 'uSize'), HW, HH)
-          gl.uniform1f(U(P.strands, 'uGain'), tune('fg', 1.1))
+          gl.uniform1f(U(P.strands, 'uGain'), tune('fg', 1.15))
           gl.uniform1f(U(P.strands, 'uOn'), 1)
           gl.uniform4f(U(P.strands, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
           gl.uniform1f(U(P.strands, 'uBT'), t)
@@ -1029,7 +1034,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.twinkles, 'uOn'), 1)
           gl.uniform1f(U(P.twinkles, 'uSpark'), 0.6)
           gl.uniform2f(U(P.twinkles, 'uSize'), HW, HH)
-          gl.uniform1f(U(P.twinkles, 'uGain'), tune('fg', 1.1))
+          gl.uniform1f(U(P.twinkles, 'uGain'), tune('fg', 1.15))
           gl.uniform4f(U(P.twinkles, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
           gl.uniform1f(U(P.twinkles, 'uBT'), t)
           gl.uniform1f(U(P.twinkles, 'uUp'), 48)
@@ -1066,6 +1071,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         //   uGain  = hum.body.bright · breathGlow · bright · (1 + 0,8·q)
         //   uBackK = KN(yaw,pitch) · xs(t,[ignite+1,6; ignite+2,6])  (pose tenang → 0)
         // Sebelumnya uOn dipaku 0, jadi lapisan ini tidak pernah muncul.
+        // shader memakai `uOn` sebagai saklar (ambang 0,5), jadi `bo` = saklar dan `bog` = pengali gain
         const bodyOn = t > reveal[2] + 1.6 ? tune('bo', 0) : 0
         gl.uniform1f(U(P.points, 'uOn'), bodyOn)
         gl.uniform1f(U(P.points, 'uZRef'), 164.86306762695312)
@@ -1077,7 +1083,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniform3f(U(P.points, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
         gl.uniform2f(U(P.points, 'uSize'), fw, fh)
         const qb = t - reveal[2]
-        gl.uniform1f(U(P.points, 'uGain'), bodyOn > 0 ? (1 + 0.8 * (qb >= 0 && qb < 8 ? Math.exp(-qb / 1.9) : 0)) : 1)
+        // F-119: `bo` kini juga pengali gain (dulu hanya on/off, sehingga 0,5 dan 1 memberi hasil identik)
+        gl.uniform1f(U(P.points, 'uGain'), bodyOn > 0 ? tune('bog', 1) * (1 + 0.8 * (qb >= 0 && qb < 8 ? Math.exp(-qb / 1.9) : 0)) : 1)
         gl.uniform4f(U(P.points, 'uHz'), hz[0], hz[1], hz[2], hz[3])
         gl.uniform3f(U(P.points, 'uHzSkull'), hzSkull[0], hzSkull[1], hzSkull[2])
         gl.uniform3f(U(P.points, 'uHzInner'), hzInner[0], hzInner[1], hzInner[2])
@@ -1126,7 +1133,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           // live: uSettle = 0,75 − 0,4·smoothstep(t; 0,9; 6)   (terukur: 0,7106 @1,89 · 0,3608 @5,5)
           gl.uniform1f(U(P.matter, 'uSettle'), 0.75 - 0.4 * xs(t, 0.9, 6))
           gl.uniform1f(U(P.matter, 'uLiveT'), 0)   // live: 0 saat idle (terukur di 5,5 & 9,5)
-          gl.uniform1f(U(P.matter, 'uBright'), 1)
+          gl.uniform1f(U(P.matter, 'uBright'), tune('mg', 1))
           gl.uniform1f(U(P.matter, 'uMatter'), 1)
           gl.uniform1f(U(P.matter, 'uCoreA'), 0.22)
           gl.uniform1f(U(P.matter, 'uLag'), 0)
@@ -1183,7 +1190,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         // live: uGain = 0,95·bright·(1+1,1·q), q = hum.build.surge · b_(t, ignite), b_ = exp(−Δ/1,9)
         const me = t - reveal[2]
         const qSurge = me >= 0 && me < 8 ? Math.exp(-me / 1.9) : 0
-        gl.uniform1f(U(P.wire, 'uGain'), 0.95 * (1 + 1.1 * qSurge))
+        gl.uniform1f(U(P.wire, 'uGain'), 0.95 * tune('lg', 1) * (1 + 1.1 * qSurge))
         // F-106: live menyalakan cahaya yang berjalan di sepanjang garis setelah `idle`
         //   uIdle = smoothstep(t; idle−0,6; idle+0,6), idle = ignite + 1,4 = 7,95
         //   (shader: c += vec3(1,0,94,1)·pulse·2,0, pulse dari kepala cahaya yang bergerak)
@@ -1370,9 +1377,12 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         const bloomOn = !OFF.has('bloom')
         if (bloomOn) {
           gl.disable(gl.BLEND)
-          // 1) luminansi (17/18): threshold 0,6 · smoothing 0,9
-          gl.bindFramebuffer(gl.FRAMEBUFFER, mips[0].fbo)
-          gl.viewport(0, 0, mips[0].w, mips[0].h)
+          // 1) luminansi (17/18): threshold 0,6 · smoothing 0,9 — di RESOLUSI PENUH seperti live
+          // (`?bl=0` mengembalikan perilaku lama: luminansi dihitung langsung di mip 0 setengah resolusi)
+          const lumFull = tune('bl', 0) > 0.5
+          const lumDst = lumFull ? lum : mips[0]
+          gl.bindFramebuffer(gl.FRAMEBUFFER, lumDst.fbo)
+          gl.viewport(0, 0, lumDst.w, lumDst.h)
           gl.useProgram(P.hp)
           gl.bindVertexArray(hpVaoF)
           gl.activeTexture(gl.TEXTURE0)
@@ -1384,6 +1394,18 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1f(U(P.hp, 'threshold'), tune('bt', 0.6))
           gl.uniform1f(U(P.hp, 'smoothing'), tune('bs', 0.9))
           gl.drawArrays(gl.TRIANGLES, 0, 3)
+          if (lumFull) {
+            // turunkan luminansi resolusi penuh → mip 0 (setengah) dengan 13-tap yang sama seperti live
+            gl.useProgram(P.down)
+            gl.bindVertexArray(downVaoF)
+            gl.activeTexture(gl.TEXTURE0)
+            gl.bindTexture(gl.TEXTURE_2D, lum.tex)
+            gl.uniform1i(U(P.down, 'inputBuffer'), 0)
+            gl.bindFramebuffer(gl.FRAMEBUFFER, mips[0].fbo)
+            gl.viewport(0, 0, mips[0].w, mips[0].h)
+            gl.uniform2f(U(P.down, 'texelSize'), 1 / lum.w, 1 / lum.h)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+          }
           // 1b) F-107: latar/nebula di app asli adalah mesh DI DALAM scene, jadi ikut di-bloom
           // (uji `off=bloom` di live: bingkai turun +2,72 pada t=9,5; build kita +0,00 karena latar
           // diblit ke kanvas sesudah pass bloom). Di sini medan ditambahkan ke citra luminansi
@@ -1419,7 +1441,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.bindVertexArray(upVaoF)
           gl.uniform1i(U(P.up, 'inputBuffer'), 0)
           gl.uniform1i(U(P.up, 'supportBuffer'), 1)
-          gl.uniform1f(U(P.up, 'radius'), 0.62)
+          gl.uniform1f(U(P.up, 'radius'), tune('ur', 0.62))
           let acc = mips[LEVELS - 1]
           for (let i = LEVELS - 2; i >= 0; i--) {
             gl.bindFramebuffer(gl.FRAMEBUFFER, ups[i].fbo)
@@ -1449,8 +1471,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           // (kontribusi bloom: live +6,04/+9,59/+13,53 vs kita +1,15/+2,16/+4,50 pada t=3,5/5,5/9,5),
           // jadi ditambah pengali terkalibrasi: 2,0 sebelum ignition → 1,5 sesudahnya (F-96, lihat LANGKAH3).
           const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2))
-          gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * (1 + 1.6 * qSurge * tune('bq', 1)) * bgK : 0)
+          gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * (1 + 1.6 * qSurge * tune('bq', 0.7)) * bgK : 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
+          gl.uniform1f(U(P.comp, 'uGamma'), tune('gm', 1))
           gl.enable(gl.BLEND)
           gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)   // figur di atas latar, memakai alpha figur
           gl.activeTexture(gl.TEXTURE0)
@@ -1469,6 +1492,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.uniform1i(U(P.comp, 'e0Map'), 1)
           gl.uniform1f(U(P.comp, 'e0Intensity'), 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
+          gl.uniform1f(U(P.comp, 'uGamma'), tune('gm', 1))
           gl.enable(gl.BLEND)
           gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
           gl.drawArrays(gl.TRIANGLES, 0, 3)

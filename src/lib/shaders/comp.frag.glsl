@@ -263,9 +263,11 @@ uniform mediump sampler2D e0Map;
 #else
 uniform lowp sampler2D e0Map;
 #endif
-uniform float e0Intensity;void e0MainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){outputColor=texture2D(e0Map,uv)*e0Intensity;}
+uniform float e0Intensity;
+uniform float uGamma; void e0MainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){outputColor=texture2D(e0Map,uv)*e0Intensity;}
 vec4 blend0(const in vec4 dst,const in vec4 src,const in float opacity){vec3 c=dst.rgb+src.rgb;return mix(dst,vec4(c,max(dst.a,src.a)),opacity);} void main(){ vec4 color0=texture2D(inputBuffer,UV);vec4 color1=vec4(0.0);e0MainImage(color0, UV, color1);
 	color0 = blend0(color0, color1, e0BlendOpacity); color0.a=clamp(color0.a,0.0,1.0);
+	color0.rgb = pow(max(color0.rgb, vec3(0.0)), vec3(uGamma));
 	gl_FragColor=color0;
 #ifdef ENCODE_OUTPUT
 gl_FragColor = linearToOutputTexel( gl_FragColor );
