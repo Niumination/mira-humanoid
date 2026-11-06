@@ -1271,10 +1271,17 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           // Ukurannya: live punya haze pada 5,5 dan 6,0, tetapi TIDAK pada 6,4-6,5 (sesaat sebelum ignition),
           // lalu menyala lagi setelah 6,55. Jadi bukan gerbang "mulai ignition", melainkan TAKIKAN sempit.
           const notch = 1 - xs(t, tune('nc', 5.75), tune('nd', 6.15)) * (1 - xs(t, reveal[2] - 0.02, reveal[2] + 0.1))
-          const pulse = 1.73 * g(1.95, 0.75) + 3.56 * g(6.9, 0.75) * notch
+          // F-131: denyut AWAL tersendiri di sekitar t=0,95. Diukur pada 0,7-1,3: build kita kurang terang
+          // tepat di jendela ini (profil radial t=1,0: −32 di r 40-60, −43 di 60-100, −7 di 200-400),
+          // sedangkan denyut 1,95 saja tidak cukup (0,20 dari puncaknya pada t=1,0).
+          const pulse = 1.73 * g(1.95, 0.75) + tune('hp', 0.7) * g(0.95, 0.35) + 3.56 * g(6.9, 0.75) * notch
           const hz = tune('hz', 0.2) * pulse
           if (hz > 0.002) {
-            const hs = tune('hs', 1.0)
+            // F-131b: denyut awal memakai sprite LEBIH BESAR (1,3x) lalu menyusut ke 1,0x sesudah t≈1,35.
+            // Terukur pada t=1,0: dengan sprite 1,3x MAE 1,0 turun 4,16 → 2,82 (dan 0,8: 3,30 → 1,93),
+            // tetapi pada t=1,5 sprite besar justru merugikan (1,47 → 2,16) → jadi ukurannya menyusut.
+            const contract = 1 - xs(t, 1.25, 1.45)
+            const hs = tune('hs', 1.0) * (1 + tune('hse', 0.3) * contract)
             gl.useProgram(P.sprite)
             gl.bindVertexArray(spriteVao)
             gl.enable(gl.BLEND)

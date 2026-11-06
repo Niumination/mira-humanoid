@@ -513,3 +513,17 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   6,0 3,74→2,34 · 6,5 7,49→**1,50** · 5,5 tetap 2,84.
 - Gerbang 21 fase: rata² **5,43 → 3,49**. Gerbang 6 fase: **1,28 · 2,07 · 1,91 · 2,84 · 3,05 · 4,71 = 2,64**
   (blur4 2,15 · blur10 1,97), tanpa fase yang memburuk.
+
+### Sesi 34 (2026-11-04) — ledakan awal t≈0,8–1,2 diperbaiki → **build33**
+
+- Terverifikasi paket 4f: produksi `index-K2P1iKLh.js`, repo `99a091e`, blob `082271ad…` = lokal.
+- Profil radial t=1,0: kita KURANG terang menyeluruh (−32 di r 40-60 · −43 di 60-80 · −45 di 80-100 · −8 di 300-360).
+- **F-131 DITERIMA:** denyut haze khusus di 0,95 (`hp=0,7`, lebar 0,35). Penyapu `hz=2` memperbaiki 1,0 tapi
+  merusak 1,2–2,5 (1,5: 1,44 → 8,98) → bentuk yang benar = denyut tambahan, bukan skala global.
+- **F-131b DITERIMA:** sprite haze 1,3× selama ledakan awal lalu menyusut ke 1,0× sesudah t≈1,35
+  (`hs=1,3`: 0,8 → 1,93 · 1,0 → 2,82 · 1,2 → 1,63, tetapi 1,5 → 2,16 bila dipakai terus).
+- Ditolak: `bq=1,6`, `fl=1,3` (inert), `hz=0`, `lg=0,9` (bantu 11,0/12,0 tipis tetapi merusak 7,5: 5,28 → 5,77).
+- Gerbang 6 fase **1,14 · 2,07 · 1,91 · 2,84 · 3,05 · 4,71 = 2,62** (blur4 2,12 · blur10 1,95); 24 fase **3,56 → 3,22**.
+- Acuan fase awal 0,7–1,3 ditambahkan ke `recon/live-ref-v3/` (total 27 fase).
+- Sisa terburuk sekarang: 8,0 (5,38) · 7,5 (5,28) · 11,0 (4,96) · 12,0 (4,94) · 11,5 (4,88) — semuanya wilayah
+  dada/tepi (peta selisih 11,0: +15,5 di blok dada kiri-tengah).

@@ -1297,3 +1297,80 @@ Hasil: t=5,5 **2,84** (utuh), t=6,0 **2,34** (dari 3,74), t=6,4–6,5 **1,50** (
 | **build32** | 1,28 | 2,07 | 1,91 | 2,84 | **3,05** | 4,71 | **2,64** | **2,15** | **1,97** |
 
 Tidak ada fase yang memburuk. Bukti visual: `banding-build32.jpg` (termasuk 7,0 & 7,5 yang tadinya kotak terang).
+
+---
+
+## Bagian 24 — Ledakan awal (t≈0,8–1,2): denyut haze yang hilang + sprite yang menyusut (build33)
+
+Pemeriksaan penerapan 4f: produksi `index-K2P1iKLh.js`; repo `99a091e`; blob `MiraStage.tsx`
+`082271ad7e012ca1` (82 094 B) = lokal; build ulang lokal = `index-K2P1iKLh.js` → **paket 4f terverifikasi**.
+
+Sasaran sesi ini: **t=1,0 (4,84)**, satu-satunya jendela yang belum pernah dibedah.
+
+### 24.1 Profil radial t=1,0 (pusat 717,658)
+
+| radius | live | kita | selisih |
+|---|---|---|---|
+| 40–60 | 202,0 | 169,8 | **−32** |
+| 60–80 | 172,5 | 129,6 | **−43** |
+| 80–100 | 147,2 | 102,5 | **−45** |
+| 100–120 | 119,9 | 88,6 | −31 |
+| 200–260 | 58,0–42,5 | 50,9–34,9 | −5…−8 |
+| 300–360 | 21,2–15,2 | 11,9–7,0 | −8…−9 |
+
+Jadi pada t=1,0 build kita **kekurangan cahaya menyeluruh** (bukan kelebihan), dengan puncak kekurangan
+di r 60–100.
+
+### 24.2 F-131: denyut awal tersendiri (DITERIMA)
+
+Denyut haze pertama berpusat di 1,95 dengan lebar 0,75; pada t=1,0 nilainya tinggal 20 % puncak.
+Penyapu `?hz=` membuktikan arahnya benar tetapi bukan skalanya: `hz=2` memperbaiki 1,0 (4,84 → 3,37)
+**tetapi merusak 1,2–2,5** (1,2: 2,74 → 5,96 · 1,5: 1,44 → 8,98 · 2,0: 2,00 → 9,45).
+Karena itu ditambahkan denyut **khusus** di 0,95 dengan lebar sempit 0,35:
+
+```
+pulse = 1,73·g(1,95; 0,75) + hp·g(0,95; 0,35) + 3,56·g(6,9; 0,75)·notch      (hp default 0,7)
+```
+
+| t | 0,7 | 0,8 | 0,9 | 1,0 | 1,2 | 1,5 | 2,0 |
+|---|---|---|---|---|---|---|---|
+| tanpa | 3,76 | 4,27 | 4,14 | 4,84 | 2,74 | 1,44 | 2,00 |
+| hp=0,35 | 3,51 | 3,76 | 3,77 | 4,49 | 2,51 | 1,45 | 2,00 |
+| hp=0,50 | 3,41 | 3,56 | 3,62 | 4,35 | 2,46 | 1,46 | 2,00 |
+| **hp=0,70** | **3,27** | **3,30** | **3,42** | **4,16** | **2,41** | 1,47 | 2,00 |
+
+### 24.3 F-131b: sprite haze menyusut sesudah t≈1,35 (DITERIMA)
+
+Menskalakan sprite haze (`?hs=`) pada hp=0,7:
+
+| t | hs=0,75 | hs=1,0 | **hs=1,3** | hs=1,6 |
+|---|---|---|---|---|
+| 0,8 | 4,03 | 3,30 | **1,93** | 1,92 |
+| 1,0 | 4,79 | 4,16 | **2,82** | 3,11 |
+| 1,2 | 3,12 | 2,41 | **1,63** | 3,24 |
+| 1,5 | 1,62 | 1,47 | 2,16 | 4,36 |
+
+Sprite besar jelas benar untuk ledakan awal tetapi salah sesudahnya → ukurannya **menyusut**:
+`hs = 1,0·(1 + 0,3·(1 − smoothstep(t; 1,25; 1,45)))`.
+
+| t | 0,5 | 0,7 | 0,8 | 0,9 | 1,0 | 1,2 | 1,5 | 2,0 |
+|---|---|---|---|---|---|---|---|---|
+| build32 | 2,56 | 3,76 | 4,27 | 4,14 | 4,84 | 2,74 | 1,44 | 2,00 |
+| **build33** | **2,07** | **2,38** | **1,93** | **2,22** | **2,82** | **1,63** | 1,47 | 2,00 |
+
+### 24.4 Yang diuji dan ditolak
+
+`?bq=1,6` (4,84) · `?fl=1,3` (4,84 — lapisan bola tidak aktif di fase ini) · `?hz=0` (5,21) ·
+`?lg=0,9` pada fase akhir (11,0: 4,96 → 4,93 · 12,0: 4,94 → 4,91 tetapi **7,5 memburuk 5,28 → 5,77**) → tidak dipakai.
+
+### 24.5 Gerbang
+
+Gerbang 6 fase:
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata² | blur4 | blur10 |
+|---|---|---|---|---|---|---|---|---|---|
+| build32 | 1,28 | 2,07 | 1,91 | 2,84 | 3,05 | 4,71 | 2,64 | 2,15 | 1,97 |
+| **build33** | **1,14** | 2,07 | 1,91 | 2,84 | 3,05 | 4,71 | **2,62** | **2,12** | **1,95** |
+
+Gerbang 24 fase (rata-rata): **3,56 → 3,22**, tanpa satu fase pun memburuk selain 1,5 (+0,03).
+Acuan fase awal (0,7–1,3) kini tersimpan di `recon/live-ref-v3/ref_-*.png`.
+Bukti visual: `banding-build33.jpg`.
