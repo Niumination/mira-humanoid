@@ -488,3 +488,28 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - **Diterima:** `bb` 1,00 → 0,90 dan `bq` 0,70 → 0,85 (semua fase membaik/tertahan; 2,688 → 2,666).
 - Gerbang build31: **1,28 · 2,07 · 1,91 · 2,84 · 3,18 · 4,71 = 2,67** (blur4 2,17 · blur10 1,99).
 - Kesimpulan: sisa galat = detail frekuensi tinggi (butir/kilau/tekstur). `blur10` 1,99 = struktur besar sudah dekat.
+
+### Sesi 32 (2026-11-04) — sapuan 21 fase: galat terkonsentrasi di ignition (6,0–8,0); gerbang 6 fase terlalu sempit
+
+- Terverifikasi penuh paket 4d: produksi `index-B3kfpwXh.js`, repo `b703d26`, **225 berkas repo = 0 berbeda**.
+- Acuan baru **`recon/live-ref-v3/` (21 fase)** + render kita; alat: `tools/shot.js` seperti biasa.
+- Hasil: rata² 21 fase **5,43**; fase terbaik 3,0 (1,35); **terburuk 7,5 (29,70)**; 6,5 = 7,49; 8,0 = 10,28.
+  Enam fase gerbang lama semuanya 1,3–4,7 → gerbang lama tidak pernah melihat zona terburuk.
+- t=7,5: semua lapisan yang bisa diablasi hampir sama dengan live (pic 13,48/11,10 · hair 8,04/7,51 ·
+  lines 6,38/7,82 · arcs 0,00/0,00) tetapi rata bingkai 84,45 vs 57,50 → **kilatan ignition = peristiwa bloom**.
+  `bq=2,0` → 29,70 → 28,05 (belum cukup).
+- t=6,5: kita 13,45 vs live 7,00 (nebula 6,60 + materi 3,44); mematikan keduanya memburuk (7,78/8,82) →
+  masalahnya **kurva waktu**, bukan kelebihan salah satu lapisan.
+- Langkah berikut: gerbang diperluas ke 21 fase; sasaran utama 7,5 & 6,5 (bloom + kurva waktu).
+
+### Sesi 33 (2026-11-04) — gerbang 21 fase membuahkan dua perbaikan besar → **build32**
+
+- **F-129 DITERIMA (akar t=7,5):** live membuat cincin kejut dari `new PlaneGeometry(E*9,E*9)` yang digeser ke
+  titik bintang → bidang 9× gambar menutupi seluruh layar. Port kita memakai kuad seukuran gambar, jadi
+  gelombangnya TERPOTONG di tepi gambar (yang tampak: kotak terang). Setelah diperbaiki + kekuatan `rg=1,15`:
+  7,0 6,12→3,79 · **7,5 29,70→5,28** · 8,0 10,28→5,38 · 8,5 6,00→4,65 · 9,0 5,11→4,78.
+- **F-130 DITERIMA (akar t=6,5):** denyut haze 6,9 masih 64 % pada 6,4 (live 7,0 vs kita 12,9). Haze memang ada
+  di 5,5/6,0 (mematikannya memburuk), jadi bentuknya TAKIKAN sempit 5,75–6,15 sampai ignition:
+  6,0 3,74→2,34 · 6,5 7,49→**1,50** · 5,5 tetap 2,84.
+- Gerbang 21 fase: rata² **5,43 → 3,49**. Gerbang 6 fase: **1,28 · 2,07 · 1,91 · 2,84 · 3,05 · 4,71 = 2,64**
+  (blur4 2,15 · blur10 1,97), tanpa fase yang memburuk.

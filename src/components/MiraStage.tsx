@@ -422,8 +422,17 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       const hairVao = mk(P.hair, [['position', hairQuad.position, 3]], hairQuad.index)
 
       // helai rambut: pita 2 verteks/titik (32.382 indeks live)
-      // cincin kejut: satu kuad besar di bidang gambar (6 verteks, seperti live)
-      const shockVao = mk(P.shock, [['position', new Float32Array([0, 0, 0, fw, 0, 0, 0, fh, 0, fw, fh, 0, fw, 0, 0, 0, fh, 0]), 3]])
+      // cincin kejut: F-129 — live memakai `new PlaneGeometry(E*9, E*9)` yang digeser ke titik bintang
+      // (`Q.translate(e.star.x, e.star.y, 0)`), jadi bidangnya 9x lebar gambar dan MENGISI SELURUH LAYAR.
+      // Port lama memakai kuad gambar (0..fw, 0..fh): cincinnya terpotong di tepi gambar dan yang terlihat
+      // hanyalah kotak terang — itu sumber galat besar di sekitar ignition (t=7,2-8,0).
+      const shR = 4.5 * fw
+      const shX = pic.star.x
+      const shY = pic.star.y
+      const shockVao = mk(P.shock, [['position', new Float32Array([
+        shX - shR, shY - shR, 0, shX + shR, shY - shR, 0, shX - shR, shY + shR, 0,
+        shX + shR, shY + shR, 0, shX + shR, shY - shR, 0, shX - shR, shY + shR, 0,
+      ]), 3]])
 
       // pita & percikan: posisi diperbarui tiap frame (DYNAMIC_DRAW)
       const waveVaos = waveRibbons.map((r) => {
@@ -1112,8 +1121,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE, gl.ZERO, gl.ONE)
             gl.uniformMatrix4fv(U(P.shock, 'modelViewMatrix'), false, mvPoints)
             gl.uniformMatrix4fv(U(P.shock, 'projectionMatrix'), false, proj)
-            gl.uniform4f(U(P.shock, 'uShock'), star.x, star.y, shock.r, shock.k)
-            gl.uniform1f(U(P.shock, 'uShockW'), shock.w)
+            gl.uniform4f(U(P.shock, 'uShock'), star.x, star.y, shock.r, shock.k * tune('rg', 1.15))
+            gl.uniform1f(U(P.shock, 'uShockW'), shock.w * tune('rw', 1))
             gl.drawArrays(gl.TRIANGLES, 0, 6)
           }
         }
@@ -1257,7 +1266,12 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           const g = (c: number, w: number) => Math.exp(-(((t - c) / w) ** 2))
           // denyut haze diukur dari live: kuat saat figur muncul (t≈1,95) dan saat orb menyala (t≈6,9),
           // mendekati nol di antaranya dan sesudahnya (live t=5,5 & 9,5 justru lebih gelap dari kita).
-          const pulse = 1.73 * g(1.95, 0.75) + 3.56 * g(6.9, 0.75)
+          // F-130: denyut kedua hanya MULAI saat ignition. Sebelumnya Gaussian 6,9 masih menyala pada 6,4-6,5
+          // (exp(−0,44)=0,64) sehingga bola sudah berpendar sebelum app asli menyalakannya (ukuran t=6,4: 12,9 vs 7,2).
+          // Ukurannya: live punya haze pada 5,5 dan 6,0, tetapi TIDAK pada 6,4-6,5 (sesaat sebelum ignition),
+          // lalu menyala lagi setelah 6,55. Jadi bukan gerbang "mulai ignition", melainkan TAKIKAN sempit.
+          const notch = 1 - xs(t, tune('nc', 5.75), tune('nd', 6.15)) * (1 - xs(t, reveal[2] - 0.02, reveal[2] + 0.1))
+          const pulse = 1.73 * g(1.95, 0.75) + 3.56 * g(6.9, 0.75) * notch
           const hz = tune('hz', 0.2) * pulse
           if (hz > 0.002) {
             const hs = tune('hs', 1.0)
