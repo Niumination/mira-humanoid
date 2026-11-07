@@ -568,8 +568,13 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, gl.RGBA, gl.UNSIGNED_BYTE, img)
       gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
-      gl.generateMipmap(gl.TEXTURE_2D)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+      // F-132: mipmap MENGHAPUS garis tipis. Gambar 1145x1374 digambar hanya 0,59x di layar, jadi
+      // pemilihan LOD menurunkan tekstur ke mip 1 (~572 px) dan merata-ratakan garis terang 1 px ke
+      // badan yang gelap -> "kabut ungu" di dada/torso. Terukur pada ?off= gambar-saja t=11,0:
+      // dada kita 77,5 vs live 47,2 (sumber 59,5). `?nm=1` mematikan mipmap untuk menguji.
+      const noMipPic = tune('nm', 0) > 0.5
+      if (!noMipPic) gl.generateMipmap(gl.TEXTURE_2D)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, noMipPic ? gl.LINEAR : gl.LINEAR_MIPMAP_LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
@@ -652,8 +657,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)   // shader memakai uv = posisi/uSize (y turun)
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, gl.RGBA, gl.UNSIGNED_BYTE, hairImg)
           gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
-          gl.generateMipmap(gl.TEXTURE_2D)
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+          const noMipHair = tune('nh', 0) > 0.5      // F-132b: sama untuk citra rambut
+          if (!noMipHair) gl.generateMipmap(gl.TEXTURE_2D)
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, noMipHair ? gl.LINEAR : gl.LINEAR_MIPMAP_LINEAR)
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
@@ -665,8 +671,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
       gl.bindTexture(gl.TEXTURE_2D, texLifted)
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, 1385, 1422, 0, gl.RGBA, gl.UNSIGNED_BYTE, hairTex.lifted)
-      gl.generateMipmap(gl.TEXTURE_2D)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+      const noMipLift = tune('nh', 0) > 0.5
+      if (!noMipLift) gl.generateMipmap(gl.TEXTURE_2D)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, noMipLift ? gl.LINEAR : gl.LINEAR_MIPMAP_LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
@@ -945,6 +952,8 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         gl.uniformMatrix4fv(U(P.pic, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.pic, 'uFill'), 1)
         gl.uniform1f(U(P.pic, 'uGain'), tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1))
+        gl.uniform1f(U(P.pic, 'uPG'), tune('pgg', 1))
+        gl.uniform1f(U(P.pic, 'uPGE'), tune('pge', 0))
         gl.uniform2f(U(P.pic, 'uSize'), fw, fh)
         gl.uniform1f(U(P.pic, 'uTime'), t)
         gl.uniform1f(U(P.pic, 'uHeadOn'), 0)
@@ -977,7 +986,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
           gl.uniformMatrix4fv(U(P.hair, 'projectionMatrix'), false, proj)
           gl.uniform2f(U(P.hair, 'uSize'), HW, HH)
-          gl.uniform1f(U(P.hair, 'uGain'), tune('fg', 1.15) * tune('hg', 1))
+          gl.uniform1f(U(P.hair, 'uGain'), tune('fg', 1.15) * tune('hg', 1) * tune('hgg', 1))
           gl.uniform1f(U(P.hair, 'uOn'), 1)
           gl.uniform4f(U(P.hair, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
           // langkah 3: `uBT` = jam build, BUKAN konstanta. Rambut baru muncul setelah gelombang ignition
@@ -1013,7 +1022,7 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
           gl.uniformMatrix4fv(U(P.strands, 'projectionMatrix'), false, proj)
           gl.uniform2f(U(P.strands, 'uSize'), HW, HH)
-          gl.uniform1f(U(P.strands, 'uGain'), tune('fg', 1.15) * tune('hg', 1))
+          gl.uniform1f(U(P.strands, 'uGain'), tune('fg', 1.15) * tune('hg', 1) * tune('hgg', 1))
           gl.uniform1f(U(P.strands, 'uOn'), 1)
           gl.uniform4f(U(P.strands, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
           gl.uniform1f(U(P.strands, 'uBT'), t)
@@ -1503,7 +1512,10 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           // e0Intensity live = 0,9·(1+1,6·q) (terukur). Tetapi sebaran bloom kita hanya ~1/3–1/5 live
           // (kontribusi bloom: live +6,04/+9,59/+13,53 vs kita +1,15/+2,16/+4,50 pada t=3,5/5,5/9,5),
           // jadi ditambah pengali terkalibrasi: 2,0 sebelum ignition → 1,5 sesudahnya (F-96, lihat LANGKAH3).
-          const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2))
+          // F-134: plato akhir bgK 1,5 membuat bloom kita 1,6x live pada t>10 (kontribusi dada kita
+          // +8,0 vs live +4,9 dengan dial glow 0 di live). Gerbang mulai 10,2 supaya fase 7-10 yang
+          // memang BUTUH bloom penuh (badan kita terlalu gelap di sana) tidak tersentuh.
+          const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2) - 0.15 * xs(t, 10.2, 10.6))
           gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * tune('bb', 0.9) * (1 + 1.6 * qSurge * tune('bq', 0.85)) * bgK : 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
           gl.uniform1f(U(P.comp, 'uGamma'), tune('gm', 1))

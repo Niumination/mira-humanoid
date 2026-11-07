@@ -67,7 +67,7 @@ float luminance( const in vec3 rgb ) {
 }
 
 
-  uniform sampler2D uMap; uniform float uFill; uniform float uGain; uniform vec2 uSize; uniform float uTime; varying vec2 vUv;
+  uniform sampler2D uMap; uniform float uFill; uniform float uGain; uniform float uPG; uniform float uPGE; uniform vec2 uSize; uniform float uTime; varying vec2 vUv;
   uniform float uHeadOn, uHeadCut;
 
   uniform vec4 uHz;                  // her centre line x, her ear top y, feather (px), how much (0..1)
@@ -150,6 +150,16 @@ float luminance( const in vec3 rgb ) {
     if (uHeadOn > 0.5 && p.y < uHeadCut) discard;    // (her head is drawn by its own 3D points once she is whole)
     vec2 fm = faceMove(p);                          // her face moves with her voice: read the picture from there
     vec4 c = texture2D(uMap, vec2((p.x - fm.x) / uSize.x, 1.0 - (p.y - fm.y) / uSize.y));
+    // F-133: koreksi gamma gambar. Terukur (gambar-saja, t=11,0): mid-tone dada kita 1,9x live
+    // sedangkan puncak terang hanya 1,07x -> bukan soal gain, melainkan lengkung tonal. `uPG` > 1
+    // menggelapkan mid-tone tanpa menyentuh puncak. Default 1,0 = perilaku lama.
+    if (uPG != 1.0) c.rgb = pow(max(c.rgb, 0.0), vec3(uPG));   // default 1,0 -> piksel identik build33
+    // F-133b: EOTF sRGB EKSAK (fungsi yang dipakai three.js `sRGBTransferEOTF`). Kalau live men-dekode
+    // gambar dua kali (internalFormat SRGB8_ALPHA8 + EOTF di shader), kita harus menyalin langkah kedua.
+    if (uPGE > 0.5) {
+      vec3 e = max(c.rgb, 0.0);
+      c.rgb = mix(pow((e + 0.055) / 1.055, vec3(2.4)), e / 12.92, step(e, vec3(0.04045)));
+    }
     float bright = smoothstep(0.18, 0.55, max(c.r, max(c.g, c.b)));
     float give = underHair(p) * bright;
     float at = revealAt(p), filled = smoothstep(at - 0.04, at + 0.4, uTime);
