@@ -1515,7 +1515,13 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           // F-134: plato akhir bgK 1,5 membuat bloom kita 1,6x live pada t>10 (kontribusi dada kita
           // +8,0 vs live +4,9 dengan dial glow 0 di live). Gerbang mulai 10,2 supaya fase 7-10 yang
           // memang BUTUH bloom penuh (badan kita terlalu gelap di sana) tidak tersentuh.
-          const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2) - 0.15 * xs(t, 10.2, 10.6))
+          // F-135: profil bloom terhadap waktu salah BENTUK, bukan sekadar skala. Diukur per lapisan:
+          //   t=8,0 (figur): bloom kita +10,54 vs live +13,55  → kita KURANG 3,0
+          //   t=11,0 (dada): bloom kita +7,99  vs live +4,94   → kita LEBIH 3,0
+          // Penyebab: kernel bloom kita lebih lemah pada masukan terang (figur baru menyala), jadi
+          // kompensasi (bgK) harus lebih besar tepat sesudah ignition lalu mengecil. Knob `bbu` = amplitudo.
+          const kabut = tune('bbu', 0.85) * Math.exp(-(((t - tune('bbc', 8.1)) / tune('bbw', 0.68)) ** 2))
+          const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2) - 0.15 * xs(t, 10.2, 10.6) + kabut)
           gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * tune('bb', 0.9) * (1 + 1.6 * qSurge * tune('bq', 0.85)) * bgK : 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
           gl.uniform1f(U(P.comp, 'uGamma'), tune('gm', 1))
