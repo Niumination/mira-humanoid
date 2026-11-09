@@ -731,7 +731,9 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
           orb: Math.max(oe * 0.25, xs(t, reveal[2], reveal[2] + 1.35)),
         }
       }
-      const hz = [575.2919921875, 295.4100036621094, 22, 1]
+      // F-137: kekuatan penekan `underHair` (komponen .w) bisa disapu lewat `?uh=`.
+      // Terukur t=7,0: dasar kepala kita 26 vs live 52 (dengan semua lapisan dikurangi) -> tekanan terlalu kuat.
+      const hz = [575.2919921875, 295.4100036621094, 22, tune('uh', 1)]
       const hzSkull = [179.9219970703125, 274.79998779296875, 217.0919952392578]
       const hzInner = [158.1479949951172, 302.2799987792969, 136.0260009765625]
       const face = [575.2919921875, 359.9880065917969, 112.30799865722656, 222.58799743652344]
@@ -1260,7 +1262,12 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         // Lapisan ini belum pernah ada di build kita, padahal pada t=9,5 opasitasnya ≈ 0,54
         // dan menutupi seluruh kepala — di peta selisih, kepala kita memang lebih gelap.
         {
-          const au = tune('au', 0)   // diukur: membantu di 6,8 (6,97→6,76) tapi merugikan di 9,5 (5,20→5,77) → mati
+          // F-138: aura violet DI BELAKANG KEPALA dinyalakan hanya di jendela sesudah ignition.
+          // Diukur penuh (au=1) per fase: 6,8 3,06→2,80 · 7,0 3,81→3,27 (kepala 55,4→74,5 vs live 75,1)
+          // tetapi 7,5 4,65→5,02 · 8,0 4,86→5,46 · 9,5 4,54→5,27 → jadi digerbangi: penuh sampai t≈7,1,
+          // nol sesudah 7,5. Di luar jendela itu perilakunya sama persis dengan build36.
+          const auWin = 1 - xs(t, tune('aus', 7.1), tune('aue', 7.5))
+          const au = tune('au', 1) * auWin
           const qa = t >= reveal[2] ? Math.exp(-(t - reveal[2]) / 1.9) : 0
           const op = Math.min(1, 0.8 * 0.6 * xs(t, reveal[2], reveal[2] + 1.35) * (1 + 0.6 * qa) * au)
           if (op > 0.002) {
