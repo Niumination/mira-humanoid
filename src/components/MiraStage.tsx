@@ -1022,7 +1022,12 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
             new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
           gl.uniformMatrix4fv(U(P.strands, 'projectionMatrix'), false, proj)
           gl.uniform2f(U(P.strands, 'uSize'), HW, HH)
-          gl.uniform1f(U(P.strands, 'uGain'), tune('fg', 1.15) * tune('hg', 1) * tune('hgg', 1))
+          // F-136: helai rambut (strands) terlalu terang SETELAH figur tenang. Terukur pada tumpukan penuh:
+          //   stg 1,0 -> 11,0 4,82 · 12,0 4,79 · 9,5 4,72   tetapi 8,0 4,86 (baik)
+          //   stg 0,3 -> 11,0 4,50 · 12,0 4,40 · 9,5 4,55   tetapi 8,0 4,95 (memburuk)
+          // Jadi: penuh saat ignition (helai ikut menyala) lalu diredupkan sesudahnya (gerbang t>=8,6).
+          const stgK = 1 - tune('stgd', 0.7) * xs(t, tune('stgs', 8.6), tune('stge', 9.6))
+          gl.uniform1f(U(P.strands, 'uGain'), tune('fg', 1.15) * tune('hg', 1) * tune('stg', 1) * Math.max(0, stgK))
           gl.uniform1f(U(P.strands, 'uOn'), 1)
           gl.uniform4f(U(P.strands, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
           gl.uniform1f(U(P.strands, 'uBT'), t)
