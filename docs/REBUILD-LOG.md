@@ -595,3 +595,77 @@ Sisa terukur pada 9,5 (kita 46,7 vs live 39,6, kelebihan +7,1). Kontribusi tiap 
 gambar 10,0 · garis 6,5 · rambut 5,8 · bloom 4,5 · materi 0,4 · pita 0,8. Uniform lapisan-lapisan itu
 sudah sama dengan live, jadi sisa ini soal **cakupan piksel/komposisi**, bukan nilai uniform — perlu
 perbandingan per-lapisan berikutnya (gambar dulu: live menggambar lapisan gambar di dua tahap dengan alpha).
+
+
+## Sesi 35 (2026-11-06) — F-132…F-134
+
+| # | temuan | angka |
+|---|---|---|
+| **F-132** | Mipmap gambar 1145×1374 (digambar 0,59×) dirata-ratakan ke mip 1 → dugaan "kabut ungu". Uji `?nm=1` (tanpa mipmap) + `?nh=1` (rambut). | 11,0: 4,96 → **5,29** (nm=1) · 5,23 (nm=1&nh=1) → **mipmap justru membantu, knob default mati** |
+| **F-133** | Tekstur gambar didekode **dua kali** di live (SRGB8_ALPHA8 + EOTF sRGB di shader, perilaku three.js). Bukti: mid-tone dada kita 1,93× live tetapi puncak terang hanya 1,07×. Knob `?pgg=<gamma>` dan `?pge=1` (EOTF eksak). | gambar-saja t=11,0: MAE **8,19 → 2,08** (pge) · dada 77,5 → 46,3 vs live 47,2. Tumpukan penuh: **9,35** → ditolak sebagai default |
+| **F-133b** | `?hgg=` gain rambut tersendiri (sebelumnya `?fg=` mengubah gambar+rambut+helai+bintik sekaligus, sehingga sapuan lama tidak bisa memisahkan penyebab). | rambut dada kita +25,9 vs live +33,5 (bloom mati) |
+| **F-134** | Platon akhir `bgK` 1,50 membuat bloom kita 1,6× live pada t>10 (dada +7,99 vs +4,94), sementara fase 7–9 masih membutuhkan bloom penuh. **Diterima:** `bgK = 2,0 − 0,5·xs(t;5,8;7,2) − 0,15·xs(t;10,2;10,6)`. | 10,5 4,64→**4,53** · 11,0 4,96→**4,82** · 11,5 4,88→**4,74** · 12,0 4,94→**4,79** · 7,5/8,0/9,0/9,5 tetap |
+
+**Jebakan alat (dicatat supaya tidak terulang):** `?off=bloom` di live membuang **seluruh composer postprocessing**
+(bukan hanya bloom), sehingga `off=bloom` live-vs-kita bukan pembanding setara. Untuk mengukur kontribusi bloom
+live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini terdokumentasi
+(`hum.body.bright`=1, `hum.glow.strength`=0,9, `hum.glow.threshold`=0,6, `hum.glow.radius`=0,62,
+`hum.hair.light`=1, `hum.lines.bright`=0,15, …).
+
+
+## Sesi 36 (2026-11-06) — F-135
+
+| # | temuan | angka |
+|---|---|---|
+| **F-135** | Profil bloom terhadap waktu **salah bentuk**. Ablasi t=8,0 (figur): bloom live +13,55 vs kita +10,54 (kurang 3,0); t=11,0: live +4,94 vs kita +7,99 (lebih 3,0). Sebab: kernel bloom kita lebih lemah pada masukan terang, jadi kompensasi `bgK` harus besar tepat sesudah ignition lalu mengecil. **Diterima:** `kabut = 0,85·exp(−((t−8,1)/0,68)²)` ditambahkan ke `bgK` (knob `?bbu= ?bbc= ?bbw=`). | 7,5 **5,28 → 4,65** · 8,0 **5,38 → 4,86** · 8,5 4,65 → 4,62 · 24 fase **3,20 → 3,15**; kerugian ≤ +0,02 (7,0 · 9,0 · 6,8 · 9,5) |
+| **G-1** | Amplop surge live **sudah** identik: `P_(i,e,t=1.9)=>i>=e&&i<e+8?exp(-(i-e)/t):0` — hipotesis "surge meluruh terlalu cepat" **gugur**, jangan diuji ulang. | — |
+
+**Kalibrasi F-135 (MAE, t=7,5 / 8,0):** 0,4 → 4,80/5,05 · 0,7 → **4,65**/4,90 · 1,0 → 4,68/4,85 ·
+1,4 → 4,88/4,92 (memburuk) · lebar 0,68 pusat 8,1 → **4,65/4,86** dan 7,0 tetap 3,81.
+
+
+## Sesi 37 (2026-11-06) — F-136 + koreksi metrik
+
+| # | temuan | angka |
+|---|---|---|
+| **M-2** | **Jebakan ukur:** `?off=bloom` di LIVE membuang seluruh composer postprocessing, jadi "kontribusi bloom/ gambar" yang diukur dengan cara itu artefak. Pembanding adil = live `?dial.hum.glow.strength=0` vs kita `?off=bloom`. | gambar-saja dada: +19,98 (artefak) → **+7,87** (adil) · seluruh bingkai +0,94. Kesimpulan sesi 35 "gambar +20" **dibatalkan** |
+| **F-133 (ulang)** | Diukur ulang dengan metrik adil: `?pgg=1,1` dada +7,9 → +4,2 tetapi MAE **3,10 → 3,87** (`pgg=1,2` → 4,86). Kelebihan terlokalisasi, bukan tonal → **tetap default MATI**. | — |
+| **F-136b** | Knob `?stg=` khusus lapisan `strands` (sebelumnya `?fg=` mengubah gambar+rambut+helai+bintik sekaligus). | — |
+| **F-136** | Helai rambut terlalu terang setelah figur tenang. Tetap `stg=0,3`: 11,0 4,82→**4,50** · 12,0 4,79→**4,40** · 9,5 4,72→**4,55**, tetapi 8,0 4,86→**4,95**. **Diterima sebagai gerbang:** `stgK = 1 − 0,7·xs(t; 8,6; 9,6)`. | 24 fase **3,15 → 3,08** · 6 fase 2,62 → **2,59** · blur10 2,42 → **2,28**, tanpa regresi |
+
+
+## Sesi 38 (2026-11-06) — F-137, F-138
+
+| # | temuan | angka |
+|---|---|---|
+| **F-137** | `?uh=` kekuatan penekan `underHair` (komponen `.w` `uHz`). **INERT**: 1,0 / 0,7 / 0,4 → kepala 55,43 & MAE 3,81 identik. Sebab: `underHair` hanya menggigit piksel terang (`give = underHair·bright`), sedangkan yang hilang di kepala adalah pendar lembut. | 0 perubahan |
+| **F-138** | **Sprite aura violet di belakang kepala (F-110) dimatikan** sejak dulu → dasar kepala t=7,0 hanya 26 vs live 52 (total 55,43 vs 75,08). Dinyalakan penuh: 6,8 3,06→**2,80** · 7,0 3,81→**3,27** (kepala 74,45 vs live 75,08) tetapi 7,5 4,65→5,02 · 8,0 4,86→5,46 · 9,5 4,54→5,27. **Diterima dengan gerbang:** `auWin = 1 − xs(t; 7,1; 7,5)`. | 24 fase 3,08 → **3,06** · 6 fase 2,59 → **2,55** · blur10 2,28 → **2,26**, tanpa regresi |
+| **A-3** | Total kepala vs jumlah lapisan: live 75,08 dengan lapisan +22,7 → dasar 52; kita 55,43 dengan lapisan +29,4 → dasar 26. Selisih dasar itulah aura. Teknik "kurangkan ablasi dari total" berguna untuk menemukan lapisan yang **tidak terukur**. | — |
+
+
+## Sesi 39 (2026-11-06) — Gerbang A/B, penutupan jalur lg & aura
+
+| # | temuan | angka |
+|---|---|---|
+| **K-4** | Gain garis `?lg=` **bukan** penyebab kelebihan di bahu (t=7,0 hidup +12 vs live). `lg=0,85` → 7,0 **3,30** · 8,0 **5,00**; `lg=0,7` → **3,54 / 5,15**, sedangkan dasar 3,27 / 4,86. | ditutup |
+| **K-5** | Aura kepala sesudah 7,5 merugikan pada semua skala: `as=1` 8,0 **5,46** · `as=0,6` **5,17** · `as=0,4` **5,03** (dasar 4,86); 9,0 `as=0,4` **4,90** (dasar 4,71). | ditutup |
+| **M-3** | **`off=` di live tidak setara** untuk lapisan berpartikel: `off=hair,matter` di kedua sisi menaikkan galat t=8,0 4,86 → **5,29**. Aturan: `off=` untuk ablasi satu sisi saja. | — |
+| **G-A** | **Gerbang A MIRA 8/8 lolos** (title, teks entry, body, tombol+gaya, label & gaya & aria mode, aria-label kamera). | `verification/mira/gate-a.json` |
+| **G-B** | **Gerbang B MIRA 10/10 lolos** (82 slider, 20 seksi, urutan, 82/82 nilai, 7 alias + propagate, `?dial.`, localStorage). Alat diperbaiki: `ensurePanel()`. | `verification/mira/gate-b.json` |
+| **R-2** | `recon/mira-params.json` hilang oleh glitch snapshot → direkonstruksi dari bundle live: **82 dial unik + 7 `stands`**. | — |
+
+
+## Sesi 40 (2026-10-29) — audio MIRA
+
+| # | temuan | angka |
+|---|---|---|
+| **A-1** | **Tidak ada `createAnalyser` di graph audio live.** Satu-satunya analyser di bundle = analyser mikrofon kamera (langkah 6). Butir rencana “16 osc + 36 gain + analyser→uEnergy” dibatalkan. | 0 analyser di graph |
+| **A-2** | **MIRA hanya memancarkan `MIRA_BUILD` + `MIRA_BOLT`.** `MIRA_ENTER`/`ASSEMBLY`/`READY`/`FAILED` hanya dipakai aplikasi APEX, jadi bunyi masuk humanoid datang dari skor cue. | 2 pemancar di app MIRA |
+| **A-3** | **Label SOUND**: live menampilkan `SOUND ${S ? 'OFF' : 'ON'}` dengan `S = localStorage.apex_sound_off === '1'` dan `aria-pressed = !S`. Port awal kita terbalik; dibetulkan → default **SOUND ON**, `aria-pressed=true`. | 1 bug dibetulkan |
+| **A-4** | **Skala pan `Vk` = lebar citra**: `pan = clamp((x − star.x)/(0,75·W), ±0,9)`. Bukan lebar layar. | — |
+| **A-5** | **`FN` live menyuntik latensi wall-clock** `(performance.now()−t)/1e3` ke `at`. Karena itu gerbang spektrum wajib membekukan `performance.now()`; tanpa itu “skor penuh” tampak gagal (MAE 12,8 % / 17,8 %) padahal port identik. | 0,0000 % setelah dibekukan |
+| **A-6** | **`boil`/`needle` mengundi `Math.random`** → gerbang paritas pemanggilan wajib memakai PRNG ber-seed per skenario, kalau tidak jumlah node berbeda secara acak. | 3 skenario sempat “gagal” palsu |
+| **D-1** | Paritas pemanggilan `create*` + penjadwalan AudioParam live vs port: **31/31 skenario identik** (termasuk multiset `jenis.param.metode.nilai`). | 1 709 sambungan · 777 penjadwalan |
+| **D-2** | Paritas spektrum `OfflineAudioContext` (Chromium, PRNG sama): **27/27 sampel-identik**. | MAE **0,0000 %** · korelasi pita **1,000000** |
+| **D-3** | Audio hidup di aplikasi (build lokal, autoplay dilonggarkan): mesin `running`, **36 cue**, panjang skor **12,550 s**, RMS master 2,55·10⁻², SOUND OFF → **0,00**, ON → 1,01·10⁻¹, bolt 2,26·10⁻². | 9/9 |
+| **D-4** | Tidak ada regresi piksel: build-audio vs produksi build37 `?t=8,0` **MAE 0,0000**, `?t=0,3` 0,0206. | — |

@@ -21,6 +21,17 @@ import { Panel } from './Panel'
 import { MiraStage } from './MiraStage'
 import type { Dial } from '../lib/miraDial'
 import { ACCENT, STATE_BUTTONS, btnStyle, type MiraState } from '../lib/uiStyle'
+import {
+  bolt,
+  contextState,
+  cuesLength,
+  playCues,
+  primeUnlock,
+  setSoundEnabled,
+  stopCues,
+  unlockAudio,
+  type SoundCue,
+} from '../lib/miraAudio'
 
 const CAMERA_MSG = {
   off: 'ENABLE CAMERA',
@@ -41,9 +52,108 @@ export function HumanoidMode({
   const [panelOpen, setPanelOpen] = useState(false)
   const [cameraOn] = useState(false) // langkah 6
   const [micOn, setMicOn] = useState(false) // langkah 4
-  const [soundOn, setSoundOn] = useState(false) // bundle: S = !soundOn untuk label "SOUND ON/OFF"
+  // live: `S = useState(() => localStorage.apex_sound_off === "1")`, tombol menampilkan SOUND {S ? ON : OFF}
+  const [soundOn, setSoundOn] = useState(() => {
+    try {
+      return localStorage.getItem('apex_sound_off') !== '1'
+    } catch {
+      return true
+    }
+  })
   const [speed, setSpeed] = useState(1)
   const stageRef = useRef<HTMLCanvasElement | null>(null)
+  const cuesRef = useRef<SoundCue[] | null>(null)
+  const pendingRef = useRef(false)   // live `w.current`: menunggu gestur pertama sebelum cue dijalankan
+  const startedRef = useRef(false)
+
+  const pinTime = (() => {
+    if (typeof window === 'undefined') return null
+    const v = new URLSearchParams(window.location.search).get('t')
+    const n = v === null ? NaN : Number(v)
+    return Number.isFinite(n) ? n : null
+  })()
+
+  /** jalankan skor adegan dari `at` (live `k()` → `vd(MIRA_BUILD,{cues, at})`) */
+  const startCues = (from?: number) => {
+    const cues = cuesRef.current
+    if (!cues) return
+    playCues(cues, from ?? pinTime ?? 0)
+    startedRef.current = true
+  }
+
+  // diagnostik (seperti `__MIRA_*` di panggung): status mesin audio untuk alat verifikasi
+  useEffect(() => {
+    ;(window as unknown as Record<string, unknown>).__MIRA_AUDIO = () => ({
+      state: contextState(),
+      cues: cuesRef.current?.length ?? 0,
+      started: startedRef.current,
+      soundOn,
+      scoreLength: cuesRef.current ? cuesLength(cuesRef.current) : 0,
+    })
+  }, [soundOn])
+
+  // unlock: live memanggil `Pg()` saat mount lalu menandai `w.current` bila konteks belum running,
+  // dan menyelesaikannya pada `pointerdown`/`keydown` pertama.
+  useEffect(() => {
+    primeUnlock()
+    const st = unlockAudio()
+    if (st !== 'running') pendingRef.current = true
+    const retry = () => {
+      unlockAudio()
+      if (pendingRef.current) {
+        pendingRef.current = false
+        if (cuesRef.current && soundOn) startCues()
+      }
+    }
+    window.addEventListener('pointerdown', retry)
+    window.addEventListener('keydown', retry)
+    return () => {
+      window.removeEventListener('pointerdown', retry)
+      window.removeEventListener('keydown', retry)
+      stopCues()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // SOUND ON/OFF: live menyimpan `apex_sound_off` dan mematikan/menyalakan mesin suara.
+  useEffect(() => {
+    setSoundEnabled(soundOn)
+    try {
+      localStorage.setItem('apex_sound_off', soundOn ? '0' : '1')
+    } catch { /* mode privat */ }
+    if (!soundOn) {
+      stopCues()
+      startedRef.current = false
+    } else if (cuesRef.current && speed === 1) startCues()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [soundOn])
+
+  // skor baru dari panggung: putar bila suara hidup & kecepatan 1 (live: `m !== 1` → hanya `{stop:true}`)
+  useEffect(() => {
+    if (!soundOn || speed !== 1) return
+    if (startedRef.current) return
+    if (unlockAudio() === 'running') startCues()
+    else pendingRef.current = true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [speed, soundOn])
+
+  // `MIRA_BOLT`: klik/sentuh → bunyi bolt + pan dari posisi X (live: `pan: x*0,8`, ambang 150 ms,
+  // diabaikan bila sasaran ada di dalam button/input/select/textarea)
+  useEffect(() => {
+    let last = 0
+    const onDown = (ev: PointerEvent) => {
+      const el = ev.target as HTMLElement | null
+      if (el?.closest?.('button, input, select, textarea')) return
+      if (!soundOn) return
+      const nowMs = performance.now()
+      if (nowMs - last < 150) return
+      last = nowMs
+      const x = Math.max(-1, Math.min(1, (ev.clientX / window.innerWidth) * 2 - 1))
+      bolt({ pan: x * 0.8 })
+    }
+    window.addEventListener('pointerdown', onDown)
+    return () => window.removeEventListener('pointerdown', onDown)
+  }, [soundOn])
 
   // kanvas latar sementara (langkah 2 menggantinya dengan WebGL + mesin garis)
   useEffect(() => {
@@ -71,7 +181,15 @@ export function HumanoidMode({
     >
       {/* mesin garis: artwork → garis → mesh wire (langkah 2) */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
-        <MiraStage onError={(m) => console.warn('mira-stage', m)} />
+        <MiraStage
+          onError={(m) => console.warn('mira-stage', m)}
+          onCues={(cues) => {
+            cuesRef.current = cues
+            if (!soundOn || speed !== 1) return
+            if (unlockAudio() === 'running') startCues()
+            else pendingRef.current = true
+          }}
+        />
       </div>
 
       <canvas
@@ -130,10 +248,10 @@ export function HumanoidMode({
           className="mira-btn"
           style={btnStyle(false)}
           data-testid="mira-humanoid-sound"
-          aria-pressed={!soundOn}
+          aria-pressed={soundOn}
           onClick={() => setSoundOn((v) => !v)}
         >
-          SOUND {soundOn ? 'OFF' : 'ON'}
+          SOUND {soundOn ? 'ON' : 'OFF'}
         </button>
       </div>
 

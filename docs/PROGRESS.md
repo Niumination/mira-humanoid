@@ -527,3 +527,146 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Acuan fase awal 0,7–1,3 ditambahkan ke `recon/live-ref-v3/` (total 27 fase).
 - Sisa terburuk sekarang: 8,0 (5,38) · 7,5 (5,28) · 11,0 (4,96) · 12,0 (4,94) · 11,5 (4,88) — semuanya wilayah
   dada/tepi (peta selisih 11,0: +15,5 di blok dada kiri-tengah).
+
+
+### Sesi 35 (2026-11-06) — verifikasi 4g + diagnosis dada/torso → **build34**
+
+- **Verifikasi paket 4g LULUS:** produksi `assets/index-Er3c1CLa.js`; repo head `d534b49`; blob
+  `MiraStage.tsx` = `e33acf06556a164d` (82 843 B) = lokal; `npm ci` + `npm run build` → berkas **identik byte**
+  (sha256 `8ace0810…` di kedua sisi).
+- Tiga pemeriksaan dasar untuk t=11,0: **tidak ada** pergeseran waktu (10,9/11,05/11,1 → 4,72/4,79/5,01),
+  acuan live **deterministik** (live-vs-live MAE 0,08), dan geometri **tepat** (optimum skala 1,00 geser 0,0).
+- Ablasi lapisan kita & live pada 11,0. Temuan penting: **`?off=bloom` di live membuang seluruh composer** →
+  kontribusi bloom live harus diukur dengan dial resmi `?dial.hum.glow.strength=0` (+4,94 dada, bukan +43,33).
+- Diagnosis: **pembagian beban lapisan berbeda** — gambar kita +30 terlalu terang di dada, rambut kita −8
+  terlalu lemah, bloom kita 1,6× terlalu kuat; totalnya hanya +9,96 karena dua kesalahan pertama saling menutupi.
+- **F-133 (ditambah, default MATI):** koreksi tonal gambar (`?pgg=` pow, `?pge=1` EOTF sRGB eksak). Di harness
+  gambar-saja EOTF eksak menurunkan MAE dada **8,19 → 2,08** (dada 77,5 → 46,3 vs live 47,2), tetapi di
+  tumpukan penuh menjadi 9,35 → **ditolak sebagai default**, disimpan sebagai knob riset.
+- Ditolak juga: `nm=1` (5,29), `bo=1` (10,13), `bb=2,5/4,0` (7,78/10,28), `bb=4,0&bt=1,2` (7,5 → 7,12),
+  `ur=0,5&bb=0,75` (11,0 4,68 ✓ tetapi 7,5 8,25 ✗), `hgg=1,4`+`pge=1` (10,74).
+- **F-134 DITERIMA:** plato akhir `bgK` 1,50 → 1,35 mulai t≈10,2 (bergerbang waktu, bukan skala global):
+  10,5 4,64→**4,53** · 11,0 4,96→**4,82** · 11,5 4,88→**4,74** · 12,0 4,94→**4,79**; fase 7,5/8,0/9,0/9,5
+  **tidak berubah sama sekali**.
+- **Gerbang build34:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · 3,05 · 4,71 = **2,62** (identik, tanpa regresi);
+  24 fase **3,22 → 3,20**. Alat baru `tools/metric3.py` (acuan v3 + jatuh ke v2 + `--grid`).
+- Paket **`niu-update-langkah4h.zip`** (kode + shader + docs + PNG + acuan).
+- Berikutnya: menyeimbangkan **tiga lapisan sekaligus** (gambar −, rambut +, bloom −) dengan sasaran terukur
+  per lapisan; fase terburuk 8,0 (5,38) dan 7,5 (5,28) justru berada di wilayah yang sebaliknya (kita terlalu gelap).
+
+
+### Sesi 36 (2026-11-06) — profil bloom terhadap waktu → **build35**
+
+- **Verifikasi paket 4h LULUS:** produksi `index-CWsd9OOS.js`, repo `4fcba39`, blob `MiraStage.tsx`
+  `66731b32d7dd79bd` (83 986 B) & `picColor.frag.glsl` `4f94c7632488c4b1` = lokal; build ulang **identik byte**
+  (sha256 `cf240796…`).
+- Catatan alat: `/tmp` (playwright) hilang antar-sesi → jalankan `bash tools/siapkan-alat.sh` dan
+  `vite preview` lagi; **dua proses chromium paralel saling mematikan** (swiftshader) → sapuan render harus
+  **berurutan**. Glitch snapshot juga menghapus `LANGKAH3.md` Bagian 25 + 12 PNG build34 dari workspace →
+  dipulihkan dari paket 4h.
+- Hipotesis amplop surge **gugur**: rumus live `P_(i,e,1.9)=exp(−(i−e)/1,9)` identik dengan kita.
+- Ablasi t=8,0 (figur 200–700 × 450–1000): live 106,30 vs kita 102,30. Semua lapisan setara **kecuali bloom**
+  (live +13,55 vs kita +10,54) — sedangkan pada 11,0 bloom kita justru lebih (+7,99 vs +4,94).
+- **F-135 DITERIMA:** bump bloom bergerbang waktu `kabut = 0,85·exp(−((t−8,1)/0,68)²)` ditambahkan ke `bgK`.
+  Kalibrasi: 0,4 → 7,5 4,80 · 0,7 → 4,65/8,0 4,90 · 1,0 → 4,68/4,85 · **1,4 → memburuk (4,88)**;
+  lebar 0,9 merusak 7,0 (3,96) → lebar **0,68** dengan pusat 8,1.
+- **Gerbang build35:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · 3,06 · 4,72 = **2,62** (blur4 2,12 · blur10 1,95);
+  24 fase **3,20 → 3,15**, dengan 7,5 **5,28 → 4,65** dan 8,0 **5,38 → 4,86**; kerugian maksimum +0,02.
+- Paket **`niu-update-langkah4i.zip`**.
+- Berikutnya: enam fase sisa (8,0 · 11,0 · 9,0 · 12,0 · 11,5 · 9,5 ≈ 4,6–4,9) selisih terang totalnya hanya
+  +1…+2 → sisa galat adalah soal **sebaran**, bukan jumlah cahaya.
+
+
+### Sesi 37 (2026-11-06) — strands + koreksi cara ukur → **build36**
+
+- **Verifikasi paket 4i LULUS:** produksi `index-laJDkWl3.js` (sha256 `352fd7e0…` = build lokal), repo `33b2817`,
+  blob `MiraStage.tsx` `342212a1fbcc90ce` (84 581 B) = lokal.
+- **KOREKSI METODOLOGI:** angka sesi 35 "gambar kita +20 lebih terang di dada" adalah **artefak** (`off=bloom`
+  di live membuang seluruh composer). Pembanding adil (`dial.hum.glow.strength=0` vs `off=bloom`):
+  dada **+7,87**, seluruh bingkai **+0,94**. Kesimpulan itu dibatalkan; F-133 tetap default MATI.
+  `pgg` (kurva tonal) juga ditolak di harness adil: dada +7,9 → +4,2 tetapi MAE total 3,10 → 3,87.
+- **F-136b:** knob `?stg=` khusus lapisan helai rambut (sebelumnya menempel pada `?fg=`).
+- **F-136 DITERIMA:** helai rambut terlalu terang setelah figur tenang. `stg=0,3` tetap: 11,0 4,82→4,50 ·
+  12,0 4,79→4,40 · 9,5 4,72→4,55 **tetapi** 8,0 4,86→4,95. Dipakai **gerbang waktu**
+  `stgK = 1 − 0,7·xs(t; 8,6; 9,6)` → fase < 8,6 tak tersentuh.
+- **Gerbang build36:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · 3,06 · **4,54** = **2,59** (blur4 **2,05** · blur10 **1,88**);
+  24 fase **3,15 → 3,08** (blur4 2,50 · blur10 2,28), tanpa regresi. Perbaikan besar: 10,0 4,57→**4,28** ·
+  10,5 4,53→**4,23** · 11,0 4,82→**4,50** · 11,5 4,74→**4,36** · 12,0 4,79→**4,40**.
+- Paket **`niu-update-langkah4j.zip`**.
+- Berikutnya: sisa terburuk ada di jendela ignition (8,0 4,86 · 9,0 4,71 · 7,5 4,65 · 8,5 4,62) dan **lonjakan
+  7,0 (3,81** vs tetangga 6,8 = 3,06) → perlu peta selisih 7,0 sendiri.
+
+
+### Sesi 38 (2026-11-06) — aura kepala + jendela ignition → **build37**
+
+- **Verifikasi paket 4j LULUS:** produksi `index-re72jnYx.js` (sha256 `76131240…` = build lokal), repo `51e9913`,
+  blob `MiraStage.tsx` `eb65e850c75f12f1` (85 082 B) = lokal. (Workspace sempat kehilangan PNG build36 lagi →
+  dipulihkan dari paket.)
+- Peta selisih t=7,0: **kepala −17,4/−16,6** (kita gelap) dan tepi bawah **+11,1/+10,6** (kita terang).
+- Ablasi t=7,0: total kepala live 75,08 vs kita 55,43; setelah semua lapisan dikurangi **dasar kepala live ≈52
+  vs kita ≈26** → yang hilang bukan milik lapisan terukur mana pun, melainkan **sprite aura violet** (F-110)
+  yang di build kita dimatikan sejak dulu.
+- **F-137 (INERT, dicatat):** `?uh=` (kekuatan penekan `underHair`) disapu 1,0/0,7/0,4 → hasil identik
+  (55,43 · MAE 3,81). `underHair` hanya bekerja pada piksel terang; yang hilang adalah pendar lembut → bukan itu.
+- **F-138 DITERIMA:** aura dinyalakan dengan **gerbang sempit** `auWin = 1 − xs(t; 7,1; 7,5)`.
+  Penuh `au=1`: 6,8 3,06→**2,80** · 7,0 3,81→**3,27** (kepala 55,4→74,5 vs live 75,1) tetapi 7,5 5,02 · 8,0 5,46 ·
+  9,5 5,27 → digerbangi. Hasil: 6,8 **2,80** · 7,0 **3,27** · 7,5/8,0/9,5 **tidak berubah**.
+- **Gerbang build37:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · **2,80** · 4,54 = **2,55** (blur4 **2,01** · blur10 **1,84**);
+  24 fase **3,08 → 3,06**. Seluruh 24 fase dirender ulang penuh (render lama hilang oleh glitch snapshot).
+- Paket **`niu-update-langkah4k.zip`**.
+- Berikutnya: `lines` **+12 terlalu kuat di bahu** pada t=7,0 (live +36,2 vs kita +48,2) → kandidat gain
+  `lines`/`wire` yang digerbangi waktu; sisa terburuk 8,0 (4,86) · 9,0 (4,71) · 7,5 (4,65) · 8,5 (4,62).
+
+
+### Sesi 39 (2026-11-06) — Gerbang A & B (P9) + gerbang dari produksi → **tanpa perubahan piksel**
+
+- **Verifikasi paket 4k LULUS:** produksi `index-B2KyDmhD.js` (sha256 `bca27438…` = build lokal), repo `aa05d21`,
+  blob `MiraStage.tsx` `4090892cb76dc049` (85 699 B) = lokal.
+- **Gerbang diukur dari URL PRODUKSI:** 1,14 · 2,07 · 1,91 · 2,84 · 2,80 · 4,55 = **2,55** — sama persis dengan
+  lokal (selisih 0,01 di 9,5 = derau render) → tidak ada penyimpangan build/deploy.
+- **Ditutup:** `lg` (gain garis) — 0,85 → 7,0 3,30 · 8,0 5,00; 0,7 → 3,54 · 5,15, keduanya lebih buruk dari
+  dasar (3,27/4,86) → kelebihan di bahu bukan dari `lines`.
+- **Ditutup:** aura kepala sesudah 7,5 — skala diperkecil 0,6 → 8,0 5,17 · 0,4 → 8,0 5,03 & 9,0 4,90,
+  semuanya lebih buruk dari dasar (4,86 / 4,71). Aura hanya benar di jendela ≤7,5.
+- **Aturan metrik baru:** `off=` di live tidak setara untuk lapisan berpartikel (`off=hair,matter` justru
+  menaikkan galat 4,86 → 5,29) → `off=` hanya untuk ablasi satu sisi, bukan pembanding dua implementasi.
+- **`recon/mira-params.json` hilang oleh glitch snapshot** → direkonstruksi dari bundle live: 82 dial unik + 7 `stands`.
+- **Gerbang A: 8/8 lolos** · **Gerbang B: 10/10 lolos** (`verification/mira/gate-{a,b}.json`). Alat gerbang B
+  diperbaiki (`ensurePanel()`) karena menggantung bila panel sudah terbuka.
+- **P9 🟡:** A & B lulus; C (ambang live-vs-live) dan D masih terbuka.
+- Paket **`niu-update-langkah4l.zip`** — isinya **dokumen + alat + spesifikasi dial**, BUKAN kode panggung
+  (tidak ada perubahan piksel sesi ini).
+
+### Sesi 40 (2026-10-29) — **langkah 4 MIRA: mesin audio penuh** (graph + 8 cue + skor adegan + bolt)
+
+- **Verifikasi paket 4l LULUS:** produksi masih `index-B2KyDmhD.js` (sha256 `bca27438…` = build37),
+  repo head `51edcaa` — sesuai karena 4l hanya dokumen/alat, tanpa kode panggung.
+  Glitch snapshot ke-5 (LANGKAH3.md kehilangan Bagian 29) dipulihkan dari zip 4l.
+- **Lantai derau Gerbang C MIRA diukur** (`shot.js` @8,0/9,5 + pembanding live): t=8,0 **MAE 0,00** ·
+  9,5 **0,55** · 11,0 **0,08** → ambang Gerbang C hampir nol; kita masih 4,50–4,86 di fase itu.
+  Ditulis `STATUS-ROADMAP.md` (P0–P10, 24/30 ≈ 80 %).
+- **Langkah 4 (audio) selesai dan diuji.** Region audio live (20 291 B di `recon/mira-2026-11-03.js`,
+  arsip `recon/audio-region.js`) diport verbatim ke `src/lib/miraAudio.ts` +
+  `src/lib/miraSoundCues.ts`:
+  graph `rh` (comp −8/12/3,5/0,006/0,25 · `hg=vN·0,62` · reverb 3,2 s/exp 2,4 & 6,0 s/exp 1,7 ·
+  send `gN`/`gN·1,15` · noise loop 2 s), primitif `oc/_o/U_/Vw`, drone `xN/_N/yN`,
+  8 cue `LN`, dua voice `EN`, ignition `DN`, **synth buffer prosedural `mo`** (6 strike · burst ·
+  thunder · boom · sizzle · hum), player `wi/Pl/xd`, **8 jenis cue skor `qw`**, track `FN/FT`,
+  bolt `kN`, unlock iOS `ON/Pg`.
+- **Temuan yang mengubah rencana:** (a) graph live **tidak** punya `createAnalyser` → butir rencana
+  “analyser→uEnergy” dibatalkan; (b) MIRA **tidak** memancarkan `MIRA_ENTER`/`ASSEMBLY` — bunyi masuk
+  berasal dari skor cue (`MIRA_BUILD`) + `MIRA_BOLT` per klik; (c) label tombol SOUND = **status**
+  (`SOUND ON` + `aria-pressed=true` sebagai default) — versi kita sebelumnya terbalik, dibetulkan;
+  (d) `Vk` memakai **lebar citra** sebagai skala pan.
+- **Penyambungan:** `MiraStage` membangun skor setelah `buildMatter` (36 cue, panjang **12,550 s**);
+  `HumanoidMode` menangani unlock (`Pg`), skor tunggu-gestur (`w.current`), SOUND ON/OFF
+  (`localStorage.apex_sound_off`), dan bolt pada `pointerdown` (pan `x·0,8`, ambang 150 ms).
+- **Gerbang D:** D1 paritas pemanggilan **31/31** (node/sambungan/start-stop/**multiset nilai
+  AudioParam** identik: 194 osc · 773 gain · 119 bufferSource · 96 panner · 54 biquad · 25 shaper ·
+  1 709 sambungan · 604 start/stop · 777 penjadwalan) · D2 spektrum `OfflineAudioContext`
+  **27/27 sampel-identik (MAE 0,0000 %, korelasi pita 1,000000)** · D3 audio hidup di aplikasi
+  **9/9** (RMS 2,55·10⁻² → SOUND OFF 0,00 → ON 1,01·10⁻¹; bolt 2,26·10⁻²) · D4 regresi piksel
+  t=8,0 **MAE 0,0000**.
+- Paket **`niu-update-langkah4m.zip`**.
+- Berikutnya (langkah 5): state machine penuh + 4 param *Her states* (`?state=`), SPEED/REPLAY
+  menggeser jam panggung, lalu langkah 6 (MediaPipe: `hum.touch.wave`, MIC) dan gerbang C/D + viewport 390.

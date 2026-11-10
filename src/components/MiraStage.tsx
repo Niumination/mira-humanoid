@@ -64,6 +64,8 @@ import { buildHead } from '../lib/miraHead'
 import { buildPicturePoints, quadGeometry, spriteGeometry } from '../lib/miraPicture'
 import { buildWireMesh, pictureToWire } from '../lib/miraWire'
 import { buildMatter, nw } from '../lib/miraMatter'
+import { buildCueTracks } from '../lib/miraSoundCues'
+import type { SoundCue } from '../lib/miraAudio'
 import { IGNITE_CFG, mulberry32 } from '../lib/miraTimeline'
 import { liveArcs } from '../lib/miraArcsLive'
 import { AN, EN, TN, strandGeometry } from '../lib/miraHair'
@@ -189,7 +191,16 @@ function perspective(fovDeg: number, aspect: number, near: number, far: number) 
   return new Float32Array([f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2 * far * near * nf, 0])
 }
 
-export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void; onError?: (m: string) => void }) {
+export function MiraStage({
+  onTrace,
+  onError,
+  onCues,
+}: {
+  onTrace?: (m: string) => void
+  onError?: (m: string) => void
+  /** skor suara adegan (port `Vk`): dipakai HumanoidMode untuk `playCues` */
+  onCues?: (cues: SoundCue[]) => void
+}) {
   const ref = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -261,6 +272,16 @@ export function MiraStage({ onTrace, onError }: { onTrace?: (m: string) => void;
         lines: pic.lines.length,
         particles: matter.particles.length,
       }
+
+      // skor suara adegan — hidup Vk({arcs,particles,tl}, picture.width) di dalam pembangun adegan Hk()
+      onCues?.(
+        buildCueTracks({
+          arcs: matter.arcs,
+          particles: matter.particles,
+          star: matter.star,
+          width: pic.width,
+        })
+      )
 
       // pita `waves`: 3 pita melintasi pemandangan (Qy=3) + 168 percikan (56/pita)
       const waveRibbons = buildWaveRibbons()

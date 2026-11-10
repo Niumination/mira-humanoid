@@ -1,0 +1,773 @@
+{
+  "when": "2026-11-09T16:10:21.135Z",
+  "score": "31/31",
+  "totals": {
+    "nodes": {
+      "compressor": 1,
+      "gain": 773,
+      "convolver": 2,
+      "bufferSource": 119,
+      "biquad": 54,
+      "stereoPanner": 96,
+      "oscillator": 194,
+      "waveShaper": 25
+    },
+    "connects": 1709,
+    "src": 604,
+    "paramCount": 777
+  },
+  "rows": [
+    {
+      "name": "graph (rh/ensureAudio)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "compressor": 1,
+          "gain": 4,
+          "convolver": 2
+        },
+        "connects": 7,
+        "src": 0,
+        "paramCount": 0
+      },
+      "ours": {
+        "nodes": {
+          "compressor": 1,
+          "gain": 4,
+          "convolver": 2
+        },
+        "connects": 7,
+        "src": 0,
+        "paramCount": 0
+      }
+    },
+    {
+      "name": "synth buffer (mo/syn)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {},
+        "connects": 0,
+        "src": 0,
+        "paramCount": 0
+      },
+      "ours": {
+        "nodes": {},
+        "connects": 0,
+        "src": 0,
+        "paramCount": 0
+      }
+    },
+    {
+      "name": "cue hum",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 2,
+          "biquad": 2,
+          "gain": 6
+        },
+        "connects": 14,
+        "src": 4,
+        "paramCount": 10
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 2,
+          "biquad": 2,
+          "gain": 6
+        },
+        "connects": 14,
+        "src": 4,
+        "paramCount": 10
+      }
+    },
+    {
+      "name": "cue strike",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 1,
+          "gain": 3,
+          "stereoPanner": 1
+        },
+        "connects": 7,
+        "src": 1,
+        "paramCount": 0
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 1,
+          "gain": 3,
+          "stereoPanner": 1
+        },
+        "connects": 7,
+        "src": 1,
+        "paramCount": 0
+      }
+    },
+    {
+      "name": "cue strike>1.05 (thunder)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 2,
+          "gain": 6,
+          "stereoPanner": 2
+        },
+        "connects": 14,
+        "src": 3,
+        "paramCount": 0
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 2,
+          "gain": 6,
+          "stereoPanner": 2
+        },
+        "connects": 14,
+        "src": 3,
+        "paramCount": 0
+      }
+    },
+    {
+      "name": "cue gather",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 3
+        },
+        "connects": 7,
+        "src": 2,
+        "paramCount": 5
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 3
+        },
+        "connects": 7,
+        "src": 2,
+        "paramCount": 5
+      }
+    },
+    {
+      "name": "cue boil",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 23,
+          "biquad": 2,
+          "gain": 69,
+          "stereoPanner": 21
+        },
+        "connects": 161,
+        "src": 46,
+        "paramCount": 12
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 23,
+          "biquad": 2,
+          "gain": 69,
+          "stereoPanner": 21
+        },
+        "connects": 161,
+        "src": 46,
+        "paramCount": 12
+      }
+    },
+    {
+      "name": "cue needle",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 13,
+          "biquad": 1,
+          "gain": 39,
+          "stereoPanner": 12
+        },
+        "connects": 91,
+        "src": 26,
+        "paramCount": 2
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 13,
+          "biquad": 1,
+          "gain": 39,
+          "stereoPanner": 12
+        },
+        "connects": 91,
+        "src": 26,
+        "paramCount": 2
+      }
+    },
+    {
+      "name": "cue release",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 6,
+          "gain": 24,
+          "oscillator": 2,
+          "waveShaper": 2,
+          "biquad": 4,
+          "stereoPanner": 2
+        },
+        "connects": 56,
+        "src": 10,
+        "paramCount": 18
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 6,
+          "gain": 24,
+          "oscillator": 2,
+          "waveShaper": 2,
+          "biquad": 4,
+          "stereoPanner": 2
+        },
+        "connects": 56,
+        "src": 10,
+        "paramCount": 18
+      }
+    },
+    {
+      "name": "cue fill",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 3
+        },
+        "connects": 7,
+        "src": 2,
+        "paramCount": 5
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 3
+        },
+        "connects": 7,
+        "src": 2,
+        "paramCount": 5
+      }
+    },
+    {
+      "name": "cue ignite",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 2,
+          "gain": 9,
+          "bufferSource": 1,
+          "biquad": 1
+        },
+        "connects": 19,
+        "src": 6,
+        "paramCount": 15
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 2,
+          "gain": 9,
+          "bufferSource": 1,
+          "biquad": 1
+        },
+        "connects": 19,
+        "src": 6,
+        "paramCount": 15
+      }
+    },
+    {
+      "name": "skor penuh (FN/playCues)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 57,
+          "biquad": 13,
+          "gain": 183,
+          "stereoPanner": 44,
+          "oscillator": 4,
+          "waveShaper": 2
+        },
+        "connects": 425,
+        "src": 114,
+        "paramCount": 72
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 57,
+          "biquad": 13,
+          "gain": 183,
+          "stereoPanner": 44,
+          "oscillator": 4,
+          "waveShaper": 2
+        },
+        "connects": 425,
+        "src": 114,
+        "paramCount": 72
+      }
+    },
+    {
+      "name": "bolt (kN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 2,
+          "gain": 9,
+          "stereoPanner": 2,
+          "oscillator": 1,
+          "biquad": 1
+        },
+        "connects": 21,
+        "src": 5,
+        "paramCount": 10
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 2,
+          "gain": 9,
+          "stereoPanner": 2,
+          "oscillator": 1,
+          "biquad": 1
+        },
+        "connects": 21,
+        "src": 5,
+        "paramCount": 10
+      }
+    },
+    {
+      "name": "fmBlip default (oc)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 2,
+          "gain": 3
+        },
+        "connects": 6,
+        "src": 4,
+        "paramCount": 7
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 2,
+          "gain": 3
+        },
+        "connects": 6,
+        "src": 4,
+        "paramCount": 7
+      }
+    },
+    {
+      "name": "thump default (_o)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 1,
+          "gain": 2
+        },
+        "connects": 4,
+        "src": 2,
+        "paramCount": 4
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 1,
+          "gain": 2
+        },
+        "connects": 4,
+        "src": 2,
+        "paramCount": 4
+      }
+    },
+    {
+      "name": "noiseSweep default (U_)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 2
+        },
+        "connects": 5,
+        "src": 2,
+        "paramCount": 5
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 2
+        },
+        "connects": 5,
+        "src": 2,
+        "paramCount": 5
+      }
+    },
+    {
+      "name": "voice A Tripod (Vw/EN[0])",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "gain": 15,
+          "oscillator": 5,
+          "stereoPanner": 3,
+          "bufferSource": 1,
+          "biquad": 5,
+          "waveShaper": 1
+        },
+        "connects": 37,
+        "src": 12,
+        "paramCount": 8
+      },
+      "ours": {
+        "nodes": {
+          "gain": 15,
+          "oscillator": 5,
+          "stereoPanner": 3,
+          "bufferSource": 1,
+          "biquad": 5,
+          "waveShaper": 1
+        },
+        "connects": 37,
+        "src": 12,
+        "paramCount": 8
+      }
+    },
+    {
+      "name": "voice B Leviathan (Vw/EN[1])",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "gain": 15,
+          "oscillator": 5,
+          "stereoPanner": 3,
+          "bufferSource": 1,
+          "biquad": 5,
+          "waveShaper": 1
+        },
+        "connects": 37,
+        "src": 12,
+        "paramCount": 8
+      },
+      "ours": {
+        "nodes": {
+          "gain": 15,
+          "oscillator": 5,
+          "stereoPanner": 3,
+          "bufferSource": 1,
+          "biquad": 5,
+          "waveShaper": 1
+        },
+        "connects": 37,
+        "src": 12,
+        "paramCount": 8
+      }
+    },
+    {
+      "name": "voice shimmer",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "gain": 24,
+          "oscillator": 8,
+          "stereoPanner": 3,
+          "bufferSource": 1,
+          "biquad": 5,
+          "waveShaper": 1
+        },
+        "connects": 55,
+        "src": 18,
+        "paramCount": 17
+      },
+      "ours": {
+        "nodes": {
+          "gain": 24,
+          "oscillator": 8,
+          "stereoPanner": 3,
+          "bufferSource": 1,
+          "biquad": 5,
+          "waveShaper": 1
+        },
+        "connects": 55,
+        "src": 18,
+        "paramCount": 17
+      }
+    },
+    {
+      "name": "cue alert (wN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 6,
+          "gain": 10
+        },
+        "connects": 20,
+        "src": 12,
+        "paramCount": 6
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 6,
+          "gain": 10
+        },
+        "connects": 20,
+        "src": 12,
+        "paramCount": 6
+      }
+    },
+    {
+      "name": "cue loading (_N)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "gain": 8,
+          "oscillator": 4,
+          "biquad": 2,
+          "bufferSource": 1
+        },
+        "connects": 17,
+        "src": 5,
+        "paramCount": 2
+      },
+      "ours": {
+        "nodes": {
+          "gain": 8,
+          "oscillator": 4,
+          "biquad": 2,
+          "bufferSource": 1
+        },
+        "connects": 17,
+        "src": 5,
+        "paramCount": 2
+      }
+    },
+    {
+      "name": "cue ready (RN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 6,
+          "gain": 12
+        },
+        "connects": 24,
+        "src": 12,
+        "paramCount": 21
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 6,
+          "gain": 12
+        },
+        "connects": 24,
+        "src": 12,
+        "paramCount": 21
+      }
+    },
+    {
+      "name": "cue needsYou (CN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 8,
+          "gain": 14
+        },
+        "connects": 28,
+        "src": 16,
+        "paramCount": 28
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 8,
+          "gain": 14
+        },
+        "connects": 28,
+        "src": 16,
+        "paramCount": 28
+      }
+    },
+    {
+      "name": "cue failed (MN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 6,
+          "gain": 12
+        },
+        "connects": 24,
+        "src": 12,
+        "paramCount": 27
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 6,
+          "gain": 12
+        },
+        "connects": 24,
+        "src": 12,
+        "paramCount": 27
+      }
+    },
+    {
+      "name": "cue miraEnter (PN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 18,
+          "oscillator": 7
+        },
+        "connects": 37,
+        "src": 16,
+        "paramCount": 31
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 18,
+          "oscillator": 7
+        },
+        "connects": 37,
+        "src": 16,
+        "paramCount": 31
+      }
+    },
+    {
+      "name": "cue miraExit (IN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 6,
+          "oscillator": 1
+        },
+        "connects": 13,
+        "src": 4,
+        "paramCount": 10
+      },
+      "ours": {
+        "nodes": {
+          "bufferSource": 1,
+          "biquad": 1,
+          "gain": 6,
+          "oscillator": 1
+        },
+        "connects": 13,
+        "src": 4,
+        "paramCount": 10
+      }
+    },
+    {
+      "name": "call riser (bN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 1,
+          "gain": 6,
+          "bufferSource": 1,
+          "biquad": 1
+        },
+        "connects": 13,
+        "src": 4,
+        "paramCount": 10
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 1,
+          "gain": 6,
+          "bufferSource": 1,
+          "biquad": 1
+        },
+        "connects": 13,
+        "src": 4,
+        "paramCount": 10
+      }
+    },
+    {
+      "name": "assembly (DN)",
+      "ok": true,
+      "problems": [],
+      "live": {
+        "nodes": {
+          "oscillator": 125,
+          "gain": 268,
+          "biquad": 7,
+          "waveShaper": 18,
+          "bufferSource": 2,
+          "stereoPanner": 3
+        },
+        "connects": 560,
+        "src": 254,
+        "paramCount": 444
+      },
+      "ours": {
+        "nodes": {
+          "oscillator": 125,
+          "gain": 268,
+          "biquad": 7,
+          "waveShaper": 18,
+          "bufferSource": 2,
+          "stereoPanner": 3
+        },
+        "connects": 560,
+        "src": 254,
+        "paramCount": 444
+      }
+    },
+    {
+      "name": "skor adegan: adegan kecil (2 busur, 5 titik)",
+      "ok": true,
+      "problems": [],
+      "detail": "10 cue · panjang 12.550 s"
+    },
+    {
+      "name": "skor adegan: adegan sedang (12 busur, 400 titik)",
+      "ok": true,
+      "problems": [],
+      "detail": "20 cue · panjang 12.550 s"
+    },
+    {
+      "name": "skor adegan: adegan besar (28 busur, 3000 titik)",
+      "ok": true,
+      "problems": [],
+      "detail": "36 cue · panjang 12.550 s"
+    }
+  ]
+}
