@@ -1,5 +1,5 @@
 {
- "base": "http://127.0.0.1:8802",
+ "base": "http://127.0.0.1:8804",
  "checks": [
   {
    "n": "jumlah slider = 82",

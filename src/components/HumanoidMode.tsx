@@ -18,9 +18,11 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import { Panel } from './Panel'
+import { HandTracker, type AttentionRef } from './HandTracker'
 import { MiraStage } from './MiraStage'
 import type { Dial } from '../lib/miraDial'
 import { ACCENT, STATE_BUTTONS, btnStyle, type MiraState } from '../lib/uiStyle'
+import { boltOverride, boltAge, LOOK_HOLD_MS, miraBody, startSpeech } from '../lib/miraHand'
 import {
   aura,
   clearLevel,
@@ -60,7 +62,9 @@ export function HumanoidMode({
 }) {
   const [panelOpen, setPanelOpen] = useState(false)
   const [replayKey, setReplayKey] = useState(0)
-  const [cameraOn] = useState(false) // langkah 6
+  const [cameraOn, setCameraOn] = useState(false)   // tombol ENABLE CAMERA / CAMERA OFF
+  const [heard, setHeard] = useState('')            // baris `mira-heard`
+  const attentionRef = useRef<AttentionRef>({ x: 0, y: 0, at: 0 })
   const [micOn, setMicOn] = useState(false) // langkah 4
   // live: `S = useState(() => localStorage.apex_sound_off === "1")`, tombol menampilkan SOUND {S ? ON : OFF}
   const [soundOn, setSoundOn] = useState(() => {
@@ -91,6 +95,45 @@ export function HumanoidMode({
     startedRef.current = true
   }
 
+  // perhatian dari penunjuk (live `AF`): pointermove/pointerdown → `M.current`;
+  // `?attn=x,y` dipakai lapisan gambar (MiraStage, live `eF`), `?bolt=x,y` memaku posisi percikan
+  useEffect(() => {
+    const norm = (ev: PointerEvent) => ({
+      x: Math.max(-1, Math.min(1, (ev.clientX / window.innerWidth) * 2 - 1)),
+      y: Math.max(-1, Math.min(1, (ev.clientY / window.innerHeight) * 2 - 1)),
+    })
+    const held = () => performance.now() - ((attentionRef.current.fingerHold as number) || 0) < 1200
+    const onMove = (ev: PointerEvent) => {
+      if (held()) return
+      Object.assign(attentionRef.current, norm(ev), { at: performance.now() })
+    }
+    const onDown = (ev: PointerEvent) => {
+      const el = ev.target as HTMLElement | null
+      if (el?.closest?.('button, input, select, textarea')) return
+      const p = norm(ev)
+      if (!held()) Object.assign(attentionRef.current, p, { at: performance.now() })
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerdown', onDown)
+    // `mira-body` (perintah suara / tangan) → arahkan perhatian
+    const onBody = (ev: Event) => {
+      const d = (ev as CustomEvent).detail as { kind?: string; x?: number; y?: number; release?: boolean }
+      if (d?.kind !== 'look') return
+      if (d.release) {
+        attentionRef.current.voice = null
+        return
+      }
+      attentionRef.current.voice = { x: d.x ?? 0, y: d.y ?? 0, until: performance.now() + LOOK_HOLD_MS }
+      attentionRef.current.at = performance.now()
+    }
+    window.addEventListener('mira-body', onBody)
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('mira-body', onBody)
+    }
+  }, [])
+
   // aura (live `MF` + `QU`): status MIRA + level bicara → `RN.talk` / `RN.listen` / `RN.voice`.
   // Level bicara: mikrofon bila MIC ON (level nyata), selain itu `PF(t)` prosedural seperti live.
   useEffect(() => {
@@ -102,7 +145,7 @@ export function HumanoidMode({
       const dt = (now - last) / 1000
       last = now
       const speaking = state === 'talking'
-      if (speaking) setLevel('output', micOn ? level('output') : talkLevel((now - t0) / 1000))
+      if (speaking) setLevel('output', micRef.current ? micRef.current.level() : talkLevel((now - t0) / 1000))
       else clearLevel('output')
       updateAura(dt, { energy: level('output'), speaking, listening: state === 'listening' })
       raf = requestAnimationFrame(loop)
@@ -127,6 +170,66 @@ export function HumanoidMode({
     return () => pinAura(null)
   }, [])
 
+  /** live `y()` — MIC: mikrofon nyata (analiser 512, level = min(1, √rata²·6)) atau mati */
+  const micRef = useRef<{ level: () => number; stop: () => void } | null>(null)
+  /** live `B(x,y)` — pinch/klik = bolt pada posisi itu (ambang 150 ms, id bertambah) */
+  const boltRef = useRef<{ x: number; y: number; id: number; when: number } | null>(null)
+  const palmsRef = useRef(0)
+  const boltPress = (x: number, y: number) => {
+    const prev = boltRef.current
+    if (prev && performance.now() - prev.when < 150) return
+    boltRef.current = { x, y, id: (prev?.id || 0) + 1, when: performance.now() }
+    bolt({ pan: x * 0.8 })
+  }
+  void boltAge
+  void boltOverride
+
+  const toggleMic = async () => {
+    if (micRef.current) {
+      micRef.current.stop()
+      micRef.current = null
+      setHeard('')
+      setMicOn(false)
+      return
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+      const ctx = new AC()
+      const an = ctx.createAnalyser()
+      an.fftSize = 512
+      ctx.createMediaStreamSource(stream).connect(an)
+      const buf = new Uint8Array(an.fftSize)
+      micRef.current = {
+        level: () => {
+          an.getByteTimeDomainData(buf)
+          let sum = 0
+          for (let i = 0; i < buf.length; i++) {
+            const v = (buf[i] - 128) / 128
+            sum += v * v
+          }
+          return Math.min(1, Math.sqrt(sum / buf.length) * 6)
+        },
+        stop: () => {
+          stream.getTracks().forEach((t) => t.stop())
+          ctx.close()
+        },
+      }
+      setMicOn(true)
+      onState('talking')
+      const rec = startSpeech((text, cmd) => setHeard(cmd ? `heard "${text}" - ${cmd.say}` : `heard "${text}"`))
+      setHeard(rec ? 'say "look left", "look right", "look at me" or "follow me"' : 'voice commands are not available in this browser')
+      if (rec) speechRef.current = rec
+    } catch {
+      setMicOn(false)
+    }
+  }
+  const speechRef = useRef<{ stop: () => void } | null>(null)
+  const heardRef = useRef('')
+  heardRef.current = heard
+  const cameraRef = useRef(false)
+  cameraRef.current = cameraOn
+
   // diagnostik (seperti `__MIRA_*` di panggung): status mesin audio untuk alat verifikasi
   useEffect(() => {
     ;(window as unknown as Record<string, unknown>).__MIRA_AUDIO = () => ({
@@ -137,6 +240,16 @@ export function HumanoidMode({
       scoreLength: cuesRef.current ? cuesLength(cuesRef.current) : 0,
       aura: { ...aura() },
       bright: (window as unknown as { __MIRA_RAMP?: { t: number } }).__MIRA_RAMP?.t ?? null,
+    })
+    ;(window as unknown as Record<string, unknown>).__MIRA_MIC = () => ({
+      on: !!micRef.current,
+      level: micRef.current ? micRef.current.level() : 0,
+      heard: heardRef.current,
+      speech: !!speechRef.current,
+      camera: cameraRef.current,
+      attention: { ...attentionRef.current },
+      bolt: boltRef.current ? { ...boltRef.current } : null,
+      palms: palmsRef.current,
     })
   }, [soundOn])
 
@@ -159,6 +272,8 @@ export function HumanoidMode({
       window.removeEventListener('pointerdown', retry)
       window.removeEventListener('keydown', retry)
       stopCues()
+      micRef.current?.stop()
+      speechRef.current?.stop()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -188,19 +303,17 @@ export function HumanoidMode({
   // `MIRA_BOLT`: klik/sentuh → bunyi bolt + pan dari posisi X (live: `pan: x*0,8`, ambang 150 ms,
   // diabaikan bila sasaran ada di dalam button/input/select/textarea)
   useEffect(() => {
-    let last = 0
     const onDown = (ev: PointerEvent) => {
       const el = ev.target as HTMLElement | null
       if (el?.closest?.('button, input, select, textarea')) return
       if (!soundOn) return
-      const nowMs = performance.now()
-      if (nowMs - last < 150) return
-      last = nowMs
       const x = Math.max(-1, Math.min(1, (ev.clientX / window.innerWidth) * 2 - 1))
-      bolt({ pan: x * 0.8 })
+      const y = Math.max(-1, Math.min(1, (ev.clientY / window.innerHeight) * 2 - 1))
+      boltPress(x, y)
     }
     window.addEventListener('pointerdown', onDown)
     return () => window.removeEventListener('pointerdown', onDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [soundOn])
 
   // kanvas latar sementara (langkah 2 menggantinya dengan WebGL + mesin garis)
@@ -235,6 +348,7 @@ export function HumanoidMode({
           speed={speed}
           replayKey={replayKey}
           pinTime={pinTime}
+          attention={attentionRef}
           onError={(m) => console.warn('mira-stage', m)}
           onCues={(cues) => {
             cuesRef.current = cues
@@ -277,9 +391,25 @@ export function HumanoidMode({
           data-testid="mira-humanoid-camera"
           aria-pressed={cameraOn}
           aria-label="Turn the camera (hand tracking) on or off"
+          onClick={() => setCameraOn((v) => !v)}
         >
           {cameraOn ? CAMERA_MSG.on : CAMERA_MSG.off}
         </button>
+        {cameraOn && (
+          <span
+            aria-label="The camera is on"
+            title="The camera is on"
+            data-testid="mira-camera-dot"
+            style={{
+              width: 14,
+              height: 14,
+              borderRadius: '50%',
+              background: '#ff4444',
+              boxShadow: '0 0 10px #ff4444aa',
+              animation: 'fadeInOut 1.6s ease infinite',
+            }}
+          />
+        )}
       </div>
 
       {/* kanan-bawah: REPLAY / SPEED / SOUND */}
@@ -345,12 +475,42 @@ export function HumanoidMode({
           style={btnStyle(micOn)}
           aria-pressed={micOn}
           title="While she talks, her voice follows your microphone's loudness"
-          onClick={() => setMicOn((v) => !v)}
+          onClick={() => toggleMic()}
           data-testid="mira-mic"
         >
           MIC {micOn ? 'ON' : 'OFF'}
         </button>
+        {micOn && heard && (
+          <div
+            className="mira-heard"
+            role="status"
+            data-testid="mira-heard"
+            style={{
+              flexBasis: '100%',
+              color: ACCENT,
+              opacity: 0.8,
+              font: "11px 'Share Tech Mono', monospace",
+              letterSpacing: '0.06em',
+            }}
+          >
+            {heard}
+          </div>
+        )}
       </div>
+
+      {/* kamera + tangan (live `QN`) — hanya saat kamera menyala */}
+      {cameraOn && (
+        <HandTracker
+          attentionRef={attentionRef}
+          color={ACCENT}
+          onPinch={(x, y) => boltPress(x, y)}
+          onPalm={() => {
+            palmsRef.current++
+            onState('idle')
+          }}
+          onSnap={() => onState('listening')}
+        />
+      )}
 
       {/* panel 82 slider — tambahan yang disengaja, default tertutup */}
       <div style={{ position: 'absolute', right: 18, top: 18, zIndex: 300, display: 'flex', gap: 8 }}>

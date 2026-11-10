@@ -1,0 +1,56 @@
+{
+  "part": "A",
+  "ok": true,
+  "pass": 8,
+  "total": 8,
+  "rows": [
+    {
+      "id": "A1",
+      "name": "worker ZN verbatim",
+      "ok": true,
+      "detail": "884 char, selisih 0"
+    },
+    {
+      "id": "A2",
+      "name": "konstanta HAND vs live",
+      "ok": true,
+      "detail": "10/10 sama"
+    },
+    {
+      "id": "A3",
+      "name": "YN / updateHead",
+      "ok": true,
+      "detail": "6000 kombinasi, max|Δ| = 0.00e+0"
+    },
+    {
+      "id": "A4",
+      "name": "jN / headParams",
+      "ok": true,
+      "detail": "{\"follow\":0.7,\"life\":0.55,\"speed\":1.3}"
+    },
+    {
+      "id": "A5",
+      "name": "$k / backK",
+      "ok": true,
+      "detail": "1681 kombinasi, max|Δ| = 0.00e+0"
+    },
+    {
+      "id": "A6",
+      "name": "G / handLandmarks",
+      "ok": true,
+      "detail": "684 status · pinch 167/167 · palm 2/2"
+    },
+    {
+      "id": "A7",
+      "name": "V / snapHit",
+      "ok": true,
+      "detail": "700 kombinasi, selisih 0"
+    },
+    {
+      "id": "A8",
+      "name": "RF / matchSpeech",
+      "ok": true,
+      "detail": "30 kalimat, selisih 0"
+    }
+  ]
+}

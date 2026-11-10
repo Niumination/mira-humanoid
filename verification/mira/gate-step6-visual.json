@@ -1,0 +1,34 @@
+{
+  "bagian": "visual",
+  "build": {
+    "file": "dist/assets/index-DimN9-5N.js",
+    "sha256": "bc3c1ef077d81dd6830c8828ef215e0431ad47f095d8f00a62c18aa74baf9060"
+  },
+  "acuan_langkah5": {
+    "file": "dist/assets/index-GQBZc4h8.js",
+    "sha256": "ba48a373b3a0f935a189e21d6474153b52209d6d0e7f8a65c1bfd6140defe011",
+    "sumber": "niu-update-langkah4n.zip → vite build (cocok)"
+  },
+  "regresi": [
+    {
+      "t": 8.0,
+      "knob": "dial.hum.head.life=0&dial.hum.head.follow=0",
+      "mae": 0.0,
+      "piksel_beda": 0
+    },
+    {
+      "t": 11.5,
+      "knob": "dial.hum.head.life=0&dial.hum.head.follow=0",
+      "mae": 0.0,
+      "piksel_beda": 0
+    }
+  ],
+  "efek_kepala": {
+    "t": 11.5,
+    "banding": "?attn=-1,0 vs ?attn=1,0",
+    "mae": 3.7271,
+    "piksel_beda": 128608,
+    "cakupan_persen": 9.9
+  },
+  "catatan": "Tanpa knob nol, build 6 vs build 5 memang berbeda karena live punya gerak kepala bawaan (life) + arah perhatian; knob nol mengisolasi perubahan lain → 0,0000."
+}

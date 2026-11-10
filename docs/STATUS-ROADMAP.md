@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-10-29** (sesudah paket 4n / langkah 5 MIRA: aura & Her states — paritas modul 6/6, aplikasi 6/6, SPEED rasio 0,300; audio produksi 9/9).
+Diperbarui: **2026-10-29** (sesudah paket 4o / **langkah 6 MIRA: tangan MediaPipe + MIC nyata** — paritas modul 8/8, aplikasi 6/6, regresi 0,0000, efek kepala MAE 3,7271).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -18,12 +18,12 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P6** | DOM runtime + ground truth | ✅ **selesai** | `recon/ground-truth/` 73 artefak, 22 MB |
 | **P7** | Arsitektur + peta UNVERIFIED | ✅ **selesai** | `recon/ARCHITECTURE.md` |
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
-| **P8b** | **MIRA** 8 langkah implementasi | 🟡 **7 dari 8** | langkah 1,2,3,**4 (audio)**,**5 (aura/Her states/SPEED/REPLAY: modul 6/6 · aplikasi 6/6)**,7,8 ✅ · tinggal langkah **6 (MediaPipe tangan + MIC nyata) ⬜** |
+| **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
 | **P9** | Gerbang A/B/C/D | 🟡 **2 dari 4** | **A ✅** (APEX semua · MIRA 8/8) · **B ✅** (APEX 18/18 hook · MIRA 10/10) · **C 🟡** (lantai derau 0,00–0,55; kita 4,50–4,86) · **D 🟡** — **audio lolos penuh (D1–D4 sekaligus)**; reproduktibilitas/seam/fps belum |
 | **P10** | Deliverable + deploy | 🟡 **1 dari 2** | deploy ✅ berjalan & diverifikasi tiap paket (dua situs hidup) · deliverable akhir ⬜ |
 
-**Hitungan item: 27 dari 30 selesai ≈ 90 %.**
-Tetapi 6 item sisanya justru yang terberat: 3 fitur interaktif MIRA + paritas piksel + 2 gerbang penilai.
+**Hitungan item: 28 dari 30 selesai ≈ 93 %.**
+Yang tersisa 2 item justru yang terberat: **paritas piksel (Gerbang C)** dan **sisa Gerbang D + deliverable/deploy akhir**.
 
 ---
 

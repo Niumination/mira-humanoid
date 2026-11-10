@@ -67,6 +67,7 @@ import { buildMatter, nw } from '../lib/miraMatter'
 import { buildCueTracks } from '../lib/miraSoundCues'
 import type { MiraState } from '../lib/uiStyle'
 import type { Dial } from '../lib/miraDial'
+import { attentionOverride, backK, headParams, updateHead, type Attention, type HeadPose } from '../lib/miraHand'
 import { aura, herSpeedBright, herStateParams, setPace, setPresence, touchRate } from '../lib/miraAura'
 import type { SoundCue } from '../lib/miraAudio'
 import { IGNITE_CFG, mulberry32 } from '../lib/miraTimeline'
@@ -203,6 +204,7 @@ export function MiraStage({
   speed = 1,
   replayKey = 0,
   pinTime: pinProp = null,
+  attention,
 }: {
   onTrace?: (m: string) => void
   onError?: (m: string) => void
@@ -218,11 +220,13 @@ export function MiraStage({
   replayKey?: number
   /** `?t=` — jam dibekukan */
   pinTime?: number | null
+  /** perhatian (penunjuk / tangan / perintah suara) — live `attention` prop `SF` */
+  attention?: { current: Attention }
 }) {
   const ref = useRef<HTMLCanvasElement | null>(null)
   // nilai yang berubah tanpa membangun ulang adegan
-  const live = useRef({ state, dial, speed, replayKey, pinProp })
-  live.current = { state, dial, speed, replayKey, pinProp }
+  const live = useRef({ state, dial, speed, replayKey, pinProp, attention })
+  live.current = { state, dial, speed, replayKey, pinProp, attention }
 
   useEffect(() => {
     const canvas = ref.current
@@ -826,6 +830,7 @@ export function MiraStage({
 
       ;(window as any).__MIRA_ERR = null
       let Ee = { speed: 1, bright: 1 }
+      let headState: HeadPose = { yaw: 0, pitch: 0, roll: 0 }
       const draw = () => {
         if (dead) return
         raf = requestAnimationFrame(draw)
@@ -861,6 +866,22 @@ export function MiraStage({
         setPace(Ee.speed)
         const t = tick()
         const ramp = rampAt(t)
+        // ── arah kepala (live `YN`): perhatian penunjuk/tangan/suara → yaw/pitch/roll ──
+        const attn = live.current.attention?.current
+        const eF = attentionOverride()
+        const nowMs = performance.now()
+        const lastAt = Math.max(attn?.at || 0, attn?.fingerHold || 0)
+        const voice = attn?.voice && nowMs < attn.voice.until ? attn.voice : null
+        const rr = eF
+          ? { x: eF[0], y: eF[1], idle: 0 }
+          : voice
+            ? { x: voice.x, y: voice.y, idle: 0 }
+            : { x: attn?.x || 0, y: attn?.y || 0, idle: (nowMs - lastAt) / 1000 }
+        const hp = live.current.dial ? headParams((k) => live.current.dial!.get(k)) : { follow: 1, life: 1, speed: 1 }
+        headState = updateHead(headState, rr, auraNow, t, eF ? 5 : 0.016, hp)
+        const headOn = xs(t, reveal[2] + 1.6, reveal[2] + 2.6)
+                const pose: [number, number, number] = [headState.yaw * headOn, headState.pitch * headOn, headState.roll * headOn]
+        ;(window as unknown as Record<string, unknown>).__MIRA_HEAD = { ...headState, on: headOn, x: rr.x, y: rr.y, idle: rr.idle }
         // live `Rw({waves, matter, orb})` — sumber nilai sama dengan `rampAt` (port verbatimnya)
         setPresence({ waves: ramp.waves, matter: ramp.matterN, orb: ramp.orb })
         const fieldClock = pin !== null && Number.isFinite(pin) ? fieldPin : t
@@ -1066,7 +1087,7 @@ export function MiraStage({
           gl.uniform2f(U(P.hair, 'uHead'), 694.7899780273438, 322.79998779296875)
           gl.uniform2f(U(P.hair, 'uHairOff'), 120, 48)
           gl.uniform1f(U(P.hair, 'uHeadH'), fh)
-          gl.uniform4f(U(P.hair, 'uHeadPose'), 0, 0, 0, 0)
+          gl.uniform4f(U(P.hair, 'uHeadPose'), pose[0], pose[1], pose[2], 0)
           gl.uniform3f(U(P.hair, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
           gl.uniform1i(U(P.hair, 'uMap'), 0)
           gl.uniform1i(U(P.hair, 'uHeadRows'), 1)
@@ -1107,7 +1128,7 @@ export function MiraStage({
           gl.uniform2f(U(P.strands, 'uHead'), 694.7899780273438, 322.79998779296875)
           gl.uniform2f(U(P.strands, 'uHairOff'), 120, 48)
           gl.uniform1f(U(P.strands, 'uHeadH'), HH - 48)
-          gl.uniform4f(U(P.strands, 'uHeadPose'), 0, 0, 0, 0)
+          gl.uniform4f(U(P.strands, 'uHeadPose'), pose[0], pose[1], pose[2], 0)
           gl.uniform3f(U(P.strands, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
           gl.uniform1f(U(P.strands, 'uPulse'), 0.6 * Ee.bright)
           gl.uniform1f(U(P.strands, 'uPulseSpeed'), 1)
@@ -1144,7 +1165,7 @@ export function MiraStage({
           gl.uniform2f(U(P.twinkles, 'uHead'), 694.7899780273438, 322.79998779296875)
           gl.uniform2f(U(P.twinkles, 'uHairOff'), 120, 48)
           gl.uniform1f(U(P.twinkles, 'uHeadH'), HH - 48)
-          gl.uniform4f(U(P.twinkles, 'uHeadPose'), 0, 0, 0, 0)
+          gl.uniform4f(U(P.twinkles, 'uHeadPose'), pose[0], pose[1], pose[2], 0)
           gl.uniform3f(U(P.twinkles, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
           gl.uniform1i(U(P.twinkles, 'uHeadRows'), 0)
           gl.drawArrays(gl.POINTS, 0, twinklesPx.length)
@@ -1163,7 +1184,7 @@ export function MiraStage({
         gl.uniform1f(U(P.points, 'uStep'), 1.5)
         // live: uPxPerPic = X.k·breathSx·(canvasH/2/_d)·dpr — skala per-piksel, `?pp=` untuk kalibrasi ukuran titik
         gl.uniform1f(U(P.points, 'uPxPerPic'), 0.5895196795463562 * tune('pp', 1))
-        gl.uniform1f(U(P.points, 'uBackK'), 0)
+        gl.uniform1f(U(P.points, 'uBackK'), backK(pose[0], pose[1]))
         gl.uniform1f(U(P.points, 'uRim'), 0.9)
         // F-103: live menyalakan awan titik tubuh setelah ignition+1,6 s:
         //   uOn    = (t > ignite+1,6 && !head3d) ? 1 : 0
@@ -1178,7 +1199,7 @@ export function MiraStage({
         gl.uniform4f(U(P.points, 'uFaceA'), 0, 0, 0, 0)
         gl.uniform1f(U(P.points, 'uFaceSize'), 1)
         gl.uniform1f(U(P.points, 'uHeadH'), fh)
-        gl.uniform4f(U(P.points, 'uHeadPose'), 0, 0, 0, 0)
+        gl.uniform4f(U(P.points, 'uHeadPose'), pose[0], pose[1], pose[2], 0)
         gl.uniform3f(U(P.points, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
         gl.uniform2f(U(P.points, 'uSize'), fw, fh)
         const qb = t - reveal[2]
@@ -1247,7 +1268,7 @@ export function MiraStage({
           gl.uniform4f(U(P.matter, 'uFaceA'), 0, 0, 0, 0)
           gl.uniform1f(U(P.matter, 'uFaceSize'), 1)
           gl.uniform1f(U(P.matter, 'uHeadH'), fh)
-          gl.uniform4f(U(P.matter, 'uHeadPose'), 0, 0, 0, 0)
+          gl.uniform4f(U(P.matter, 'uHeadPose'), pose[0], pose[1], pose[2], 0)
           gl.uniform3f(U(P.matter, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
           gl.uniform1i(U(P.matter, 'uHeadRows'), 0)
           // ---- live: SATU salinan utama (lag 0, trail 1) + tiga salinan jejak `eF` ----
@@ -1313,7 +1334,7 @@ export function MiraStage({
         gl.uniform4f(U(P.wire, 'uFace'), face[0], face[1], face[2], face[3])
         gl.uniform4f(U(P.wire, 'uFaceA'), 0, 0, animClock, 0)
         gl.uniform1f(U(P.wire, 'uFaceSize'), 1)
-        gl.uniform4f(U(P.wire, 'uHeadPose'), 0, 0, 0, 0)
+        gl.uniform4f(U(P.wire, 'uHeadPose'), pose[0], pose[1], pose[2], 0)
         gl.uniform3f(U(P.wire, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
         gl.uniform1f(U(P.wire, 'uHeadH'), fh)
         if (!OFF.has('lines')) gl.drawElements(gl.TRIANGLES, mesh.indexCount, gl.UNSIGNED_INT, 0)

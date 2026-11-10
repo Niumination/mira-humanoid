@@ -692,3 +692,30 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Paket **`niu-update-langkah4n.zip`**.
 - Berikutnya (langkah 6): MediaPipe tangan → `hum.touch.wave` + `touchRate`, MIC nyata & `mira-heard`,
   lalu gerbang C/D sisa (reproduktibilitas, seam, fps) dan viewport 390.
+
+### Sesi 42 (2026-10-29) — **langkah 6 MIRA: tangan MediaPipe + MIC nyata** (langkah MIRA terakhir)
+
+- **Dua berkas baru.** `src/lib/miraHand.ts` memport `HAND`/`ZN`/`YN`/`jN`/`$k`/`G`/`V`/`XN`/`qN`/`CF`/`bF`/`RF`/`VT`;
+  `src/components/HandTracker.tsx` memport komponen `QN` (kamera 320×240 + audio, worker `Blob` modul,
+  fallback MediaPipe thread-utama GPU→CPU 125 ms, kanvas 256×192 tiap 40 ms, status berwarna).
+- **Sambungan di aplikasi:** tombol `mira-humanoid-camera` (`ENABLE CAMERA`/`CAMERA OFF`, `aria-pressed`,
+  titik merah 14 px), `onPinch→bolt`, `onPalm→idle`, `onSnap→listening`, MIC nyata (analiser 512) +
+  baris `mira-heard` + perintah suara (`look left/right/up/down`, `look at me`, `follow me`), dan
+  `attentionRef` menggerakkan `uHeadPose` semua lapisan (rambut, helai, bintik, poin, materi, wire)
+  serta `uBackK` poin.
+- **Dua koreksi semantik dari live:** (a) logika landmark dipisah jadi fungsi murni `handLandmarks`
+  supaya bisa diuji; (b) `?bolt=x,y` = posisi percikan (bukan arah perhatian) — arah perhatian memakai
+  `?attn=x,y`. Port sebelumnya men-seed perhatian dari `?bolt`; sekarang tidak.
+- **Gerbang D langkah 6 — modul 8/8:** worker `ZN` **884 char selisih 0** · `YN` **6 000 kombinasi
+  max|Δ| 0,00e+0** · `$k` **1 681 kombinasi 0,00e+0** · `G` **800 frame** (684 status, pinch 167/167,
+  palm 2/2, perhatian & state identik) · `V` 700 kombinasi · `RF` 30 kalimat · konstanta 10/10.
+- **Aplikasi 6/6** (kamera palsu Chromium + MediaPipe tiruan): label/aria, titik merah 14 px
+  `rgb(255,68,68)`, status `camera on` → `hand found`, perhatian Δx 0,246–0,256, yaw Δ 0,023–0,057,
+  pinch → bolt **3×**, telapak → `idle`, MIC level 0,03–0,87 + `mira-heard`, `?attn=±0,8` →
+  yaw **+0,2419 / −0,2701**, `?attn=1,1` |yaw|max **0,3059** ≤ 0,416.
+- **Tanpa regresi:** build 6 vs build 5 (knob kepala nol) **MAE 0,0000 · 0 piksel beda** (PNG identik)
+  di `?t=8,0` dan `?t=11,5` · langkah 5 modul **6/6** & aplikasi **6/6** · audio D1 **31/31** ·
+  Gerbang A **8/8** · Gerbang B **10/10**.
+- **Efek baru terukur:** `?attn=-1,0` vs `?attn=1,0` @`t=11,5` **MAE 3,7271** (128 608 piksel ≈10 %).
+- Paket **`niu-update-langkah4o.zip`**. P8b MIRA **8/8 langkah selesai**; sisa: Gerbang C (paritas
+  piksel), sisa Gerbang D (reproduktibilitas/seam/fps), viewport 390, deliverable akhir.

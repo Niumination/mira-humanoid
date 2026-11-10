@@ -684,3 +684,17 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | **V-5** | Efek visual: idle vs talking `?t=8,0` MAE **4,61** (+8,4 % terang, 539 266 piksel) · `talkBright` 1,0 vs 2,5 MAE **18,34** (53,19 → 71,52). | — |
 | **R-3** | Tidak ada regresi: build 5 vs build 4m **MAE 0,0000**; D1 audio **31/31**; Gerbang A **8/8**; B **10/10**. Selisih 0,039 vs **produksi** = derau (produksi lawan dirinya 0,037). | — |
 | **V-4m** | Verifikasi paket 4m: produksi `index-nbTSOwn5.js` sha256 `feaaf85a…` = build lokal · repo `334f054` · 4 blob identik · **audio produksi 9/9**. | — |
+
+## Sesi 42 (2026-10-29) — kamera, tangan, mikrofon
+
+| # | temuan | angka |
+|---|---|---|
+| **H-1** | **`?bolt=x,y` bukan arah perhatian.** Di live `ix=VT("bolt")` mengisi posisi percikan efek bolt (`N.current` fallback `{x,y,id:-1}`), sedangkan arah perhatian memakai `eF=VT("attn")` dan hanya di lapisan gambar. Port langkah 6 awal men-seed `attentionRef` dari `?bolt` → dihapus. | 1 koreksi |
+| **H-2** | **`YN` memakai jam yang sama dengan build (`Y`), bukan jam animasi.** Argumen `r` = dt asli (dijepit `?5` saat `?attn` dipakai) dan pelunakan `1−exp(−dt·4,2·speed)`; `headOn = xs(Y,[ignite+1,6; ignite+2,6])` mengalikan Keluaran → sebelum `t≈9,15` kepala memang belum bergerak (di `?t=8,0` yaw≈0 itu **benar**). | — |
+| **H-3** | **`G` (landmark) punya dua jebakan yang gampang salah port:** telapak = `dist(tip,wrist) > dist(pip,wrist)·1,12` (bukan `tip↔pip`), dan jeda telapak memakai penghitung sendiri `K` (1500 ms) terpisah dari jeda tepuk `Z` (1000 ms). Keduanya dibetulkan sebelum uji. | 2 bug ditutup |
+| **H-4** | **Di SwiftShader panggung ≈1 fps**, jadi landmark datang tiap ~5–9 s. Tangan tiruan karena itu digerakkan **per frame** (siklus 6: kepalan → 4× telapak diam → pinch); penjadwalan berbasis waktu tak akan pernah memberi 4 frame telapak berturut-turut. | — |
+| **H-5** | **`page.click` masih bisa habis waktu** walau tombol benar (actionability pada ~1 fps). Semua klik di gerbang langkah 6 lewat `el.click()` DOM. | 3 klik |
+| **G-6A** | Paritas modul vs bundel live: `ZN` 884 char selisih **0** · `YN` **6 000** kombinasi max\|Δ\| **0,00e+0** · `$k` **1 681** kombinasi **0,00e+0** · `YN`/`jN` sama · `G` **800 frame** → 684 status, pinch **167/167**, palm **2/2**, perhatian & `L,D,X,J,M,Z,K` identik · `V` 700 kombinasi · `RF` 30 kalimat · konstanta 10/10. | **8/8** |
+| **G-6B** | Aplikasi (kamera palsu + MediaPipe tiruan): `ENABLE CAMERA`→`CAMERA OFF` + titik **14 px `rgb(255,68,68)`**, status `camera on - show your hand`→`hand found`, perhatian Δx **0,246**, yaw Δ **0,0225**, pinch→bolt **3**, telapak→`idle` **true**, MIC level puncak **0,028–0,87** + `mira-heard` + state `talking`, `?attn=±0,8`→yaw **+0,2419/−0,2701**, `?attn=1,1` \|yaw\|max **0,3059** (batas **0,416**). | **6/6** |
+| **V-6** | Regresi: build 6 vs build 5 (knob `dial.hum.head.life=0&dial.hum.head.follow=0`) `?t=8,0` & `?t=11,5` → **MAE 0,0000 · 0 piksel** (PNG sha sama `6b720824`). Tanpa knob nol, selisih memang ada — itu gerak kepala bawaan live + arah perhatian. Efek kepala `?attn=-1,0` vs `1,0` @`t=11,5` **MAE 3,7271** / 128 608 piksel (≈10 %). | — |
+| **R-4** | Tidak ada regresi gerbang lama dengan build 6: langkah 5 modul **6/6** & aplikasi **6/6** · audio D1 **31/31** · Gerbang A **8/8** · Gerbang B **10/10**. | — |
