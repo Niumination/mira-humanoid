@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-11-06** (sesudah paket 4k / build37 terverifikasi di produksi).
+Diperbarui: **2026-10-29** (sesudah paket 4n / langkah 5 MIRA: aura & Her states — paritas modul 6/6, aplikasi 6/6, SPEED rasio 0,300; audio produksi 9/9).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -18,11 +18,11 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P6** | DOM runtime + ground truth | ✅ **selesai** | `recon/ground-truth/` 73 artefak, 22 MB |
 | **P7** | Arsitektur + peta UNVERIFIED | ✅ **selesai** | `recon/ARCHITECTURE.md` |
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
-| **P8b** | **MIRA** 8 langkah implementasi | 🟡 **6 dari 8** | langkah 1,2,3,**4 (audio: paritas pemanggilan 31/31 · spektrum 27/27 sampel-identik · hidup 9/9)**,7,8 ✅ · langkah **5 (state penuh), 6 (hand tracking) ⬜** |
+| **P8b** | **MIRA** 8 langkah implementasi | 🟡 **7 dari 8** | langkah 1,2,3,**4 (audio)**,**5 (aura/Her states/SPEED/REPLAY: modul 6/6 · aplikasi 6/6)**,7,8 ✅ · tinggal langkah **6 (MediaPipe tangan + MIC nyata) ⬜** |
 | **P9** | Gerbang A/B/C/D | 🟡 **2 dari 4** | **A ✅** (APEX semua · MIRA 8/8) · **B ✅** (APEX 18/18 hook · MIRA 10/10) · **C 🟡** (lantai derau 0,00–0,55; kita 4,50–4,86) · **D 🟡** — **audio lolos penuh (D1–D4 sekaligus)**; reproduktibilitas/seam/fps belum |
 | **P10** | Deliverable + deploy | 🟡 **1 dari 2** | deploy ✅ berjalan & diverifikasi tiap paket (dua situs hidup) · deliverable akhir ⬜ |
 
-**Hitungan item: 26 dari 30 selesai ≈ 87 %.**
+**Hitungan item: 27 dari 30 selesai ≈ 90 %.**
 Tetapi 6 item sisanya justru yang terberat: 3 fitur interaktif MIRA + paritas piksel + 2 gerbang penilai.
 
 ---
@@ -91,7 +91,7 @@ Sisa APEX **hanya satu**: profil kernel bloom (fitur sudah lengkap, uniform/atri
 | Gerbang C/D + viewport 390 | 3 | sedang | ~20 % |
 | Penyempurnaan piksel (MIRA + APEX bloom) | 2 | sedang–besar | ~15 % |
 | Deliverable + pembersihan | 2 | kecil | ~5 % |
-| **total** | **10 pekerjaan** | | **≈87 % selesai · ≈13 % sisa** |
+| **total** | **10 pekerjaan** | | **≈90 % selesai · ≈10 % sisa** |
 
 Catatan: 20 % ini **bukan** sisa yang mudah — tiga fitur interaktif itu belum ada baris kodenya, dan
 paritas piksel MIRA masih 10–50× di atas lantai derau.

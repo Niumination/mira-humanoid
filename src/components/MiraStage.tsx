@@ -65,6 +65,9 @@ import { buildPicturePoints, quadGeometry, spriteGeometry } from '../lib/miraPic
 import { buildWireMesh, pictureToWire } from '../lib/miraWire'
 import { buildMatter, nw } from '../lib/miraMatter'
 import { buildCueTracks } from '../lib/miraSoundCues'
+import type { MiraState } from '../lib/uiStyle'
+import type { Dial } from '../lib/miraDial'
+import { aura, herSpeedBright, herStateParams, setPace, setPresence, touchRate } from '../lib/miraAura'
 import type { SoundCue } from '../lib/miraAudio'
 import { IGNITE_CFG, mulberry32 } from '../lib/miraTimeline'
 import { liveArcs } from '../lib/miraArcsLive'
@@ -195,13 +198,31 @@ export function MiraStage({
   onTrace,
   onError,
   onCues,
+  state = 'idle',
+  dial,
+  speed = 1,
+  replayKey = 0,
+  pinTime: pinProp = null,
 }: {
   onTrace?: (m: string) => void
   onError?: (m: string) => void
   /** skor suara adegan (port `Vk`): dipakai HumanoidMode untuk `playCues` */
   onCues?: (cues: SoundCue[]) => void
+  /** status MIRA (idle/listening/talking) — menggerakkan `RN.talk`/`RN.listen` (live `MF`/`AF`) */
+  state?: MiraState
+  /** 82 dial: 4 param *Her states* dipakai `VN()` bersama aura */
+  dial?: Dial
+  /** SPEED 1× / 0,3× — mengalikan jam (`v.current.speed` live) */
+  speed?: number
+  /** REPLAY: menaikkan start jam (`v.current.start = performance.now()`) */
+  replayKey?: number
+  /** `?t=` — jam dibekukan */
+  pinTime?: number | null
 }) {
   const ref = useRef<HTMLCanvasElement | null>(null)
+  // nilai yang berubah tanpa membangun ulang adegan
+  const live = useRef({ state, dial, speed, replayKey, pinProp })
+  live.current = { state, dial, speed, replayKey, pinProp }
 
   useEffect(() => {
     const canvas = ref.current
@@ -776,8 +797,12 @@ export function MiraStage({
       // live: dt = min(0,05 s, dt asli) → jam build ikut lambat bila fps rendah (terukur: ~0,1 s/s di SwiftShader)
       let clockT = 0
       let lastNow = performance.now()
+      let speedStart = performance.now()      // live `v.current.start`
+      let lastReplayKey = live.current.replayKey
       // `?t=` = jam dibekukan (sama seperti live: `pinTime`), supaya frame bisa dibandingkan fase-per-fase
       const pin = (() => {
+        const given = live.current.pinProp
+        if (given !== null && given !== undefined && Number.isFinite(given)) return given
         try {
           const v = new URLSearchParams(window.location.search).get('t')
           return v === null ? null : Number(v)
@@ -792,12 +817,15 @@ export function MiraStage({
       const tick = () => {
         if (pin !== null && Number.isFinite(pin)) return pin
         const now = performance.now()
-        clockT += Math.min(0.05, (now - lastNow) / 1000)
+        const dt = Math.min(0.05, (now - lastNow) / 1000)
         lastNow = now
-        return clockT
+        // live: `L.current += Fe · aura.speed · Kk(touchT0)`; `Y = (now − start)/1e3 · speed`
+        clockT += dt * Ee.speed * touchRate(-1e9)
+        return clockT * live.current.speed
       }
 
       ;(window as any).__MIRA_ERR = null
+      let Ee = { speed: 1, bright: 1 }
       const draw = () => {
         if (dead) return
         raf = requestAnimationFrame(draw)
@@ -819,8 +847,22 @@ export function MiraStage({
         gl.viewport(0, 0, pw, ph)
         gl.clearColor((window as any).__MIRA_RED ? 1 : 0, (window as any).__MIRA_RED ? 0 : 0, 0, 1)
         gl.clear(gl.COLOR_BUFFER_BIT)
+        // ── aura (live `AF`): status + level → `RN`, lalu `VN` → {speed, bright} ──
+        const st = live.current.state
+        const her = live.current.dial ? herStateParams((k) => live.current.dial!.get(k)) : { talkSpeed: 2, talkBright: 1.35, listenSpeed: 1.5, listenBright: 1.15 }
+        if (live.current.replayKey !== lastReplayKey) {
+          lastReplayKey = live.current.replayKey
+          clockT = 0
+          speedStart = performance.now()
+        }
+        void speedStart
+        const auraNow = aura()
+        Ee = herSpeedBright(auraNow, her)
+        setPace(Ee.speed)
         const t = tick()
         const ramp = rampAt(t)
+        // live `Rw({waves, matter, orb})` — sumber nilai sama dengan `rampAt` (port verbatimnya)
+        setPresence({ waves: ramp.waves, matter: ramp.matterN, orb: ramp.orb })
         const fieldClock = pin !== null && Number.isFinite(pin) ? fieldPin : t
         animT += 0.016
         const animClock = pin !== null && Number.isFinite(pin) ? Math.min(animT, 0.2) : animT
@@ -974,7 +1016,7 @@ export function MiraStage({
         gl.uniformMatrix4fv(U(P.pic, 'modelViewMatrix'), false, quadMv())
         gl.uniformMatrix4fv(U(P.pic, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.pic, 'uFill'), 1)
-        gl.uniform1f(U(P.pic, 'uGain'), tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1))
+        gl.uniform1f(U(P.pic, 'uGain'), Ee.bright * tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1))
         gl.uniform1f(U(P.pic, 'uPG'), tune('pgg', 1))
         gl.uniform1f(U(P.pic, 'uPGE'), tune('pge', 0))
         gl.uniform2f(U(P.pic, 'uSize'), fw, fh)
@@ -1067,7 +1109,7 @@ export function MiraStage({
           gl.uniform1f(U(P.strands, 'uHeadH'), HH - 48)
           gl.uniform4f(U(P.strands, 'uHeadPose'), 0, 0, 0, 0)
           gl.uniform3f(U(P.strands, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
-          gl.uniform1f(U(P.strands, 'uPulse'), 0.6)
+          gl.uniform1f(U(P.strands, 'uPulse'), 0.6 * Ee.bright)
           gl.uniform1f(U(P.strands, 'uPulseSpeed'), 1)
           gl.uniform1i(U(P.strands, 'uHeadRows'), 0)
           gl.uniform1i(U(P.strands, 'uLifted'), 1)
@@ -1247,14 +1289,14 @@ export function MiraStage({
         // live: uGain = 0,95·bright·(1+1,1·q), q = hum.build.surge · b_(t, ignite), b_ = exp(−Δ/1,9)
         const me = t - reveal[2]
         const qSurge = me >= 0 && me < 8 ? Math.exp(-me / 1.9) : 0
-        gl.uniform1f(U(P.wire, 'uGain'), 0.95 * tune('lg', 1) * tune('hg', 1) * (1 + 1.1 * qSurge))
+        gl.uniform1f(U(P.wire, 'uGain'), 0.95 * Ee.bright * tune('lg', 1) * tune('hg', 1) * (1 + 1.1 * qSurge))
         // F-106: live menyalakan cahaya yang berjalan di sepanjang garis setelah `idle`
         //   uIdle = smoothstep(t; idle−0,6; idle+0,6), idle = ignite + 1,4 = 7,95
         //   (shader: c += vec3(1,0,94,1)·pulse·2,0, pulse dari kepala cahaya yang bergerak)
         // Di build kita nilai ini dipaku 0, jadi lapisan itu tidak pernah muncul.
         const wireIdle = xs(t, reveal[2] + 0.8, reveal[2] + 2.0) * tune('idl', 1)
         gl.uniform1f(U(P.wire, 'uIdle'), wireIdle)
-        gl.uniform1f(U(P.wire, 'uPulse'), 0.7)
+        gl.uniform1f(U(P.wire, 'uPulse'), 0.7 * Ee.bright)
         gl.uniform1f(U(P.wire, 'uPulseSpeed'), 1)
         gl.uniform1f(U(P.wire, 'uSketchBright'), 1)
         gl.uniform1f(U(P.wire, 'uFade'), 1)

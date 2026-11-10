@@ -670,3 +670,25 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - Paket **`niu-update-langkah4m.zip`**.
 - Berikutnya (langkah 5): state machine penuh + 4 param *Her states* (`?state=`), SPEED/REPLAY
   menggeser jam panggung, lalu langkah 6 (MediaPipe: `hum.touch.wave`, MIC) dan gerbang C/D + viewport 390.
+
+### Sesi 41 (2026-10-29) — verifikasi 4m + **langkah 5 MIRA: state machine, Her states, SPEED/REPLAY**
+
+- **Verifikasi paket 4m LULUS:** produksi `index-nbTSOwn5.js` sha256 `feaaf85a…` = build 4m lokal;
+  repo head `334f054`; 4 blob (`miraAudio`, `miraSoundCues`, `MiraStage`, `HumanoidMode`) identik dengan
+  workspace. **Audio di PRODUKSI 9/9** (36 cue · skor 12,550 s · RMS 1,85·10⁻¹ · SOUND OFF → 0,00 ·
+  ON → 1,26·10⁻¹ · bolt 1,51·10⁻¹).
+- **Langkah 5 selesai.** `src/lib/miraAura.ts` memport `Rn`/`QU`/`bw`/`Rw`/`Aw`/`$U`/`A_`/`Cw`,
+  `tx`/`VN`/`GN`, `Kk`, `PF`; `MiraStage` menerima `state`/`dial`/`speed`/`replayKey`/`pinTime` dan
+  memakai `Ee.bright` pada `uGain`/`uPulse` garis, gambar, helai; `HumanoidMode` menjalankan loop aura
+  (level mic atau `PF` prosedural), pin `?talk/&listen/&voice`, SPEED menggeser jam, REPLAY mengulang 0.
+- **Gerbang D langkah 5:** modul vs live **6/6** (respons aura 205 langkah selisih **0**, `VN()` **486
+  kombinasi** selisih **0**, `Rw` jepit `0,4/1/0` sama, aturan `qy`, `Kk`, `PF`) · di aplikasi **6/6**
+  (TALKING talk 0→1,000 · LISTENING listen 0→0,417 · pin URL 0,8/0,25/0,6 · **SPEED rasio 0,300** ·
+  REPLAY 0) · efek visual idle vs talking MAE **4,61** (+8,4 % terang, 539 266 piksel) dan
+  `talkBright` 1,0 vs 2,5 MAE **18,34** (53,19 → 71,52).
+- **Tanpa regresi:** build langkah 5 vs build 4m `?t=8,0` & `?t=11,5` **MAE 0,0000** · audio D1 **31/31** ·
+  Gerbang A **8/8** · Gerbang B **10/10**. Selisih vs produksi (0,039) terbukti derau lingkungan
+  (produksi lawan dirinya sendiri 0,037).
+- Paket **`niu-update-langkah4n.zip`**.
+- Berikutnya (langkah 6): MediaPipe tangan → `hum.touch.wave` + `touchRate`, MIC nyata & `mira-heard`,
+  lalu gerbang C/D sisa (reproduktibilitas, seam, fps) dan viewport 390.

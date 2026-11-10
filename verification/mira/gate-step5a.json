@@ -1,0 +1,36 @@
+{
+  "when": "2026-11-10T14:05:23.135Z",
+  "score": "6/6",
+  "rows": [
+    {
+      "name": "respons aura (talk/listen/voice) identik",
+      "ok": true,
+      "detail": "selisih maks 0.00e+0"
+    },
+    {
+      "name": "pemusnahan < 0,01 sama",
+      "ok": true,
+      "detail": "live 0.000000/0.913648 · kita 0.000000/0.913648"
+    },
+    {
+      "name": "pin URL & pace sama",
+      "ok": true,
+      "detail": "pin true · pace<0,2 true · pace3 true · pace>6 true"
+    },
+    {
+      "name": "presence: jepit 0..1 & aturan `qy` sama",
+      "ok": true,
+      "detail": "jepit 0.4/1/0 vs 0.4/1/0 · null-sebelum-isi true · kosong true"
+    },
+    {
+      "name": "VN() identik (486 kombinasi)",
+      "ok": true,
+      "detail": "selisih maks 0.00e+0"
+    },
+    {
+      "name": "Kk() sentuhan & PF() level bicara identik",
+      "ok": true,
+      "detail": "sentuh 0.00e+0 · bicara 0.00e+0"
+    }
+  ]
+}

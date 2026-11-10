@@ -22,6 +22,15 @@ import { MiraStage } from './MiraStage'
 import type { Dial } from '../lib/miraDial'
 import { ACCENT, STATE_BUTTONS, btnStyle, type MiraState } from '../lib/uiStyle'
 import {
+  aura,
+  clearLevel,
+  level,
+  pinAura,
+  setLevel,
+  talkLevel,
+  updateAura,
+} from '../lib/miraAura'
+import {
   bolt,
   contextState,
   cuesLength,
@@ -50,6 +59,7 @@ export function HumanoidMode({
   onExit?: () => void
 }) {
   const [panelOpen, setPanelOpen] = useState(false)
+  const [replayKey, setReplayKey] = useState(0)
   const [cameraOn] = useState(false) // langkah 6
   const [micOn, setMicOn] = useState(false) // langkah 4
   // live: `S = useState(() => localStorage.apex_sound_off === "1")`, tombol menampilkan SOUND {S ? ON : OFF}
@@ -81,6 +91,42 @@ export function HumanoidMode({
     startedRef.current = true
   }
 
+  // aura (live `MF` + `QU`): status MIRA + level bicara → `RN.talk` / `RN.listen` / `RN.voice`.
+  // Level bicara: mikrofon bila MIC ON (level nyata), selain itu `PF(t)` prosedural seperti live.
+  useEffect(() => {
+    let raf = 0
+    let last = performance.now()
+    const t0 = performance.now()
+    const loop = () => {
+      const now = performance.now()
+      const dt = (now - last) / 1000
+      last = now
+      const speaking = state === 'talking'
+      if (speaking) setLevel('output', micOn ? level('output') : talkLevel((now - t0) / 1000))
+      else clearLevel('output')
+      updateAura(dt, { energy: level('output'), speaking, listening: state === 'listening' })
+      raf = requestAnimationFrame(loop)
+    }
+    raf = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearLevel('output')
+    }
+  }, [state, micOn])
+
+  // pin aura dari URL (live `AF`): `?listen` / `?talk` / `?voice`
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search)
+    if (q.has('listen') || q.has('talk')) {
+      pinAura({
+        voice: Number(q.get('voice') || 0),
+        talk: Number(q.get('talk') || 0),
+        listen: Number(q.get('listen') || 0),
+      })
+    }
+    return () => pinAura(null)
+  }, [])
+
   // diagnostik (seperti `__MIRA_*` di panggung): status mesin audio untuk alat verifikasi
   useEffect(() => {
     ;(window as unknown as Record<string, unknown>).__MIRA_AUDIO = () => ({
@@ -89,6 +135,8 @@ export function HumanoidMode({
       started: startedRef.current,
       soundOn,
       scoreLength: cuesRef.current ? cuesLength(cuesRef.current) : 0,
+      aura: { ...aura() },
+      bright: (window as unknown as { __MIRA_RAMP?: { t: number } }).__MIRA_RAMP?.t ?? null,
     })
   }, [soundOn])
 
@@ -182,6 +230,11 @@ export function HumanoidMode({
       {/* mesin garis: artwork → garis → mesh wire (langkah 2) */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
         <MiraStage
+          state={state}
+          dial={dial}
+          speed={speed}
+          replayKey={replayKey}
+          pinTime={pinTime}
           onError={(m) => console.warn('mira-stage', m)}
           onCues={(cues) => {
             cuesRef.current = cues
@@ -234,13 +287,28 @@ export function HumanoidMode({
         className="mira-own-row"
         style={{ position: 'absolute', right: 18, bottom: 18, display: 'flex', gap: 8, zIndex: 2, flexWrap: 'wrap', justifyContent: 'flex-end' }}
       >
-        <button className="mira-btn" style={btnStyle(false)} data-testid="mira-replay">
+        <button
+          className="mira-btn"
+          style={btnStyle(false)}
+          data-testid="mira-replay"
+          onClick={() => {
+            setReplayKey((k) => k + 1)
+            startedRef.current = false
+            if (soundOn && speed === 1) startCues(0)
+          }}
+        >
           REPLAY
         </button>
         <button
           className="mira-btn"
           style={btnStyle(false)}
-          onClick={() => setSpeed((s) => (s === 1 ? 0.3 : 1))}
+          onClick={() => {
+            setSpeed((s) => (s === 1 ? 0.3 : 1))
+            // live: `vd(MIRA_BUILD,{stop:true})` setiap kali kecepatan berubah
+            stopCues()
+            startedRef.current = false
+          }}
+          data-testid="mira-speed"
         >
           SPEED {speed}x
         </button>

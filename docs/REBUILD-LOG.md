@@ -669,3 +669,18 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | **D-2** | Paritas spektrum `OfflineAudioContext` (Chromium, PRNG sama): **27/27 sampel-identik**. | MAE **0,0000 %** · korelasi pita **1,000000** |
 | **D-3** | Audio hidup di aplikasi (build lokal, autoplay dilonggarkan): mesin `running`, **36 cue**, panjang skor **12,550 s**, RMS master 2,55·10⁻², SOUND OFF → **0,00**, ON → 1,01·10⁻¹, bolt 2,26·10⁻². | 9/9 |
 | **D-4** | Tidak ada regresi piksel: build-audio vs produksi build37 `?t=8,0` **MAE 0,0000**, `?t=0,3` 0,0206. | — |
+
+
+## Sesi 41 (2026-10-29) — state machine & Her states
+
+| # | temuan | angka |
+|---|---|---|
+| **S-1** | **Aura adalah sumber kecepatan & kecerahan panggung**, bukan param tetap: `speed = 1+(talkSpeed−1)·t+(listenSpeed−1)·n`, `bright = 1+(talkBright−1)·t·(0,7+0,6·voice)+(listenBright−1)·n`, dengan `n = listen·(1−t)`. Speed mengalikan jam build **dan** jam napas; bright mengalikan `uGain`/`uPulse` garis, `uGain` gambar, `uPulse` helai. | 4 param · 8 titik seragam |
+| **S-2** | `Rw(null)` live **tidak** mengosongkan bila belum pernah diisi (flag `qy`); port awal selalu mengosongkan → dibetulkan. | 1 divergensi ditutup |
+| **S-3** | Pelunakan aura dijepit `dt ≤ 0,1 s` dan nilaikan `< 0,01 → 0`; pada ~1 fps (SwiftShader) `talk` butuh puluhan detik untuk turun. Uji SPEED karena itu memakai **rasio** dua jendela, bukan laju absolut. | rasio **0,300** |
+| **S-4** | Aplikasi SwiftShader ≈1 fps membuat `page.click` Playwright habis waktu (actionability), bukan tombolnya salah → uji memakai klik DOM (`el.click()`). | 6 klik |
+| **G-5A** | Paritas modul aura vs live: respons 205 langkah selisih **0,00e+0** · `VN()` **486 kombinasi** selisih **0,00e+0** · `Rw` jepit `0,4/1/0` sama · `Kk`/`PF` selisih **0**. | 6/6 |
+| **G-5B** | Di aplikasi: TALKING talk 0→**1,000** · LISTENING listen 0→**0,417** · pin `?talk/&listen/&voice` 0,8/0,25/0,6 · SPEED Δ0,150↔Δ0,045 (**0,300**) · REPLAY 0. | 6/6 |
+| **V-5** | Efek visual: idle vs talking `?t=8,0` MAE **4,61** (+8,4 % terang, 539 266 piksel) · `talkBright` 1,0 vs 2,5 MAE **18,34** (53,19 → 71,52). | — |
+| **R-3** | Tidak ada regresi: build 5 vs build 4m **MAE 0,0000**; D1 audio **31/31**; Gerbang A **8/8**; B **10/10**. Selisih 0,039 vs **produksi** = derau (produksi lawan dirinya 0,037). | — |
+| **V-4m** | Verifikasi paket 4m: produksi `index-nbTSOwn5.js` sha256 `feaaf85a…` = build lokal · repo `334f054` · 4 blob identik · **audio produksi 9/9**. | — |

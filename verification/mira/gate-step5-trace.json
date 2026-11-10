@@ -1,0 +1,183 @@
+{
+  "when": "2026-11-10T14:05:23.134Z",
+  "steps": [
+    {
+      "dt": 0.016,
+      "speaking": true,
+      "listening": false,
+      "energy": 0.8,
+      "n": 40,
+      "live": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0.7999999999619238,
+        "talk": 0.9990642249913834,
+        "listen": 0,
+        "pace": 1
+      },
+      "ours": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0.7999999999619238,
+        "talk": 0.9990642249913834,
+        "listen": 0,
+        "pace": 1
+      }
+    },
+    {
+      "dt": 0.016,
+      "speaking": false,
+      "listening": true,
+      "energy": 0,
+      "n": 40,
+      "live": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0,
+        "talk": 0,
+        "listen": 0.9290366760990558,
+        "pace": 1
+      },
+      "ours": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0,
+        "talk": 0,
+        "listen": 0.9290366760990558,
+        "pace": 1
+      }
+    },
+    {
+      "dt": 0.05,
+      "speaking": true,
+      "listening": false,
+      "energy": 0.15,
+      "n": 20,
+      "live": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0.15,
+        "talk": 0.9999990463256836,
+        "listen": 0,
+        "pace": 1
+      },
+      "ours": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0.15,
+        "talk": 0.9999990463256836,
+        "listen": 0,
+        "pace": 1
+      }
+    },
+    {
+      "dt": 0.1,
+      "speaking": true,
+      "listening": true,
+      "energy": 0.9,
+      "n": 15,
+      "live": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0.9,
+        "talk": 1,
+        "listen": 0,
+        "pace": 1
+      },
+      "ours": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0.9,
+        "talk": 1,
+        "listen": 0,
+        "pace": 1
+      }
+    },
+    {
+      "dt": 0.004,
+      "speaking": false,
+      "listening": false,
+      "energy": 0,
+      "n": 90,
+      "live": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0,
+        "talk": 0,
+        "listen": 0,
+        "pace": 1
+      },
+      "ours": {
+        "mira": 0,
+        "orb": 0,
+        "matter": 0,
+        "routes": 1,
+        "live": false,
+        "voice": 0,
+        "talk": 0,
+        "listen": 0,
+        "pace": 1
+      }
+    }
+  ],
+  "combos": 81,
+  "states": [
+    {
+      "talk": 0,
+      "listen": 0,
+      "voice": 0
+    },
+    {
+      "talk": 1,
+      "listen": 0,
+      "voice": 1
+    },
+    {
+      "talk": 0,
+      "listen": 1,
+      "voice": 0
+    },
+    {
+      "talk": 0.6,
+      "listen": 0.8,
+      "voice": 0.4
+    },
+    {
+      "talk": 1,
+      "listen": 1,
+      "voice": 0.5
+    },
+    {
+      "talk": 0.25,
+      "listen": 0.25,
+      "voice": 1.4
+    }
+  ]
+}

@@ -71,6 +71,43 @@ export {
 export const liveState = () => ({ qe, Jy, Rg, fp, mg });
 export const setReset = () => { /* reset tidak tersedia di live (modul sekali pakai) */ };
 """
+    # ── harness AURA (langkah 5): `Rn`, `QU`, `bw`, `Rw`, `Aw`, `tx`, `VN`, `GN`, `Kk`, `PF`, `tv`
+    spans = [
+        ('const Rn={mira:0', 'function QU('),
+        ('function QU(', 'function bw('),
+        ('function bw(', 'const Xy='),
+        ('const Xy=', 'const up={input:0'),
+        ('const up={input:0', 'let ek='),
+        ('const tx=i=>', 'const GN='),
+        ('const GN=', 'let Zu='),
+        ('const tv=', 'function Yk('),
+        ('function PF(', 'const ox='),
+    ]
+    parts = [s[s.index(a):s.index(b, s.index(a))] for a, b in spans]
+    parts.append('const ' + s[s.index('Kk=(i,e=tv)'):s.index(',P_=(i,e,t=1.9)')] + ';')
+    aura = ('// ── harness AURA live (dibuat tools/ekstrak-audio-live.py) ─────────────────────────────\n'
+            + '\n'.join(parts) + '''
+
+// ── tambahan harness ───────────────────────────────────────────────────────────────────
+const auraNew = () => ({ ...Rn });
+const updateAura = (dt, opts) => QU(dt, opts);
+const pinAura = (i) => bw(i);
+const setPresence = (i) => Rw(i);
+const setPace = (i) => Aw(i);
+const clearAura = () => { bw(null); Rn.mira = 0; Rn.orb = 0; Rn.matter = 0; Rn.pace = 1; };
+const touchRate = (ht) => Kk(ht);
+const talkLevel = (t) => PF(t);
+const herStateParams = (get) => GN(get);
+const herSpeedBright = (s, p) => VN(s, p);
+export { auraNew, updateAura, pinAura, setPresence, setPace, clearAura, touchRate, talkLevel,
+  herStateParams, herSpeedBright, Rn };
+export const aura = () => Rn;
+export const setReset = () => { clearAura(); };
+''')
+    out_aura = OUT.parent / 'aura-live.mjs'
+    out_aura.write_text(aura)
+    print(f'{out_aura}  ({out_aura.stat().st_size} B)')
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(head + region + tail)
     print(f'{OUT}  ({OUT.stat().st_size} B)  region {len(region)} B  Vk {len(vk)} B')
