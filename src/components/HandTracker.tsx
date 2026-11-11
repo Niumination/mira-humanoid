@@ -11,6 +11,7 @@
  * Status ditampilkan sebagai satu baris teks berwarna (di live: `#19ddff`), `--mira-status-top` 72 px.
  */
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { setRecording } from '../lib/miraAudio'
 import {
   HAND,
   HAND_WORKER_SOURCE,
@@ -65,7 +66,10 @@ export function HandTracker({
     let audioCtx: AudioContext | null = null
     let analyser: AnalyserNode | null = null
     let audioBuf: Float32Array<ArrayBuffer> | null = null
-    let landmarkerMain: { detectForVideo: (v: HTMLVideoElement, t: number) => { landmarks?: Landmark[][] } } | null = null
+    let landmarkerMain: {
+      detectForVideo: (v: HTMLVideoElement, t: number) => { landmarks?: Landmark[][] }
+      close?: () => void
+    } | null = null
     let stopInterval: () => void = () => {}
     let hadAudio = false
     let hasAudio = false
@@ -92,7 +96,8 @@ export function HandTracker({
 
     ;(async () => {
       setStatusOnce('starting the camera')
-      hadAudio = true // live memanggil `Od(1)` (audio session "play-and-record")
+      setRecording(true) // live `Od(!0)` → sesi audio "play-and-record"
+      hadAudio = true
       try {
         const md = navigator.mediaDevices as MediaDevices | undefined
         if (!md?.getUserMedia) throw new Error('this browser has no camera access here')
@@ -249,6 +254,8 @@ export function HandTracker({
       cancelAnimationFrame(raf)
       stopInterval()
       try { worker?.terminate() } catch { /* abaikan */ }
+      try { landmarkerMain?.close?.() } catch { /* abaikan */ }
+      try { setRecording(false) } catch { /* abaikan */ }
       try { if (workerUrl) URL.revokeObjectURL(workerUrl) } catch { /* abaikan */ }
       try { audioCtx?.close() } catch { /* abaikan */ }
       try { videoRef.current && (videoRef.current.srcObject = null) } catch { /* abaikan */ }

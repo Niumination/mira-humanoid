@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-10T13:39:55.808Z",
+  "when": "2026-11-10T16:13:19.601Z",
   "base": "https://mira-humanoid-niu.vercel.app/",
   "score": "9/9",
   "info": {
@@ -7,12 +7,24 @@
     "cues": 36,
     "started": true,
     "soundOn": true,
-    "scoreLength": 12.55
+    "scoreLength": 12.55,
+    "aura": {
+      "mira": 0.04,
+      "orb": 0,
+      "matter": 0.032,
+      "routes": 1,
+      "live": false,
+      "voice": 0,
+      "talk": 0,
+      "listen": 0,
+      "pace": 1
+    },
+    "bright": 0.13479999999993014
   },
-  "rmsOn": 0.18528916523600555,
+  "rmsOn": 0.15498704918805667,
   "rmsOff": 0,
-  "rmsAgain": 0.1261849649190424,
-  "boltRms": 0.1506775959299049,
+  "rmsAgain": 0.18091874316344408,
+  "boltRms": 0.09547601472969837,
   "rows": [
     {
       "name": "mesin audio hidup",
@@ -37,22 +49,22 @@
     {
       "name": "keluaran berbunyi (RMS bus master)",
       "ok": true,
-      "detail": "RMS maks 1.85e-1"
+      "detail": "RMS maks 1.55e-1"
     },
     {
       "name": "SOUND OFF membungkam master",
       "ok": true,
-      "detail": "RMS 0.00e+0 vs 1.85e-1"
+      "detail": "RMS 0.00e+0 vs 1.55e-1"
     },
     {
       "name": "SOUND ON menyalakan lagi",
       "ok": true,
-      "detail": "RMS 1.26e-1"
+      "detail": "RMS 1.81e-1"
     },
     {
       "name": "klik panggung memicu bolt",
       "ok": true,
-      "detail": "RMS 1.51e-1"
+      "detail": "RMS 9.55e-2"
     },
     {
       "name": "tanpa error halaman",

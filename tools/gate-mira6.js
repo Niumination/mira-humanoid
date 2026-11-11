@@ -25,7 +25,7 @@ const { execFileSync } = require('child_process')
 
 const RECON = '/home/user/Kerja-Arena/recon/mira-2026-11-03.js'
 const REBUILD = '/home/user/mira-humanoid-rebuild'
-const OUT = '/home/user/Kerja-Arena/verification/mira'
+const OUT = process.env.OUT_DIR || '/home/user/Kerja-Arena/verification/mira'
 const ARGV = process.argv.slice(2)
 const PART = (ARGV[0] || 'A').toUpperCase()
 const JSON_OUT = ARGV.includes('--json')
@@ -369,7 +369,10 @@ const synth = () => {
   return lm
 }
 export const HandLandmarker = {
-  createFromOptions: async () => ({ detectForVideo: () => ({ landmarks: [synth()] }), close() {} }),
+  createFromOptions: async () => ({
+    detectForVideo: () => ({ landmarks: [synth()] }),
+    close() { window.__STUB_CLOSE = (window.__STUB_CLOSE || 0) + 1 },
+  }),
 }
 `
 
@@ -549,6 +552,69 @@ async function partB() {
     )
   }
 
+  // B7 — mematikan kamera membersihkan semuanya (live `w?.close()`, `_.terminate()`, track.stop())
+  {
+    const b3 = await chromium.launch({ args: ARGS })
+    const c3 = await b3.newContext({ viewport: { width: 1440, height: 900 }, permissions: ['camera', 'microphone'] })
+    const p3 = await c3.newPage()
+    // paksa jalur thread-utama supaya `close()` landmarker benar-benar dipanggil
+    await p3.addInitScript(() => {
+      const W = window.Worker
+      window.Worker = function (url, opts) {
+        if (String(url).startsWith('blob:')) throw new Error('worker blocked for cleanup test')
+        return new W(url, opts)
+      }
+    })
+    await p3.route('https://esm.sh/**', stub)
+    await p3.route('https://cdn.jsdelivr.net/**', stub)
+    await p3.route('https://storage.googleapis.com/**', (r) => r.fulfill({ status: 200, body: 'x' }))
+    await p3.goto(URL_ARG + '?auto=1&t=8', { waitUntil: 'load', timeout: 120000 })
+    await p3.waitForFunction(() => typeof window.__MIRA_MIC === 'function', undefined, { timeout: 120000 })
+    await p3.evaluate(() => document.querySelector('[data-testid="mira-humanoid-camera"]')?.click())
+    let ranBefore = false
+    try {
+      await p3.waitForFunction(
+        () => (window.__MIRA_HAND && window.__MIRA_HAND.lastHandAt) > 0,
+        undefined,
+        { timeout: 90000 }
+      )
+      ranBefore = true
+    } catch {
+      ranBefore = false
+    }
+    await p3.evaluate(() => document.querySelector('[data-testid="mira-humanoid-camera"]')?.click())
+    await p3.waitForTimeout(1500)
+    const st = await p3.evaluate(() => ({
+      closed: window.__STUB_CLOSE || 0,
+      dot: document.querySelectorAll('[data-testid="mira-camera-dot"]').length,
+      status: document.querySelectorAll('[data-testid="mira-camera-status"]').length,
+      pressed: document.querySelector('[data-testid="mira-humanoid-camera"]')?.getAttribute('aria-pressed'),
+    }))
+    await b3.close()
+    add(
+      'B7',
+      'kamera OFF → landmarker ditutup, titik & status hilang',
+      ranBefore && st.closed >= 1 && st.dot === 0 && st.status === 0 && st.pressed === 'false',
+      `deteksi jalan=${ranBefore} close=${st.closed} titik=${st.dot} status=${st.status} aria-pressed=${st.pressed}`
+    )
+  }
+
+  // B8 — klik panggung tetap memicu bolt walau SOUND OFF (live `B()` tidak melihat saklar suara)
+  {
+    const p4 = page
+    await p4.evaluate(() => {
+      const b = document.querySelector('[data-testid="mira-humanoid-sound"]')
+      if (b && b.getAttribute('aria-pressed') === 'true') b.click() // matikan suara
+    })
+    await p4.waitForTimeout(400)
+    const soundOff = await p4.evaluate(() => document.querySelector('[data-testid="mira-humanoid-sound"]')?.getAttribute('aria-pressed'))
+    const before = await p4.evaluate(() => window.__MIRA_MIC().bolt?.id || 0)
+    await p4.mouse.click(700, 700)
+    await p4.waitForTimeout(600)
+    const after = await p4.evaluate(() => window.__MIRA_MIC().bolt?.id || 0)
+    add('B8', 'SOUND OFF tetap memicu bolt saat panggung diklik', soundOff === 'false' && after > before, `sound=${soundOff} id ${before} → ${after}`)
+  }
+
   if (errs.length) add('B0', 'tanpa error halaman', false, errs.slice(0, 2).join(' | '))
   await browser.close()
   return finish('B')
@@ -558,7 +624,7 @@ function finish(part) {
   const pass = rows.filter((r) => r.ok).length
   const res = { part, ok: pass === rows.length, pass, total: rows.length, rows }
   fs.mkdirSync(OUT, { recursive: true })
-  const file = path.join(OUT, part === 'A' ? 'gate-step6a.json' : 'gate-step6.json')
+  const file = path.join(OUT, process.env.OUT_NAME || (part === 'A' ? 'gate-step6a.json' : 'gate-step6.json'))
   fs.writeFileSync(file, JSON.stringify(res, null, 2))
   if (JSON_OUT) console.log(JSON.stringify(res))
   else console.log(`\n${part}: ${pass}/${rows.length}  →  ${file}`)

@@ -719,3 +719,22 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - **Efek baru terukur:** `?attn=-1,0` vs `?attn=1,0` @`t=11,5` **MAE 3,7271** (128 608 piksel ≈10 %).
 - Paket **`niu-update-langkah4o.zip`**. P8b MIRA **8/8 langkah selesai**; sisa: Gerbang C (paritas
   piksel), sisa Gerbang D (reproduktibilitas/seam/fps), viewport 390, deliverable akhir.
+
+### Sesi 43 (2026-10-29) — verifikasi paket 4o di produksi + koreksi (paket 4p)
+
+- **Verifikasi produksi 4o LULUS tiga lapis:** produksi `assets/index-DimN9-5N.js` sha256 `bc3c1ef0…` ·
+  repo head `d20d76f` · 5 blob identik · **build ulang dari tarball repo → sha identik**.
+  Gerbang di produksi: hand **6/6** · audio **9/9** · langkah 5 B **6/6** · A **8/8** · B **10/10**.
+- **Temuan besar (H-6):** worker MediaPipe **selalu gagal** — di live pun. `importScripts` tidak ada di
+  module worker. Yang berjalan adalah jalur cadangan thread-utama. Live dan produksi menunjukkan angka
+  yang sama (`created=1 ready=0 fail=1 lm=0` + 4 impor esm.sh di thread utama) → ini **paritas**.
+- **5 koreksi** (paket 4p): (1) `close()` landmarker saat kamera OFF — sebelumnya bocor; (2) klik panggung
+  tidak lagi bergantung SOUND (live selalu memancarkan `MIRA_BOLT`); (3) MIC OFF menghentikan
+  `SpeechRecognition`; (4) `Od()` sesi audio `play-and-record` dipanggil di MIC & kamera; (5) perintah
+  suara terakhir dipulihkan saat humanoid dibuka (`qN('look')`).
+- **Bukti uji membedakan:** dua uji baru (B7, B8) **gagal di produksi 4o** (`close=0`, `id 12→12`) dan
+  **lulus di 4p** (`close=1`, `id 10→11`). Gerbang langkah 6 kini **8/8** (modul tetap **8/8**).
+- **MediaPipe sungguhan** (CDN asli, tanpa tiruan) diuji: 12/12 di **live** dan 12/12 di **produksi**.
+- **Tanpa regresi:** build 4p vs 4o **MAE 0,0000 · 0 piksel** · langkah 5 B **6/6** · audio D1 **31/31** ·
+  audio aplikasi **9/9** · Gerbang A **8/8** · B **10/10**.
+- Paket **`niu-update-langkah4p.zip`**.

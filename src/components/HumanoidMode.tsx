@@ -22,7 +22,7 @@ import { HandTracker, type AttentionRef } from './HandTracker'
 import { MiraStage } from './MiraStage'
 import type { Dial } from '../lib/miraDial'
 import { ACCENT, STATE_BUTTONS, btnStyle, type MiraState } from '../lib/uiStyle'
-import { boltOverride, boltAge, LOOK_HOLD_MS, miraBody, startSpeech } from '../lib/miraHand'
+import { boltOverride, boltAge, lastBody, LOOK_HOLD_MS, miraBody, startSpeech } from '../lib/miraHand'
 import {
   aura,
   clearLevel,
@@ -38,6 +38,7 @@ import {
   cuesLength,
   playCues,
   primeUnlock,
+  setRecording,
   setSoundEnabled,
   stopCues,
   unlockAudio,
@@ -126,6 +127,10 @@ export function HumanoidMode({
       attentionRef.current.voice = { x: d.x ?? 0, y: d.y ?? 0, until: performance.now() + LOOK_HOLD_MS }
       attentionRef.current.at = performance.now()
     }
+    const recent = lastBody('look') // live: `X=qN("look"); X&&D(X)`
+    if (recent && !recent.release) {
+      attentionRef.current.voice = { x: recent.x ?? 0, y: recent.y ?? 0, until: performance.now() + LOOK_HOLD_MS }
+    }
     window.addEventListener('mira-body', onBody)
     return () => {
       window.removeEventListener('pointermove', onMove)
@@ -188,10 +193,14 @@ export function HumanoidMode({
     if (micRef.current) {
       micRef.current.stop()
       micRef.current = null
+      speechRef.current?.stop() // live: `h.current?.stop(); h.current=null`
+      speechRef.current = null
+      setRecording(false)
       setHeard('')
       setMicOn(false)
       return
     }
+    setRecording(true) // live `Od(!0)` sebelum meminta mikrofon
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
@@ -221,6 +230,7 @@ export function HumanoidMode({
       setHeard(rec ? 'say "look left", "look right", "look at me" or "follow me"' : 'voice commands are not available in this browser')
       if (rec) speechRef.current = rec
     } catch {
+      setRecording(false) // live: `catch { Od(!1) }`
       setMicOn(false)
     }
   }
@@ -306,7 +316,6 @@ export function HumanoidMode({
     const onDown = (ev: PointerEvent) => {
       const el = ev.target as HTMLElement | null
       if (el?.closest?.('button, input, select, textarea')) return
-      if (!soundOn) return
       const x = Math.max(-1, Math.min(1, (ev.clientX / window.innerWidth) * 2 - 1))
       const y = Math.max(-1, Math.min(1, (ev.clientY / window.innerHeight) * 2 - 1))
       boltPress(x, y)
@@ -314,7 +323,7 @@ export function HumanoidMode({
     window.addEventListener('pointerdown', onDown)
     return () => window.removeEventListener('pointerdown', onDown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [soundOn])
+  }, [])
 
   // kanvas latar sementara (langkah 2 menggantinya dengan WebGL + mesin garis)
   useEffect(() => {

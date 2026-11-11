@@ -1,7 +1,9 @@
 # Langkah 6 MIRA — tangan MediaPipe + mikrofon nyata
 
-Status: **selesai, terukur** · build `dist/assets/index-DimN9-5N.js` sha256 `bc3c1ef0…`
-Gerbang D langkah 6: **modul 8/8** (`gate-step6a.json`) · **aplikasi 6/6** (`gate-step6.json`)
+Status: **selesai, terukur, + direvisi** · build **`dist/assets/index-6z8R68bj.js` sha256 `84655131…`** (revisi 4p)
+· build awal 4o: `index-DimN9-5N.js` sha256 `bc3c1ef0…`
+Gerbang D langkah 6: **modul 8/8** (`gate-step6a.json`) · **aplikasi 8/8** (`gate-step6.json`, revisi 4p menambah B7/B8)
+· **MediaPipe asli 12/12** di live dan di produksi (`gate-step6-real-{live,prod}.json`)
 Regresi: build 6 vs build 5 (knob kepala nol) **MAE 0,0000** dua fase · efek kepala **MAE 3,7271**
 
 ---
@@ -109,3 +111,53 @@ BASE=http://127.0.0.1:8804/ TS="8,11.5" PREFIX=b6 OUTDIR=/tmp/shots6 \
   menyimpan `{x,y,id,when}` supaya tinggal disambung.
 - **Gerbang C** (paritas piksel) tetap seperti catatan STATUS-ROADMAP: live deterministik
   0,00–0,55 sedangkan kita 4,5–4,9 — belum lulus, dan bukan lingkup langkah ini.
+
+
+---
+
+## 5. Revisi paket 4p — hasil pemeriksaan produksi 4o
+
+### 5.1 Produksi 4o terverifikasi (tiga lapis)
+| lapis | hasil |
+|---|---|
+| produksi | `assets/index-DimN9-5N.js` sha256 `bc3c1ef077d81dd6830c8828ef215e0431ad47f095d8f00a62c18aa74baf9060` |
+| repo | head `d20d76f` · 5 blob (`miraHand`, `HandTracker`, `HumanoidMode`, `MiraStage`, `miraAura`) **identik** dengan workspace |
+| build | tarball repo → `npm ci` → `vite build` → **sha identik** (reproduktif) |
+
+Gerbang di produksi: hand **6/6** · audio aplikasi **9/9** (36 cue, RMS 1,55·10⁻¹) · langkah 5 B **6/6** ·
+Gerbang A **8/8** · Gerbang B **10/10**.
+
+### 5.2 Temuan yang mengubah pemahaman (H-6)
+**Worker `ZN` selalu gagal — di aplikasi live juga.** Penyebab terukur:
+
+```
+TypeError: Failed to execute 'importScripts' on 'WorkerGlobalScope':
+           Module scripts don't support importScripts()
+    at FilesetResolver.forVisionTasks (tasks-vision.mjs)
+```
+
+Live: `worker {created:1, ready:0, fail:1, lm:0}` + 4 impor `esm.sh` di thread utama.
+Produksi 4o: **angka yang sama persis**. Artinya deteksi tangan **selalu** berjalan di jalur cadangan
+thread-utama (GPU→CPU, 125 ms) — di live maupun di rebuild. Ini **paritas**, bukan cacat port; jangan
+"diperbaiki" sepihak karena akan menyimpang dari live.
+
+### 5.3 Lima divergensi yang diperbaiki
+| # | bug di 4o | bukti sebelum → sesudah |
+|---|---|---|
+| 1 | `HandLandmarker.close()` tidak dipanggil saat kamera OFF (bocor) | `close=0` → **`close=1`** (B7) |
+| 2 | Klik panggung tidak memicu bolt saat SOUND OFF (live: selalu) | `id 12 → 12` → **`id 10 → 11`** (B8) |
+| 3 | MIC OFF tidak menghentikan `SpeechRecognition` | sekarang `speechRef.stop()` + `null` |
+| 4 | `Od()` / sesi audio `play-and-record` tidak pernah dipanggil | `setRecording(true/false)` di kamera & MIC |
+| 5 | Perintah suara terakhir tidak dipulihkan saat humanoid dibuka | `lastBody('look')` saat mount |
+
+### 5.4 Gerbang setelah revisi (build 4p)
+| bagian | hasil |
+|---|---|
+| modul (`gate-step6a.json`) | **8/8** (tidak berubah) |
+| aplikasi (`gate-step6.json`) | **8/8** — B7 & B8 baru; **keduanya GAGAL di produksi 4o**, lulus di 4p |
+| MediaPipe asli (`gate-mira6-real.js`) | **12/12** lokal · **12/12** produksi · **12/12** live |
+| regresi piksel 4p vs 4o | **MAE 0,0000 · 0 piksel** (`?t=8,0` & `?t=11,5`, knob kepala nol) |
+| gerbang lama | langkah 5 B **6/6** · audio D1 **31/31** · audio aplikasi **9/9** · A **8/8** · B **10/10** |
+
+Alat baru: `tools/gate-mira6-real.js` (MediaPipe asli, 4 skenario × 3 uji) dan
+`tools/probe-worker-live.js` (instrumen `Worker`, dipakai membandingkan live vs produksi).

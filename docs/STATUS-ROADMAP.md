@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-10-29** (sesudah paket 4o / **langkah 6 MIRA: tangan MediaPipe + MIC nyata** — paritas modul 8/8, aplikasi 6/6, regresi 0,0000, efek kepala MAE 3,7271).
+Diperbarui: **2026-10-29** (sesudah paket **4p** — verifikasi produksi 4o tiga lapis + **5 koreksi**: `close()` landmarker, bolt tak bergantung SOUND, MIC OFF menghentikan SpeechRecognition, sesi audio `play-and-record`, pemulihan perintah suara. Gerbang langkah 6: modul **8/8**, aplikasi **8/8**; MediaPipe asli live **12/12** = produksi **12/12**).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
