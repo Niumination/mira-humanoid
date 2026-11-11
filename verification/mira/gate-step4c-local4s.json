@@ -1,0 +1,75 @@
+{
+  "when": "2026-11-11T08:49:24.795Z",
+  "base": "http://127.0.0.1:8804/",
+  "score": "9/9",
+  "info": {
+    "state": "running",
+    "cues": 36,
+    "started": true,
+    "soundOn": true,
+    "scoreLength": 12.55,
+    "aura": {
+      "mira": 0.04,
+      "orb": 0,
+      "matter": 0.032,
+      "routes": 1,
+      "live": false,
+      "voice": 0,
+      "talk": 0,
+      "listen": 0,
+      "pace": 1
+    },
+    "bright": 0.3176999999992549
+  },
+  "rmsOn": 0.004099800179119415,
+  "rmsOff": 0,
+  "rmsAgain": 0.08632694194225934,
+  "boltRms": 0.002123628669153142,
+  "rows": [
+    {
+      "name": "mesin audio hidup",
+      "ok": true,
+      "detail": "state running"
+    },
+    {
+      "name": "skor cue terbangun",
+      "ok": true,
+      "detail": "36 cue"
+    },
+    {
+      "name": "skor dijalankan",
+      "ok": true,
+      "detail": "started true"
+    },
+    {
+      "name": "panjang skor ≈ 12,55 s",
+      "ok": true,
+      "detail": "12.550 s"
+    },
+    {
+      "name": "keluaran berbunyi (RMS bus master)",
+      "ok": true,
+      "detail": "RMS maks 4.10e-3"
+    },
+    {
+      "name": "SOUND OFF membungkam master",
+      "ok": true,
+      "detail": "RMS 0.00e+0 vs 4.10e-3"
+    },
+    {
+      "name": "SOUND ON menyalakan lagi",
+      "ok": true,
+      "detail": "RMS 8.63e-2"
+    },
+    {
+      "name": "klik panggung memicu bolt",
+      "ok": true,
+      "detail": "RMS 2.12e-3"
+    },
+    {
+      "name": "tanpa error halaman",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

@@ -942,6 +942,9 @@ export function MiraStage({
         gl.disable(gl.DEPTH_TEST)
 
         // ---- latar: 01-frag ke FBO 0,7 lalu blit (opaque, tanpa blend) ----
+        // W-5: `off=field` dulu hanya melewati render ke FBO, sedangkan teksturnya (isi frame lalu)
+        // tetap di-blit → latar "tidak pernah mati" (`?off=field` hanya −1,6 padahal live −13,9).
+        // Sekarang blit latar ikut dilewati dan kanvas diisi hitam, jadi flag itu benar-benar mematikan latar.
         const fw2 = Math.max(1, Math.round(cw * 0.7))
         const fh2 = Math.max(1, Math.round(ch * 0.7))
         if (!OFF.has('field')) {
@@ -988,6 +991,14 @@ export function MiraStage({
           // live: canvas opacity = min(1, mira*1.6) — `?fk=` untuk menyapu kecerahan nebula
           gl.uniform1f(U(P.blit, 'uOpacity'), Math.min(1, ramp.waves * 1.6) * tune('fk', 1))
           gl.drawArrays(gl.TRIANGLES, 0, 3)
+        }
+
+        if (OFF.has('field')) {
+          // latar dimatikan → isi kanvas hitam (opaque) supaya sama dengan "tidak ada medan"
+          gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+          gl.viewport(0, 0, pw, ph)
+          gl.clearColor(0, 0, 0, 1)
+          gl.clear(gl.COLOR_BUFFER_BIT)
         }
 
         // lapisan figur digambar ke render target (latar sudah ada di kanvas)

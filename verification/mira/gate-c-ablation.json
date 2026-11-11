@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-11T04:59:39.974Z",
+  "when": "2026-11-11T08:06:27.053Z",
   "build": "http://127.0.0.1:8804/",
   "live": "https://mira-humanoid.vercel.app/",
   "phases": [
@@ -8,30 +8,30 @@
       "rows": [
         {
           "off": "none",
-          "total": 6.7512,
+          "total": 6.2081,
           "meanOurs": 42.62,
-          "meanLive": 39.34,
+          "meanLive": 39.29,
           "weight": null
         },
         {
           "off": "fog",
-          "total": 17.0953,
-          "meanOurs": 41.01,
+          "total": 4.0169,
+          "meanOurs": 25.16,
           "meanLive": 25.35,
-          "weight": 22.5669
+          "weight": 17.4578
         },
         {
           "off": "waves",
-          "total": 5.5123,
+          "total": 4.9651,
           "meanOurs": 41.99,
-          "meanLive": 38.65,
+          "meanLive": 38.61,
           "weight": 0.634
         },
         {
           "off": "pic",
-          "total": 8.6937,
+          "total": 8.6763,
           "meanOurs": 31.35,
-          "meanLive": 30.49,
+          "meanLive": 30.5,
           "weight": 11.2775
         },
         {
@@ -43,37 +43,37 @@
         },
         {
           "off": "matter",
-          "total": 6.7235,
+          "total": 6.3885,
           "meanOurs": 42.51,
-          "meanLive": 39.25,
+          "meanLive": 39.23,
           "weight": 0.1063
         },
         {
           "off": "lines",
-          "total": 6.384,
+          "total": 6.0802,
           "meanOurs": 41.04,
-          "meanLive": 37.85,
+          "meanLive": 37.82,
           "weight": 1.5767
         },
         {
           "off": "bloom",
-          "total": 15.5355,
+          "total": 15.5273,
           "meanOurs": 40.35,
           "meanLive": 25.79,
           "weight": 2.2646
         },
         {
           "off": "hair",
-          "total": 6.703,
+          "total": 6.4984,
           "meanOurs": 35.4,
           "meanLive": 32.16,
           "weight": 7.2149
         },
         {
           "off": "arcs",
-          "total": 6.7505,
+          "total": 6.2321,
           "meanOurs": 42.62,
-          "meanLive": 39.34,
+          "meanLive": 39.29,
           "weight": 0
         }
       ]

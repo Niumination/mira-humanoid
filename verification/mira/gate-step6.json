@@ -26,13 +26,13 @@
       "id": "B4",
       "name": "landmark → perhatian & kepala; pinch → bolt; telapak → idle",
       "ok": true,
-      "detail": "perhatian Δx=0.246 · yaw Δ=0.0374 · bolt=3 · palm→idle=true"
+      "detail": "perhatian Δx=0.246 · yaw Δ=0.0352 · bolt=3 · palm→idle=true"
     },
     {
       "id": "B5",
       "name": "MIC: level > 0, mira-heard, state talking",
       "ok": true,
-      "detail": "on=true peak=1.0000 heard=1 state(400ms)=mira-state-talking state(1,3s)=mira-state-idle teks=\"say \"look left\", \"look right\", \"look at \""
+      "detail": "on=true peak=0.4412 heard=1 state(400ms)=mira-state-talking state(1,3s)=mira-state-idle teks=\"say \"look left\", \"look right\", \"look at \""
     },
     {
       "id": "B6",
@@ -50,7 +50,7 @@
       "id": "B8",
       "name": "SOUND OFF tetap memicu bolt saat panggung diklik",
       "ok": true,
-      "detail": "sound=false id 5 → 6"
+      "detail": "sound=false id 12 → 13"
     }
   ]
 }

@@ -1,6 +1,7 @@
 # Langkah 6 MIRA — tangan MediaPipe + mikrofon nyata
 
-Status: **selesai, terukur, + tiga revisi** · build **`dist/assets/index-BZ3xQRZB.js` sha256 `a3b71641…`** (revisi 4r)
+Status: **selesai, terukur, + empat revisi** · build **`dist/assets/index-B4pxZZJw.js` sha256 `1bb6e4c0…`** (revisi 4s)
+· 4r: `index-BZ3xQRZB.js` `a3b71641…`
 · 4q: `index-C7tk2IC6.js` `b9087a0c…` · 4p: `index-6z8R68bj.js` `84655131…` · 4o: `index-DimN9-5N.js` `bc3c1ef0…`
 Gerbang D langkah 6: **modul 8/8** (`gate-step6a.json`) · **aplikasi 8/8** (`gate-step6.json`, revisi 4p menambah B7/B8)
 · **MediaPipe asli 12/12** di live dan di produksi (`gate-step6-real-{live,prod}.json`)
@@ -272,3 +273,64 @@ Bukti: `&off=figure` di kedua aplikasi → **layar hitam, MAE 0,0000** (sebelumn
 2. **Tubuh**: setelah bloom seimbang, ulangi grid 6×4 untuk melihat sisa energi langsung (diduga
    `uGain` lapisan gambar + helai).
 3. Kalibrasi `fg`/`pg`/`hg` baru dilakukan **setelah** bloom setara, dengan rata-rata 6 fase acuan.
+
+
+---
+
+## 8. Revisi 4s — produksi 4r lulus, satu alat ukur ternyata bohong (W-5)
+
+### 8.1 Produksi 4r terverifikasi dan D9 kini lulus DI PRODUKSI
+`index-BZ3xQRZB.js` `a3b71641…` = repo `8fce51d` = build ulang. Gerbang D dijalankan terhadap
+**https://mira-humanoid-niu.vercel.app/**: **7/7**, dengan D9 390×844 **korelasi 0,9886** dan
+414×896 **0,9883** (sebelumnya 0,714). Jadi perbaikan W-3 memang yang diperlukan.
+
+### 8.2 W-5: `?off=field` tidak pernah mematikan latar
+Cabang `off=field` hanya **melewati render ke FBO**, sedangkan **blit latar tetap memakai tekstur isi
+frame sebelumnya** → latar tidak pernah hilang. Terukur: `?off=field` menurunkan terang kita hanya
+**1,6** satuan, sedangkan flag kembarannya di live (`off=fog`) menurunkan **13,9**.
+
+Konsekuensi: **seluruh kesimpulan ablasi di §7.4 tidak sah** (tabel "bloom kita 2,2 vs live 13,5",
+"fog kita 1,6 vs live 13,9"). Sudah dibetulkan: `off=field` kini juga melewati blit latar dan mengisi
+kanvas hitam.
+
+### 8.3 Angka setelah perbaikan (t = 9,5)
+| keadaan | kita | live | selisih |
+|---|---|---|---|
+| penuh | 42,62 | 39,33 | +3,29 |
+| `off=fog` (latar dimatikan) | **25,16** | **25,40** | **−0,24** |
+| `off=figure` | **0,00** | **0,00** | **0,0000** |
+
+Artinya: **latar (medan nebula/fog) setara dalam 0,24 satuan** dan kontribusi lapisan figur di atas latar:
+kita **17,46** vs live **13,93** → kelebihan **+3,5** satuan, terpusat di tubuh (grid 6×4: sel tengah
++7 … +14,8; tepi ±0,3).
+
+### 8.4 Dua hipotesis yang diuji dan GUGUR
+| hipotesis | uji | hasil |
+|---|---|---|
+| "bloom kita kurang kuat" | sapu `?bb=` (intensitas komposit) pada t=6,8 & 9,5 | **makin kuat makin buruk**: 0,9 → **2,80 / 4,47**; 1,2 → 3,79 / 4,54; 1,6 → 5,50 / 4,88; 2,2 → 8,08 / 5,63 |
+| "`fg` (gain gambar) terlalu besar" | sapu `?fg=` 0,9–1,3, 6 fase acuan | minimum di **1,2** (2,53) vs default 1,15 (2,54) — **selisih 0,01**, bukan penyebab |
+
+Catatan hati-hati: `off=bloom` di live menurunkan terang sampai 25,8 (bukan 40,4 seperti di kita) —
+kemungkinan besar flag itu juga mematikan pass encode sRGB di live, sehingga **tidak bisa dipakai sebagai
+pembanding bobot bloom**. Karena itu penilaian bloom sekarang memakai sapu `?bb=` (di atas), bukan selisih
+`off=bloom`.
+
+### 8.5 Regresi & gerbang lain (build 4s)
+| uji | hasil |
+|---|---|
+| 4s vs produksi (4r), `?t=8,0` & `?t=11,5`, knob kepala nol | **MAE 0,0000 · 0 piksel** |
+| paritas 1440, 6 fase acuan | rata-rata **2,54** (tidak berubah) |
+| Gerbang D 1440 | **7/7** |
+| Gerbang A · B | **8/8** · **10/10** |
+| langkah 5 BAGIAN B · hand BAGIAN B | **6/6** · **8/8** |
+| audio aplikasi | **9/9** |
+
+### 8.6 Perbaikan alat
+`tools/gate-step4c.js` memakai `page.evaluate(el.click())` (temuan S-4: panggung ~1 fps membuat
+`page.click` habis waktu 30 s → gerbang audio sempat "4/9" palsu). Setelah itu **9/9**.
+
+### 8.7 Sisa Gerbang C (untuk paket berikutnya)
+Target tinggal **satu angka**: kelebihan **+3,5** satuan pada lapisan figur di atas latar (kita 17,46 vs
+live 13,93). Urutan kerja yang masuk akal: (a) bandingkan kontribusi tiap lapisan figur **setelah** latar
+dinyalakan (ablasi ulang dengan W-5 dibetulkan) untuk menemukan lapisan penyumbang; (b) baru sesuaikan
+gain lapisan itu; (c) uji pada 6 fase acuan, bukan satu fase.

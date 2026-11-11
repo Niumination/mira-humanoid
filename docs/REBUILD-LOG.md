@@ -740,3 +740,16 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | **C-2** | **Bloom kita jauh lebih lemah**: mematikan bloom menurunkan live **13,5** satuan, kita hanya **2,2** (fog: live −13,9 vs kita −1,6). | kandidat utama |
 | **C-3** | Kalibrasi `fg` bukan penyebab utama: 1,00 → 6,353 · 1,05 → 6,380 · 1,10 → 6,502 · 1,15 → 6,739. | Δ 0,39 |
 | **R-7** | Tanpa regresi: 4r vs 4q (1440, knob kepala nol) `?t=8,0` & `?t=11,5` **MAE 0,0000 · 0 piksel**; Gerbang D 1440 **7/7**. | — |
+
+## Sesi 46 (2026-10-29) — verifikasi 4r + W-5 (alat ukur menipu) + Gerbang C diulang (paket 4s)
+
+| # | temuan | angka |
+|---|---|---|
+| **V-4r** | Produksi 4r terverifikasi 3 lapis (`index-BZ3xQRZB.js` `a3b71641…` = repo `8fce51d` = build ulang). **Gerbang D di produksi 7/7** — D9 390 **0,9886**, 414 **0,9883** (sebelumnya 0,714 di produksi 4q). | 7/7 |
+| **W-5** | **`?off=field` tidak pernah mematikan latar**: cabang itu hanya melewati render ke FBO, blit latar tetap memakai tekstur basi. Terukur: kita −1,6 satuan, live (`off=fog`) −13,9 ⇒ **seluruh tabel ablasi §7.4 tidak sah**. Dibetulkan (blit dilewati + kanvas hitam). | 1 alat ukur |
+| **C-4** | Setelah W-5 dibetulkan: `off=fog` kita **25,16** vs live **25,40** (Δ **0,24**) dan `off=figure` keduanya **0,0000** ⇒ **latar setara**. Kontribusi figur di atas latar: kita **17,46** vs live **13,93** (**+3,5**). | milestone |
+| **C-5** | Hipotesis "bloom kurang kuat" **gugur**: sapu `?bb=` makin kuat makin buruk (0,9 → 2,80/4,47 · 1,2 → 3,79/4,54 · 1,6 → 5,50/4,88 · 2,2 → 8,08/5,63). | 4 titik |
+| **C-6** | Hipotesis "`fg` terlalu besar" **gugur**: 6 fase minimum di `fg=1,2` (2,53) vs 1,15 (2,54) → Δ **0,01**. | 5 titik |
+| **C-7** | Peringatan metodologi: `off=bloom` di live menurunkan terang ke 25,8 (kita 40,4) — diduga ikut mematikan encode sRGB ⇒ **jangan** dipakai sebagai bobot bloom. | — |
+| **R-8** | Tanpa regresi: 4s vs produksi (4r) `?t=8,0` & `?t=11,5` **MAE 0,0000 · 0 piksel** · paritas 6 fase **2,54** · D **7/7** · A **8/8** · B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9**. | — |
+| **T-3** | `tools/gate-step4c.js` memakai klik DOM (`el.click()`) — `page.click` habis waktu pada panggung ~1 fps (gerbang audio sempat 4/9 palsu, kini **9/9**). | 1 alat |

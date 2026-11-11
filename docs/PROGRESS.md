@@ -770,3 +770,17 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   lebih lemah** (live turun 13,5 saat bloom dimatikan, kita 2,2). Sweep `fg` 1,00–1,15 hanya menggeser
   0,39 → bukan penyebab utama.
 - Paket **`niu-update-langkah4r.zip`**.
+
+### Sesi 46 (2026-10-29) — verifikasi 4r di produksi + W-5 + Gerbang C diulang bersih (paket 4s)
+
+- **Produksi 4r LULUS 3 lapis** dan **Gerbang D di produksi 7/7** — D9 ponsel 390 **0,9886**, 414 **0,9883**
+  (produksi 4q sebelumnya 0,714 ⇒ perbaikan W-3 memang perlu).
+- **W-5 ditemukan:** `?off=field` tidak pernah mematikan latar (blit memakai tekstur basi). Akibatnya
+  **tabel ablasi §7.4 tidak sah** (klaim "bloom kita 6× lebih lemah" gugur). Dibetulkan.
+- **Gerbang C diukur ulang:** `off=fog` kita **25,16** vs live **25,40** (Δ0,24) dan `off=figure` keduanya
+  **0,0000** ⇒ **latar setara**; kelebihan tinggal **+3,5** satuan pada lapisan figur (kita 17,46 vs live 13,93).
+- **Dua hipotesis gugur dengan angka:** bloom lebih kuat = lebih buruk (`?bb=` 0,9 → 2,80/4,47 sampai
+  2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
+- **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
+  B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
+- Paket **`niu-update-langkah4s.zip`**.
