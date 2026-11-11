@@ -204,7 +204,9 @@ if (PART.includes('B')) {
 
   // (pakai halaman yang sama: konteks WebGL kedua di SwiftShader terlalu lambat)
   await page.goto(`${BASE}?auto=1&talk=0.8&listen=0.25&voice=0.6`, { waitUntil: 'load' })
-  await page.waitForFunction(() => typeof window.__MIRA_AUDIO === 'function', { timeout: 60000 })
+  // S-7: argumen kedua waitForFunction adalah ARGUMEN untuk fungsi, bukan opsi — timeout 60 s di
+  // sini tidak pernah terpakai (bawaannya 30 s) dan produksi Vercel kadang butuh lebih lama.
+  await page.waitForFunction(() => typeof window.__MIRA_AUDIO === 'function', null, { timeout: 90000 })
   await page.waitForTimeout(1500)
   const pinnedAura = await page.evaluate(() => window.__MIRA_AUDIO().aura)
   check('pin `?talk/&listen/&voice` dipakai apa adanya',

@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-11-11** (sesudah paket **4u** — produksi 4t **lulus 3 lapis** + **Gerbang D 7/7**; **W-6**: acuan paritas kita sendiri basi (live-ref-v2 meleset 3,83 pada t=9,5) → set baru `live-ref-v4`; **F-143**: gamma kuad gambar 1,25 menurunkan rata-rata MAE fase akhir **7,04 → 5,35** sehingga sisa Gerbang C menyusut dari +3,28 menjadi torso +5,8 (dari +14,4)).
+Diperbarui: **2026-11-11** (sesudah paket **4v** — produksi 4u **lulus 3 lapis** dan **semua gerbang dijalankan di URL produksi**: D 7/7 · A 8/8 · B 10/10 · langkah 5 6/6 · hand 8/8 · audio 9/9; **W-7**: sumber APEX hilang dari repo (hanya di commit `369c8f5`) → dipulihkan & diverifikasi byte-identik; **P10 deliverable ditulis**).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -20,10 +20,10 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
 | **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
 | **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** · **B ✅** · **C 🟡 hampir tutup** — paritas vs acuan segar **2,93 → 2,76** (t=9,5 6,58 → 5,56); torso Δ **+14,4 → +5,8**, kepala +4,6 → +1,2, lengan +6,3 → +2,7; sisa = beda sumber cahaya tubuh (mesh live vs kuad kita) · **D ✅** — 7/7 di produksi 4t (D9 0,9886/0,9883, reprod 0,0000, seam 1,46, fps 0,90 vs live 0,51) |
-| **P10** | Deliverable + deploy | 🟡 **1 dari 2** | deploy ✅ berjalan & diverifikasi tiap paket (dua situs hidup) · deliverable akhir ⬜ |
+| **P10** | Deliverable + deploy | ✅ **2 dari 2** | dua situs hidup & terverifikasi 3 lapis (MIRA `68e0b85c…`, APEX `8dac8dad…`) · **`DELIVERABLE.md`** (angka, cara bangun ulang, batas diketahui, peta berkas) · sumber APEX dipulihkan dari `369c8f5` ke `apex-humanoid-rebuild/` · sisa tindakan: taruh APEX di repo/folder terpisah (W-7) |
 
 **Hitungan item: 29 dari 30 selesai ≈ 97 %.**
-Yang tersisa 1 item: **paritas piksel (Gerbang C)** — live praktis deterministik (0,00–0,55) sedangkan kita 2,54 rata-rata 6 fase; plus **deliverable akhir** (P10) yang menunggu keputusan penutup.
+Yang tersisa: **paritas piksel (Gerbang C)** — live praktis deterministik (0,00–0,55), kita **2,76** rata-rata 6 fase (dari 2,54 pada acuan basi; dengan acuan segar semula **2,93**) — dan **W-7** (APEX perlu repo/folder sendiri supaya sumbernya tidak tertimpa lagi).
 
 ---
 

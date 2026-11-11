@@ -432,3 +432,47 @@ paket terpasang — pelajaran W-3/W-4: validasi lokal saja menyesatkan).
 - `tools/sweep-knob.js` — sapu knob vs live + penilaian per wilayah, `--t` boleh diulang.
 - `tools/sweep-matte.js` — kalibrasi penutup badan (F-142).
 - `tools/metric3.py` — urutan acuan v4 → v3 → v2.
+
+## 11. Revisi 4v — produksi 4u terverifikasi, gerbang dijalankan DI PRODUKSI, dan W-7 (sumber APEX hilang)
+
+### 11.1 Produksi 4u lulus 3 lapis
+Produksi `assets/index-DRPy0tD2.js` **`68e0b85c…`** · CSS `index-DQPaiuOr.css` **`6ad9d68a…`** · repo
+`Niumination/mira-humanoid` head **`2fb3ed9`** · `npm ci` + `vite build` di tarball repo → **byte-identik**;
+sumber repo = workspace (`MiraStage.tsx 714622f6…`, `picFill.frag.glsl f22e2a27…`, `sweep-knob.js 53df9d2e…`,
+`metric3.py 00897957…`).
+
+### 11.2 Semua gerbang dijalankan terhadap **URL produksi** (bukan lokal)
+| gerbang | hasil di produksi 4u |
+|---|---|
+| D (D5–D9) | **7/7** — D5 reprod **0,0000** (live 0,0004/0,0128) · D6 1,50 vs live 1,48 · D7 **0,95 fps** vs live 0,52 · D8 4→92 frame err 0 · D9 390 **0,9912** (MAE 8,91) · 414 **0,9913** (8,70) |
+| A (mode/entry) | **8/8** |
+| B (82 slider/alias/localStorage) | **10/10** |
+| langkah 5 B (aura/state/speed/replay) | **6/6** |
+| langkah 6 B (tangan MediaPipe + MIC) | **8/8** |
+| audio aplikasi | **9/9** |
+
+Perhatikan D9: korelasi naik **0,9886 → 0,9912** dan MAE ponsel **10,80 → 8,91** — efek F-143 ikut terasa di
+viewport ponsel. Ini bukti tambahan bahwa gamma 1,25 bukan sekadar mengejar satu angka desktop.
+
+### 11.3 W-7: sumber APEX hanya tinggal di satu commit lama
+`https://niu-humanoid.vercel.app/` masih hidup dan menyajikan `index-DyoQ8hKN.js` **`8dac8dad…`** +
+`index-WDCbnnbD.css`, tetapi repo `Niu-Humanoid` **HEAD (`c370d66`) berisi aplikasi MIRA**, bukan APEX.
+Penelusuran: berkas `public/humanoid/apex-idle-v1.webp` hanya disentuh **satu** commit — `369c8f5`
+("Initial commit: APEX humanoid rebuild", 2026-10-29). Sejak MIRA masuk, sumber APEX **tertimpa**.
+
+**Tindakan:** sumber APEX dipulihkan dari `369c8f5` ke `apex-humanoid-rebuild/` (3,2 MB, tanpa node_modules)
+dan diverifikasi 3 lapis:
+
+| lapis | hasil |
+|---|---|
+| produksi | `index-DyoQ8hKN.js` **`8dac8dad…`** · `index-WDCbnnbD.css` `1b66a34b…` |
+| repo | commit **`369c8f5`** |
+| build ulang | `npm ci` + `vite build` → **byte-identik** (kedua aset) |
+
+⇒ **situs APEX masih bisa dibangun ulang**, asalkan paket ini dipakai untuk mengembalikan sumbernya
+(saran: repo terpisah atau folder `apex/` — jangan menimpa root lagi).
+
+### 11.4 Perbaikan alat
+**S-7:** `gate-step5.js` memakai `page.waitForFunction(fn, {timeout: 90000})` — argumen kedua adalah
+*argumen fungsi*, bukan opsi, jadi batas waktunya tetap 30 s dan uji pin `?talk/&listen/&voice` gagal di
+produksi Vercel yang lebih lambat. Diperbaiki (`null, {timeout: 90000}`) → **6/6 di produksi**.

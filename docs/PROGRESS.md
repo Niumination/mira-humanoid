@@ -783,7 +783,7 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
 - **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
   B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
-- Paket **`niu-update-langkah4u.zip`** (menggantikan 4t).
+- Paket **`niu-update-langkah4v.zip`** (menggantikan 4u).
 
 ## Bersih-bersih workspace (sesi 46, atas permintaan: over budget)
 
@@ -827,3 +827,16 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **Gerbang build 4u:** A 8/8 · B 10/10 · langkah 5 B 6/6 · hand B 8/8 · audio 9/9.
 - **Bersih-bersih:** `.cache` 554 MB + `.npm` 197 MB + `live-ref-v2` 5,4 MB dihapus; workspace (tanpa
   node_modules) **88 MB**.
+
+## Sesi 49 — produksi 4u diperiksa di semua gerbang, W-7, deliverable P10
+
+- **Produksi 4u lulus 3 lapis** (`68e0b85c…` = repo `2fb3ed9` = build ulang).
+- **Semua gerbang dijalankan terhadap URL produksi**: D **7/7** · A **8/8** · B **10/10** · langkah 5 B
+  **6/6** · hand B **8/8** · audio **9/9**. D9 ponsel naik ke **0,9912/0,9913** (MAE 8,91/8,70).
+- **F-144 diuji lalu dibuang**: peredupan badan `?tv=` justru memperburuk (4,71 → 5,35 pada t=9,5) karena
+  radiusnya ikut menggelapkan kepala; `dist` dikembalikan **byte-identik** dengan produksi.
+- **W-7 (baru):** sumber APEX hilang dari repo — hanya ada di commit `369c8f5`. Dipulihkan ke
+  `apex-humanoid-rebuild/` dan diverifikasi 3 lapis (build ulang = produksi `8dac8dad…` byte-identik).
+- **S-7:** `waitForFunction` salah posisi argumen timeout → gerbang langkah 5 palsu gagal di produksi.
+- **P10 deliverable:** `DELIVERABLE.md` ditulis (dua aplikasi, angka, cara membangun ulang, batas yang
+  diketahui, peta berkas).

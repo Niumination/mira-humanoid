@@ -1,0 +1,56 @@
+{
+  "part": "B",
+  "ok": true,
+  "pass": 8,
+  "total": 8,
+  "rows": [
+    {
+      "id": "B1",
+      "name": "tombol kamera awal",
+      "ok": true,
+      "detail": "\"ENABLE CAMERA\" aria-pressed=false titik=0"
+    },
+    {
+      "id": "B2",
+      "name": "klik → CAMERA OFF + titik merah",
+      "ok": true,
+      "detail": "\"CAMERA OFF\" 14px rgb(255, 68, 68)"
+    },
+    {
+      "id": "B3",
+      "name": "status pipeline kamera hidup",
+      "ok": true,
+      "detail": "\"hand found - point, pinch to touch her\""
+    },
+    {
+      "id": "B4",
+      "name": "landmark → perhatian & kepala; pinch → bolt; telapak → idle",
+      "ok": true,
+      "detail": "perhatian Δx=0.246 · yaw Δ=0.0342 · bolt=3 · palm→idle=true"
+    },
+    {
+      "id": "B5",
+      "name": "MIC: level > 0, mira-heard, state talking",
+      "ok": true,
+      "detail": "on=true peak=0.4436 heard=1 state(400ms)=mira-state-talking state(1,3s)=mira-state-idle teks=\"say \"look left\", \"look right\", \"look at \""
+    },
+    {
+      "id": "B6",
+      "name": "?attn= mengarahkan kepala (jepit ±0,416)",
+      "ok": true,
+      "detail": "kanan x=0.800 yaw=0.2419 · kiri x=-0.800 yaw=-0.2701 · |yaw|max=0.2701 ≤ 0.416"
+    },
+    {
+      "id": "B7",
+      "name": "kamera OFF → landmarker ditutup, titik & status hilang",
+      "ok": true,
+      "detail": "deteksi jalan=true close=1 titik=0 status=0 aria-pressed=false"
+    },
+    {
+      "id": "B8",
+      "name": "SOUND OFF tetap memicu bolt saat panggung diklik",
+      "ok": true,
+      "detail": "sound=false id 1 → 2"
+    }
+  ]
+}

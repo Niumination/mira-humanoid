@@ -785,3 +785,14 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | S-6 | port bawaan gerbang A/B/5/4c salah (5190/8802) | diganti 8804 (bisa `BASE=`) |
 | A-10 | alat baru | `tools/sweep-knob.js`, `tools/sweep-matte.js` |
 | B-7 | bersih-bersih | `.cache` playwright 554 MB + `.npm` 197 MB dihapus; `live-ref-v2` 5,4 MB; `b4t-*` & `b4q/b4s` PNG |
+
+## Sesi 49 — 2026-11-11
+
+| kode | temuan | angka |
+|---|---|---|
+| V-4u | verifikasi 3 lapis produksi 4u | aset `68e0b85c…` = repo `2fb3ed9` = build ulang byte-identik |
+| G-4u-prod | **semua gerbang dijalankan di URL produksi** | D **7/7** · A **8/8** · B **10/10** · langkah5 B **6/6** · hand B **8/8** · audio **9/9** |
+| C-17 | F-143 terasa juga di ponsel | D9 390 korelasi 0,9886 → **0,9912**, MAE 10,80 → **8,91** |
+| V-4v | `?tv=` peredupan badan (F-144) diuji, **tidak dipakai** | t=9,5: tv 0/0,15/0,3/0,45 → 4,711/4,846/5,076/5,351 (memanfaatkan radius lebar ikut menggelapkan kepala) ⇒ dikembalikan, `dist` = produksi byte-identik |
+| **W-7** | sumber APEX hilang dari repo (tertimpa MIRA) | hanya ada di commit `369c8f5`; dipulihkan ke `apex-humanoid-rebuild/`, build ulang = produksi `8dac8dad…` byte-identik |
+| S-7 | `waitForFunction(fn,{timeout})` salah argumen | 30 s tetap dipakai → gagal di produksi; diperbaiki → langkah5 6/6 |
