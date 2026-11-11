@@ -840,7 +840,9 @@ export function MiraStage({
           return null
         }
       })()
-      const fieldPin = 0.15
+      // F-141: jam medan saat `?t=` dipin bisa disapu lewat `?ft=` — dugaan awal 0,150 mungkin salah;
+      // live menambah jam medan tiap frame (`_ += dt`), jadi nilainya bergantung kapan tangkapan diambil.
+      const fieldPin = tune('ft', 0.15)
       // live memakai jam terpisah untuk rambut/helai/bintik/percikan/wajah: saat `?t=` dipin harganya
       // 0,045–0,2 (terukur); jadi jam ini SELALU berjalan sendiri, tidak ikut dipin.
       let animT = 0
@@ -967,16 +969,19 @@ export function MiraStage({
           gl.uniform1f(U(P.field, 'iTime'), fieldClock)
           gl.uniform1f(U(P.field, 'iField'), ramp.waves)    // ramp build (live `Tw`), bukan konstanta 1
           gl.uniform1f(U(P.field, 'iMatter'), ramp.matterN)
-          gl.uniform2f(U(P.field, 'iCenter'), 0.5009382963180542, 0.6912000179290771)
-          gl.uniform1f(U(P.field, 'iRing'), 0.12385807931423187)
-          gl.uniform1f(U(P.field, 'iClear'), 0)
-          gl.uniform1f(U(P.field, 'iSpread'), 0.85)
+          // F-140: semua uniform medan bisa disapu lewat URL (dulu dipatok). Diukur pada 1440×900
+          // `?t=9,5` dengan figur dimatikan: medan kita MELESET secara struktur (MAE 8,10) — puncak
+          // terang kita di baris 473, live 296 → penyebabnya salah satu uniform di bawah.
+          gl.uniform2f(U(P.field, 'iCenter'), tune('fcx', 0.5009382963180542), tune('fcy', 0.6912000179290771))
+          gl.uniform1f(U(P.field, 'iRing'), tune('frig', 0.12385807931423187))
+          gl.uniform1f(U(P.field, 'iClear'), tune('fclr', 0))
+          gl.uniform1f(U(P.field, 'iSpread'), tune('fspread', 0.85))
           gl.uniform1f(U(P.field, 'iState'), 0)
           gl.uniform1f(U(P.field, 'iEnergy'), 0)
           gl.uniform1f(U(P.field, 'iDebug'), 0)
-          gl.uniform1f(U(P.field, 'iAlpha'), 1)
-          gl.uniform1f(U(P.field, 'iNear'), 1.45)
-          gl.uniform1f(U(P.field, 'iHotLo'), 0.5)
+          gl.uniform1f(U(P.field, 'iAlpha'), tune('falpha', 1))
+          gl.uniform1f(U(P.field, 'iNear'), tune('fnear', 1.45))
+          gl.uniform1f(U(P.field, 'iHotLo'), tune('fhotlo', 0.5))
           gl.drawArrays(gl.TRIANGLES, 0, 3)
 
           // blit ke KANVAS (latar tidak ikut di-bloom — di live latar punya kanvas sendiri)

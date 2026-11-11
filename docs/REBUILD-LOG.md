@@ -753,3 +753,19 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | **C-7** | Peringatan metodologi: `off=bloom` di live menurunkan terang ke 25,8 (kita 40,4) — diduga ikut mematikan encode sRGB ⇒ **jangan** dipakai sebagai bobot bloom. | — |
 | **R-8** | Tanpa regresi: 4s vs produksi (4r) `?t=8,0` & `?t=11,5` **MAE 0,0000 · 0 piksel** · paritas 6 fase **2,54** · D **7/7** · A **8/8** · B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9**. | — |
 | **T-3** | `tools/gate-step4c.js` memakai klik DOM (`el.click()`) — `page.click` habis waktu pada panggung ~1 fps (gerbang audio sempat 4/9 palsu, kini **9/9**). | 1 alat |
+
+## Sesi 47 — 2026-11-11
+
+| kode | temuan | angka |
+|---|---|---|
+| V-4s | verifikasi 3 lapis produksi 4s | aset `1bb6e4c0…` = repo `c363154` = build ulang byte-identik |
+| D-4s | Gerbang D dijalankan **terhadap produksi** | **7/7**; D9 0,9884 & 0,9881; D7 0,64 fps vs live 0,35 |
+| C-8 | dekomposisi rerata vs sebaran untuk latar | rerata 18,82 vs 18,83 tetapi std 10,68 vs 22,42 |
+| C-9 | flag live tidak bisa mengisolasi latar | `off=figure` 0,00 · `off=cutwhite` 76,65 · `off=core`/`lights` 39,29 · `off=pic,…` MAE 8,24 = bukan pembanding |
+| C-10 | ablasi per wilayah (latar menyala) | torso +1,22 dgn `pic` +7,96 · lengan +0,42 dgn `pic` −1,24 · kepala −0,90 · bawah −0,29 |
+| C-11 | *fit* 7 uniform medan (koordinat-turun) | **8,114 → 8,114** — tidak ada perbaikan, bawaan sudah optimum |
+| C-12 | sapu jam medan `?ft=` 0…6 | optimum 0,5 = 8,213 vs bawaan 0,15 = 8,243 → Δ0,03 |
+| C-13 | kurva respons per piksel | k kita 0,923 vs live 0,789 → MAE 6,50 → 6,18 (Δ0,32, di bawah derau) |
+| C-14 | ambang derau acuan | live↔live 3,2 s: 0,017 · 3,2 s vs 7,0 s: **0,408** |
+| A-9 | alat baru | `tools/gate-c-layer.js`, `tools/fit-field.js` |
+| R-9 | regresi build 4t vs produksi 4s | `?t=8,0` & `11,5` → **MAE 0,0000 · 0 piksel** |

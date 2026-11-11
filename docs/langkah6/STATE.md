@@ -334,3 +334,41 @@ Target tinggal **satu angka**: kelebihan **+3,5** satuan pada lapisan figur di a
 live 13,93). Urutan kerja yang masuk akal: (a) bandingkan kontribusi tiap lapisan figur **setelah** latar
 dinyalakan (ablasi ulang dengan W-5 dibetulkan) untuk menemukan lapisan penyumbang; (b) baru sesuaikan
 gain lapisan itu; (c) uji pada 6 fase acuan, bukan satu fase.
+
+## 9. Revisi 4t — produksi 4s terverifikasi, dan Gerbang C dibongkar sampai akar
+
+### 9.1 Produksi 4s lulus 3 lapis
+Produksi `assets/index-B4pxZZJw.js` **`1bb6e4c0…`** · CSS `index-DQPaiuOr.css` **`6ad9d68a…`** ·
+repo head **`c363154`** · `npm ci` + `vite build` di tarball repo → **byte-identik**. Sumber repo =
+workspace (`MiraStage.tsx 005c8081…`, `gate-c-ablation.js 0cabb13e…`, `gate-step4c.js a65ce213…`,
+`gate-d.js 0dba1624…`).
+
+**Gerbang D di produksi 4s = 7/7** (`verification/mira/gate-d-prod4s.json`): D5 reprod 0,0000 (live 0,826/0,020),
+D6 rasio seam 1,46 vs live 1,52, D7 0,64 fps vs live 0,35, D8 7→71 frame err 0,
+D9 390×844 korelasi **0,9884** (MAE 10,70; 47,6 vs 40,6), 414×896 **0,9881** (10,33; 47,3 vs 40,3).
+
+### 9.2 Gerbang C: satu klaim sesi 46 perlu dikoreksi
+"Latar setara 0,24" benar **sebagai rerata**, tetapi menyesatkan: `off=fog` menghasilkan rerata yang sama
+sementara **sebarannya berbeda** (std kita 10,7 vs live 22,4). MAE latar **tidak bisa** diukur dengan flag
+live, sebab `off=figure` = layar hitam (0,00) dan `off=pic,…` menyisakan mesh kepala/badan yang menutupi
+nebula (MAE 8,24 — mengukur dua hal berbeda). Angka yang sah: **figur di atas hitam MAE 3,79**.
+
+### 9.3 Penyumbang +3,3 ditemukan: kuad `pic` pada torso
+Ablasi per wilayah (latar menyala, `gate-c-layer.json`): torso Δ **+1,22** dengan `pic` **+7,96** (kita
+menambah 46,69 vs live 38,73); lengan Δ +0,42 dengan `pic` **−1,24**; kepala −0,90; bawah −0,29.
+⇒ satu knob global **tidak mungkin** menutup selisih (sebagian wilayah harus turun, sebagian naik).
+
+### 9.4 Empat hipotesis gugur dengan angka
+`?bb=` monoton memburuk · `?fg=` optimum 1,2 hanya Δ0,01 · 7 uniform medan di-*fit* koordinat-turun
+**8,114 → 8,114** (bawaan sudah optimum) · `?ft=` optimum 0,5 hanya Δ0,03 · kurva respons live
+(k 0,923 vs 0,789) hanya menurunkan MAE 6,50 → 6,18 (derau acuan 0,408).
+
+### 9.5 Akar masalahnya struktural
+Live menutupi latar dengan **mesh 3D badan/kepala** yang gelap opak; kita menggambar badan dari kuad
+tekstur alpha-parsial sehingga nebula menembus dan kuad menambah cahaya. Bukti: `latar-bgonly-t95.png`
+(badan live hitam pekat, badan kita transparan). Perbaikan yang benar = pass mesh penutup (satu langkah
+penuh), bukan knob. Rincian: `docs/langkah6/ANALISIS-GERBANG-C.md`.
+
+### 9.6 Alat & knob baru (bawaan tidak berubah)
+`tools/gate-c-layer.js` · `tools/fit-field.js` · F-140 (uniform medan bisa disapu) · F-141 (`?ft=`).
+Build 4t (`index-D3XcAeJi.js` `df3071b7…`) vs produksi 4s @8 & @11,5 → **MAE 0,0000 · 0 piksel**.

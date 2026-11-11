@@ -1,0 +1,52 @@
+{
+  "when": "2026-11-11T09:21:15.108Z",
+  "build": "https://mira-humanoid-niu.vercel.app/",
+  "live": "https://mira-humanoid.vercel.app/",
+  "ok": true,
+  "pass": 7,
+  "total": 7,
+  "rows": [
+    {
+      "id": "D5",
+      "name": "reproduktibilitas @t=8 (kita vs live)",
+      "ok": true,
+      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.8262 (119307 px)"
+    },
+    {
+      "id": "D5",
+      "name": "reproduktibilitas @t=11.5 (kita vs live)",
+      "ok": true,
+      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.0198 (1158 px)"
+    },
+    {
+      "id": "D6",
+      "name": "tanpa seam buatan (lonjakan baris ≤ live)",
+      "ok": true,
+      "detail": "kita rasio 1.46 (baris 548, 8.55 vs lokal 5.84) · live 1.52 (baris 524)"
+    },
+    {
+      "id": "D7",
+      "name": "fps di lingkungan yang sama (kita ≥ 0,8× live)",
+      "ok": true,
+      "detail": "kita 0.64 fps (7 frame/10.9 s) · live 0.35 fps"
+    },
+    {
+      "id": "D8",
+      "name": "stabil 120 s (tanpa error, konteks hidup, frame bertambah)",
+      "ok": true,
+      "detail": "frame 7 → 71 · konteks hilang=false · err=0 · jam 1.63"
+    },
+    {
+      "id": "D9",
+      "name": "viewport 390×844: reproduktif & geometri cocok (korelasi ≥ 0,95)",
+      "ok": true,
+      "detail": "kita reproduktif MAE 0.0000 · live 0.6562 · korelasi profil 0.9884 · MAE 10.70 (terang: kita 47.6 vs live 40.6)"
+    },
+    {
+      "id": "D9",
+      "name": "viewport 414×896: reproduktif & geometri cocok (korelasi ≥ 0,95)",
+      "ok": true,
+      "detail": "kita reproduktif MAE 0.0485 · live 0.8054 · korelasi profil 0.9881 · MAE 10.33 (terang: kita 47.3 vs live 40.3)"
+    }
+  ]
+}

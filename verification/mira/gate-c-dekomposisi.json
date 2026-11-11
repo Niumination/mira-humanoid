@@ -1,0 +1,105 @@
+{
+ "when": "2026-11-11",
+ "t": 9.5,
+ "viewport": "1440x900",
+ "keadaan": [
+  {
+   "nama": "penuh",
+   "kita": 42.62,
+   "live": 39.33,
+   "delta": 3.28,
+   "mae": 6.5
+  },
+  {
+   "nama": "figur di atas HITAM (off=fog di kedua sisi)",
+   "kita": 25.16,
+   "live": 25.32,
+   "delta": -0.16,
+   "mae": 3.79
+  },
+  {
+   "nama": "tanpa lapisan figur (kita: semua off; live: pic,hair,lines,matter,arcs,waves off)",
+   "kita": 18.82,
+   "live": 18.83,
+   "delta": -0.01,
+   "mae": 8.24
+  }
+ ],
+ "ablasi_live": {
+  "off=core": 39.29,
+  "off=lights": 39.29,
+  "off=head3d": 39.46,
+  "off=cutwhite": 76.65,
+  "off=figure": 0.0,
+  "catatan": "off=figure = layar hitam \u21d2 live tidak bisa \"mematikan figur tapi latar hidup\"; pembanding setara hanya off=fog"
+ },
+ "kurva_respons": {
+  "k_kita": 0.923,
+  "k_live": 0.789,
+  "mae_pakai_kurva_live": 6.184,
+  "mae_sekarang": 6.503,
+  "catatan": "selisih 0,32 < ambang derau 0,4 \u21d2 bukan kandidat perbaikan"
+ },
+ "stabilitas_acuan": {
+  "live_vs_live_3.2s": 0.017,
+  "live_3.2s_vs_7.0s": 0.408,
+  "kita_vs_kita": 0.022
+ },
+ "ablasi_per_wilayah": {
+  "kepala/rambut": {
+   "delta": -0.9,
+   "pic": "+20.18 (live 0,06 \u2014 di live off=pic menyisakan mesh kepala)",
+   "hair": "+1.05",
+   "lines": "+0.64",
+   "twinkles": "+0.56",
+   "strands": "+0.44"
+  },
+  "dada/torso": {
+   "delta": 1.22,
+   "pic": "+7.96",
+   "strands": "+1.80",
+   "lines": "+0.64",
+   "hair": "-0.53",
+   "waves": "+0.19"
+  },
+  "lengan": {
+   "delta": 0.42,
+   "pic": "-1.24",
+   "lines": "+0.98",
+   "strands": "+0.77"
+  },
+  "bawah": {
+   "delta": -0.29,
+   "pic": "-0.98",
+   "waves": "+0.97",
+   "strands": "+0.31"
+  }
+ },
+ "hotspot_delta": [
+  [
+   24.45,
+   675,
+   405
+  ],
+  [
+   22.29,
+   675,
+   450
+  ],
+  [
+   21.9,
+   675,
+   360
+  ],
+  [
+   20.52,
+   675,
+   720
+  ],
+  [
+   19.98,
+   450,
+   630
+  ]
+ ]
+}

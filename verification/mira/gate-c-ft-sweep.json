@@ -1,0 +1,56 @@
+{
+ "when": "2026-11-11",
+ "t": 9.5,
+ "knob": "ft (jam medan saat ?t= dipin)",
+ "rows": [
+  {
+   "ft": 0,
+   "mae": 8.555
+  },
+  {
+   "ft": 0.15,
+   "mae": 8.243
+  },
+  {
+   "ft": 0.5,
+   "mae": 8.213
+  },
+  {
+   "ft": 1,
+   "mae": 9.07
+  },
+  {
+   "ft": 1.5,
+   "mae": 9.508
+  },
+  {
+   "ft": 2,
+   "mae": 9.819
+  },
+  {
+   "ft": 2.5,
+   "mae": 10.072
+  },
+  {
+   "ft": 3,
+   "mae": 10.298
+  },
+  {
+   "ft": 3.5,
+   "mae": 10.512
+  },
+  {
+   "ft": 4,
+   "mae": 10.776
+  },
+  {
+   "ft": 5,
+   "mae": 11.192
+  },
+  {
+   "ft": 6,
+   "mae": 11.472
+  }
+ ],
+ "catatan": "optimum 0,5 (8,213) vs bawaan 0,15 (8,243) \u2192 \u03940,03, di bawah ambang derau 0,4 \u21d2 jam medan BUKAN penyebab"
+}

@@ -783,4 +783,33 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
 - **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
   B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
-- Paket **`niu-update-langkah4s.zip`**.
+- Paket **`niu-update-langkah4t.zip`** (menggantikan 4s).
+
+## Bersih-bersih workspace (sesi 46, atas permintaan: over budget)
+
+| tindakan | jumlah | hemat |
+|---|---|---|
+| hapus tangkapan sapuan/scratch di `verification/` (deret `build14/31/32/33`, `b4q-*`, `b4s-*`, `shots6/`, `shots390/`, `build-stage*`, panel/audio/auto) | 58 berkas | **44 MB** |
+| hapus duplikat byte-identik di `verification/` (sha256 sama) | termasuk di atas | — |
+| bersihkan scratch `/tmp` (`repro4q`, `p4r.js`, `gatec/`, skrip sapuan) | — | — |
+| `recon/` **tidak disentuh** (sumber kebenaran); duplikat di dalamnya hanya 0,2 MB ⇒ tidak sepadan risikonya | 0 | 0 |
+
+Sisa: `verification/` **9,7 MB** (semua JSON gerbang + `.md` + skrip audio `.mjs` + tangkapan pembanding yang dirujuk dokumen), total workspace **81 MB** (dari 125 MB).
+
+Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebelumnya (`banding-build28..30`, `build-stage2..15`, `verification/step3/compare-birth.png`, `build-stage21.png`) kini **tidak ada di disk** — sudah sebagian hilang di sesi-sesi sebelumnya, sisanya ikut tersapu. Angka dan JSON gerbangnya tetap utuh; tangkapan bisa dibuat ulang lewat `tools/` kapan pun dibutuhkan.
+
+## Sesi 47 — produksi 4s diperiksa, Gerbang C dibongkar
+
+- **Produksi 4s lulus 3 lapis**: `index-B4pxZZJw.js` `1bb6e4c0…` = CSS `6ad9d68a…` = repo `c363154` =
+  build ulang byte-identik. **Gerbang D di produksi 7/7** (D9 0,9884 / 0,9881).
+- **Gerbang C dilanjutkan** dan satu klaim sesi 46 dikoreksi: "latar setara 0,24" hanya benar sebagai
+  rerata; sebarannya beda (std 10,7 vs 22,4) dan flag live tidak bisa mengisolasi latar (`off=figure` = 0,00).
+- **Penyumbang +3,3 ditemukan**: kuad `pic` di torso (+7,96; torso total +1,22), sementara lengan justru
+  −1,24 ⇒ tidak ada knob global yang bisa menutupnya.
+- **Empat hipotesis gugur dengan angka**: `?bb=`, `?fg=` (Δ0,01), 7 uniform medan (8,114 → 8,114), `?ft=`
+  (Δ0,03), kurva respons (Δ0,32 < derau 0,408).
+- **Akar struktural**: live menutupi latar dengan mesh badan/kepala gelap; kita memakai kuad alpha sehingga
+  nebula menembus. Perbaikan = pass mesh penutup (satu langkah penuh).
+- **Alat baru**: `tools/gate-c-layer.js`, `tools/fit-field.js`, knob F-140/F-141 (bawaan tak berubah).
+- **Tanpa regresi**: build 4t vs produksi 4s @8 & @11,5 → **MAE 0,0000 · 0 piksel**.
+- Dokumen: `docs/langkah6/ANALISIS-GERBANG-C.md`, STATE §9.
