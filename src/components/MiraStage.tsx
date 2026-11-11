@@ -76,10 +76,26 @@ import { AN, EN, TN, strandGeometry } from '../lib/miraHair'
 import { buildWaveRibbons, buildWaveSparks, carveRibbon, updateWaveSparks } from '../lib/miraWaves'
 
 /** skala dunia per piksel gambar (modelViewMatrix live, terbaca dari buffer) */
-const S = 0.002932240255177021
-const TX = 0.002932240255177021
-const TY = 1.7906213998794556
-const QUAD_TY = -0.22382767498493195
+// ── kecocokan ukuran gambar terhadap layar (live `X` di dalam komponen panggung) ──
+// live: `HT=4.8` (kamera z), `_d = HT·tan(25°)`; tinggi gambar `fh = 2·_d·es.fit` (fit 0,9);
+// lebarnya `fw = fh·(E/w)`; bila `fw > 2·halfW·0,94` (halfW = _d·aspect) maka dipotong lebar:
+// `fw = 2·halfW·0,94`, `fh = fw·(w/E)`; kotak gambar ditempel di dasar layar (`top = −_d + fh`).
+// Nilai di bawah = keadaan pada 1440×900 (aspect 1,6 → tidak terpotong, t = 1).
+const HT = 4.8
+const D0 = HT * Math.tan((25 * Math.PI) / 180)
+const S0 = 0.002932240255177021
+const TX0 = 0.002932240255177021
+const TY0 = 1.7906213998794556
+const QUAD_TY0 = -0.22382767498493195
+const HAIR_OFF = [-2.0320425033569336, 1.9313689470291138] as const
+const PTS_OFF_X = -1.680173635482788
+/** faktor & nilai aktif (diperbarui tiap frame sesuai aspect layar) */
+let S = S0
+let TX = TX0
+let TY = TY0
+let QUAD_TY = QUAD_TY0
+let FIT_T = 1
+const fitY = (y: number) => -D0 + (y + D0) * FIT_T
 const FOV = 50
 const NEAR = 0.1
 const FAR = 2000
@@ -796,7 +812,7 @@ export function MiraStage({
         m[13] += dy
         return m
       }
-      const mvPoints = new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -1.680173635482788, TY, -4.8, 1])
+      const mvPoints = new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, PTS_OFF_X * FIT_T, TY, -4.8, 1])
 
       // live: dt = min(0,05 s, dt asli) → jam build ikut lambat bila fps rendah (terukur: ~0,1 s/s di SwiftShader)
       let clockT = 0
@@ -840,6 +856,29 @@ export function MiraStage({
         const ch = canvas.clientHeight || 1
         // live: kanvas FIGUR penuh (1440×900 di jendela 1440×900, dpr 1); medan nebula punya kanvas
         // sendiri beresolusi kerja 0,7 (lihat REBUILD-LOG F-66)
+        // faktor kecocokan gambar terhadap layar (port live `X`, lihat catatan di konstanta)
+        {
+          const aspect = cw / Math.max(1, ch)
+          const halfW = D0 * aspect
+          const fh0 = TY0 + D0
+          const fw0 = fh0 * (fw / Math.max(1, fh))
+          let fhUse = fh0
+          if (fw0 > 2 * halfW * 0.94) fhUse = (2 * halfW * 0.94 * fh) / fw
+          // `?fitk=` — kalibrasi kecocokan gambar terhadap layar (default 1 = rumus live apa adanya)
+          const fitk = (() => {
+            try {
+              const v = new URLSearchParams(window.location.search).get('fitk')
+              return v === null ? 1 : Number(v)
+            } catch {
+              return 1
+            }
+          })()
+          FIT_T = (fhUse / fh0) * fitk
+          S = S0 * FIT_T
+          TX = TX0 * FIT_T
+          TY = -D0 + fh0 * FIT_T
+          QUAD_TY = -D0 + (QUAD_TY0 + D0) * FIT_T
+        }
         const dpr = Math.min(window.devicePixelRatio || 1, 2)
         const pw = Math.max(1, Math.round(cw * dpr))
         const ph = Math.max(1, Math.round(ch * dpr))
@@ -1069,7 +1108,7 @@ export function MiraStage({
           gl.bindTexture(gl.TEXTURE_2D, texHair)
           // modelView rambut: skala S, y dibalik, geser (-2,0320425, 1,9313689) — terukur dari live
           gl.uniformMatrix4fv(U(P.hair, 'modelViewMatrix'), false,
-            new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
+            new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, HAIR_OFF[0] * FIT_T, fitY(HAIR_OFF[1]), -4.8, 1]))
           gl.uniformMatrix4fv(U(P.hair, 'projectionMatrix'), false, proj)
           gl.uniform2f(U(P.hair, 'uSize'), HW, HH)
           gl.uniform1f(U(P.hair, 'uGain'), tune('fg', 1.15) * tune('hg', 1) * tune('hgg', 1))
@@ -1105,7 +1144,7 @@ export function MiraStage({
           gl.activeTexture(gl.TEXTURE1)
           gl.bindTexture(gl.TEXTURE_2D, texLifted)
           gl.uniformMatrix4fv(U(P.strands, 'modelViewMatrix'), false,
-            new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
+            new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, HAIR_OFF[0] * FIT_T, fitY(HAIR_OFF[1]), -4.8, 1]))
           gl.uniformMatrix4fv(U(P.strands, 'projectionMatrix'), false, proj)
           gl.uniform2f(U(P.strands, 'uSize'), HW, HH)
           // F-136: helai rambut (strands) terlalu terang SETELAH figur tenang. Terukur pada tumpukan penuh:
@@ -1146,7 +1185,7 @@ export function MiraStage({
           gl.activeTexture(gl.TEXTURE0)
           gl.bindTexture(gl.TEXTURE_2D, texRows)
           gl.uniformMatrix4fv(U(P.twinkles, 'modelViewMatrix'), false,
-            new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, -2.0320425033569336, 1.9313689470291138, -4.8, 1]))
+            new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, HAIR_OFF[0] * FIT_T, fitY(HAIR_OFF[1]), -4.8, 1]))
           gl.uniformMatrix4fv(U(P.twinkles, 'projectionMatrix'), false, proj)
           gl.uniform1f(U(P.twinkles, 'uTime'), animClock)
           gl.uniform1f(U(P.twinkles, 'uPx'), 1)

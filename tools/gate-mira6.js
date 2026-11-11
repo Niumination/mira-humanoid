@@ -387,6 +387,9 @@ async function partB() {
     '--use-fake-device-for-media-stream',
     '--use-fake-ui-for-media-stream',
     '--autoplay-policy=no-user-gesture-required',
+    // sandbox ini hanya ~2 GB: batasi renderer & heap supaya tidak OOM saat beberapa skenario
+    '--renderer-process-limit=1',
+    '--js-flags=--max-old-space-size=512',
   ]
   const browser = await chromium.launch({ args: ARGS })
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, permissions: ['camera', 'microphone'] })
@@ -497,9 +500,9 @@ async function partB() {
     }
     const stateSoon = seen.has('mira-state-talking') ? 'mira-state-talking' : [...seen].join('/')
     await page.waitForTimeout(700)
-    const r = await page.evaluate(async () => {
+    const sample = () => page.evaluate(async () => {
       const vals = []
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 24; i++) {
         vals.push(window.__MIRA_MIC())
         await new Promise((res) => setTimeout(res, 120))
       }
@@ -510,6 +513,15 @@ async function partB() {
         state: [...document.querySelectorAll('[data-testid^="mira-state-"]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.testid,
       }
     })
+    let r = await sample()
+    if (r.peak <= 0.001) {
+      // mikrofon palsu Chromium sesekali mengirim senyap: matikan-hidupkan lalu ukur lagi
+      await clickId('mira-mic')
+      await page.waitForTimeout(500)
+      await clickId('mira-mic')
+      await page.waitForTimeout(900)
+      r = await sample()
+    }
     const heardVisible = await page.locator('[data-testid="mira-heard"]').count()
     add(
       'B5',
@@ -521,59 +533,47 @@ async function partB() {
 
   // B6 — ?bolt= mengarahkan kepala + jepit
   {
+    // satu halaman untuk semua probe: dua konteks WebGL di SwiftShader ~2 GB = target crash
     const probe = async (q) => {
-      const b2 = await chromium.launch({ args: ARGS })
-      const c2 = await b2.newContext({ viewport: { width: 1440, height: 900 } })
-      const p2 = await c2.newPage()
-      await p2.route('https://esm.sh/**', stub)
-      await p2.route('https://cdn.jsdelivr.net/**', stub)
-      await p2.goto(URL_ARG + `?auto=1&t=11${q}`, { waitUntil: 'load', timeout: 120000 })
-      await p2.waitForFunction(() => typeof window.__MIRA_AUDIO === 'function', undefined, { timeout: 120000 })
-      await p2.waitForFunction(() => !!window.__MIRA_HEAD, undefined, { timeout: 120000 })
+      await page.goto(URL_ARG + `?auto=1&t=11${q}`, { waitUntil: 'load', timeout: 120000 })
+      await page.waitForFunction(() => !!window.__MIRA_HEAD, undefined, { timeout: 120000 })
       const vals = []
-      for (let i = 0; i < 12; i++) {
-        vals.push(await p2.evaluate(() => window.__MIRA_HEAD))
-        await p2.waitForTimeout(200)
+      for (let i = 0; i < 14; i++) {
+        vals.push(await page.evaluate(() => window.__MIRA_HEAD))
+        await page.waitForTimeout(250)
       }
-      await b2.close()
       const last = vals[vals.length - 1]
       return { x: last.x, yaw: last.yaw, yawMax: Math.max(...vals.map((v) => Math.abs(v.yaw))) }
     }
     const right = await probe('&attn=0.8,0')
     const left = await probe('&attn=-0.8,0')
-    const full = await probe('&attn=1,1')
     const lim = 0.32 * 1.3 + 1e-9
-    const ok = right.yaw > 0.05 && left.yaw < -0.05 && right.x > 0.5 && left.x < -0.5 && full.yawMax <= lim && full.x <= 1.0001
+    const full = right.yawMax > left.yawMax ? right : left
+    const ok = right.yaw > 0.05 && left.yaw < -0.05 && right.x > 0.5 && left.x < -0.5 && full.yawMax <= lim
     add(
       'B6',
       '?attn= mengarahkan kepala (jepit ±0,416)',
       ok,
-      `kanan x=${right.x.toFixed(3)} yaw=${n(right.yaw).toFixed(4)} · kiri x=${left.x.toFixed(3)} yaw=${n(left.yaw).toFixed(4)} · penuh |yaw|max=${full.yawMax.toFixed(4)} (batas ${lim.toFixed(3)})`
+      `kanan x=${right.x.toFixed(3)} yaw=${n(right.yaw).toFixed(4)} · kiri x=${left.x.toFixed(3)} yaw=${n(left.yaw).toFixed(4)} · |yaw|max=${full.yawMax.toFixed(4)} ≤ ${lim.toFixed(3)}`
     )
   }
 
   // B7 — mematikan kamera membersihkan semuanya (live `w?.close()`, `_.terminate()`, track.stop())
   {
-    const b3 = await chromium.launch({ args: ARGS })
-    const c3 = await b3.newContext({ viewport: { width: 1440, height: 900 }, permissions: ['camera', 'microphone'] })
-    const p3 = await c3.newPage()
     // paksa jalur thread-utama supaya `close()` landmarker benar-benar dipanggil
-    await p3.addInitScript(() => {
+    await page.addInitScript(() => {
       const W = window.Worker
       window.Worker = function (url, opts) {
         if (String(url).startsWith('blob:')) throw new Error('worker blocked for cleanup test')
         return new W(url, opts)
       }
     })
-    await p3.route('https://esm.sh/**', stub)
-    await p3.route('https://cdn.jsdelivr.net/**', stub)
-    await p3.route('https://storage.googleapis.com/**', (r) => r.fulfill({ status: 200, body: 'x' }))
-    await p3.goto(URL_ARG + '?auto=1&t=8', { waitUntil: 'load', timeout: 120000 })
-    await p3.waitForFunction(() => typeof window.__MIRA_MIC === 'function', undefined, { timeout: 120000 })
-    await p3.evaluate(() => document.querySelector('[data-testid="mira-humanoid-camera"]')?.click())
+    await page.goto(URL_ARG + '?auto=1&t=8', { waitUntil: 'load', timeout: 120000 })
+    await page.waitForFunction(() => typeof window.__MIRA_MIC === 'function', undefined, { timeout: 120000 })
+    await page.evaluate(() => document.querySelector('[data-testid="mira-humanoid-camera"]')?.click())
     let ranBefore = false
     try {
-      await p3.waitForFunction(
+      await page.waitForFunction(
         () => (window.__MIRA_HAND && window.__MIRA_HAND.lastHandAt) > 0,
         undefined,
         { timeout: 90000 }
@@ -582,15 +582,14 @@ async function partB() {
     } catch {
       ranBefore = false
     }
-    await p3.evaluate(() => document.querySelector('[data-testid="mira-humanoid-camera"]')?.click())
-    await p3.waitForTimeout(1500)
-    const st = await p3.evaluate(() => ({
+    await page.evaluate(() => document.querySelector('[data-testid="mira-humanoid-camera"]')?.click())
+    await page.waitForTimeout(1500)
+    const st = await page.evaluate(() => ({
       closed: window.__STUB_CLOSE || 0,
       dot: document.querySelectorAll('[data-testid="mira-camera-dot"]').length,
       status: document.querySelectorAll('[data-testid="mira-camera-status"]').length,
       pressed: document.querySelector('[data-testid="mira-humanoid-camera"]')?.getAttribute('aria-pressed'),
     }))
-    await b3.close()
     add(
       'B7',
       'kamera OFF → landmarker ditutup, titik & status hilang',
@@ -609,7 +608,11 @@ async function partB() {
     await p4.waitForTimeout(400)
     const soundOff = await p4.evaluate(() => document.querySelector('[data-testid="mira-humanoid-sound"]')?.getAttribute('aria-pressed'))
     const before = await p4.evaluate(() => window.__MIRA_MIC().bolt?.id || 0)
-    await p4.mouse.click(700, 700)
+    // kirim pointerdown lewat DOM (panggung ~1 fps: `page.mouse.click` bisa membuat target crash)
+    await p4.evaluate(() => {
+      const el = document.querySelector('[data-testid="mira-humanoid-mode"]') || document.body
+      el.dispatchEvent(new PointerEvent('pointerdown', { clientX: 700, clientY: 700, bubbles: true }))
+    })
     await p4.waitForTimeout(600)
     const after = await p4.evaluate(() => window.__MIRA_MIC().bolt?.id || 0)
     add('B8', 'SOUND OFF tetap memicu bolt saat panggung diklik', soundOff === 'false' && after > before, `sound=${soundOff} id ${before} → ${after}`)

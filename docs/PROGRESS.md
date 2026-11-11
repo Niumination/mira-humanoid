@@ -738,3 +738,20 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
 - **Tanpa regresi:** build 4p vs 4o **MAE 0,0000 · 0 piksel** · langkah 5 B **6/6** · audio D1 **31/31** ·
   audio aplikasi **9/9** · Gerbang A **8/8** · B **10/10**.
 - Paket **`niu-update-langkah4p.zip`**.
+
+### Sesi 44 (2026-10-29) — verifikasi 4p + **Gerbang D sisa** + viewport 390 (paket 4q)
+
+- **Verifikasi produksi 4p LULUS:** `assets/index-6z8R68bj.js` sha256 `84655131…` = repo head `5db599c` =
+  build ulang dari tarball. Gerbang di produksi: hand **8/8** · MediaPipe asli **12/12** · audio **9/9**.
+- **Gerbang D sisa selesai, 7/7** (`verification/mira/gate-d.json`): reproduktibilitas (kita 0,0000
+  vs live 0,31) · seam (rasio 1,46 vs 1,45) · fps (0,78 vs 0,73 di lingkungan sama) · stabilitas 120 s
+  (153 frame, konteks hidup, 0 error) · viewport 390 & 414 (reproduktif, **korelasi profil 0,9887 /
+  0,9886**).
+- **Dua bug tata letak ditemukan dan dibetulkan:** (W-1) panggung tidak pernah menyesuaikan ukuran gambar
+  terhadap bentuk layar — port rumus live (`fh = 2·D0·fit`, potong lebar `2·halfW·0,94`) → di 390 MAE
+  **70,6 → 10,8**; (W-2) baris tombol dipindah ke atas sesuai CSS live (`mira-own-row` 72 px,
+  `mira-page-row` 124 px, media ≤720 px).
+- **Tanpa regresi:** 4q vs 4p **MAE 0,0000 · 0 piksel** · paritas 1440 6 fase **2,54** (build37 2,55) ·
+  A **8/8** · B **10/10** · langkah 5 B **6/6** · audio **9/9** · hand **8/8**.
+- Sisa selisih ponsel = **kecerahan** (kita 47,6 vs live 40,7), bukan tata letak — kandidat berikutnya.
+- Paket **`niu-update-langkah4q.zip`**.

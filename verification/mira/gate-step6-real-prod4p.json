@@ -1,0 +1,81 @@
+{
+  "when": "2026-11-11T02:46:50.936Z",
+  "base": "https://mira-humanoid-niu.vercel.app/",
+  "ok": true,
+  "pass": 12,
+  "total": 12,
+  "rows": [
+    {
+      "id": "R1",
+      "name": "worker asli + model asli (MediaPipe nyata)",
+      "ok": true,
+      "detail": "status \"camera on - show your hand\" · 6.2 s · worker {\"created\":1,\"ready\":0,\"fail\":1,\"lm\":0,\"threw\":0}"
+    },
+    {
+      "id": "R1a",
+      "name": "status akhir \"camera on - show your hand\" (model siap)",
+      "ok": true,
+      "detail": "\"camera on - show your hand\""
+    },
+    {
+      "id": "R1b",
+      "name": "tanpa error halaman",
+      "ok": true,
+      "detail": "bersih"
+    },
+    {
+      "id": "R1c",
+      "name": "worker dicoba lalu gagal rapi (sama seperti live)",
+      "ok": true,
+      "detail": "created=1 ready=0 fail=1 lm=0"
+    },
+    {
+      "id": "R1d",
+      "name": "jalur cadangan thread-utama AKTIF setelah worker gagal",
+      "ok": true,
+      "detail": "impor esm.sh di thread utama: 4 · https://esm.sh/@mediapipe/tasks-vision@0.10.14"
+    },
+    {
+      "id": "R2",
+      "name": "new Worker dilarang → cadangan thread-utama",
+      "ok": true,
+      "detail": "status \"camera on - show your hand\" · 2.3 s · worker {\"created\":0,\"ready\":0,\"fail\":0,\"lm\":0,\"threw\":1}"
+    },
+    {
+      "id": "R2a",
+      "name": "status tetap \"camera on - show your hand\" (fallback GPU→CPU)",
+      "ok": true,
+      "detail": "\"camera on - show your hand\" 2.3 s"
+    },
+    {
+      "id": "R2b",
+      "name": "jalur cadangan BENAR dipakai (worker dilarang, impor di thread utama)",
+      "ok": true,
+      "detail": "threw=1 lm=0 impor utama=4"
+    },
+    {
+      "id": "R3",
+      "name": "izin kamera ditolak",
+      "ok": true,
+      "detail": "status \"camera blocked - allow it in the browser settings\" · 0.0 s · worker {\"created\":0,\"ready\":0,\"fail\":0,\"lm\":0,\"threw\":0}"
+    },
+    {
+      "id": "R3a",
+      "name": "status \"camera blocked - allow it in the browser settings\"",
+      "ok": true,
+      "detail": "\"camera blocked - allow it in the browser settings\""
+    },
+    {
+      "id": "R4",
+      "name": "CDN MediaPipe diblokir",
+      "ok": true,
+      "detail": "status \"camera unavailable\" · 1.5 s · worker {\"created\":1,\"ready\":0,\"fail\":1,\"lm\":0,\"threw\":0}"
+    },
+    {
+      "id": "R4a",
+      "name": "jatuh ke \"camera unavailable\" (tidak menggantung)",
+      "ok": true,
+      "detail": "\"camera unavailable\" 1.5 s"
+    }
+  ]
+}

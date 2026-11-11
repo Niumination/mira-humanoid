@@ -383,7 +383,7 @@ export function HumanoidMode({
       />
 
       {/* kiri-atas: EXIT + ENABLE CAMERA (bundle: dua tombol, minHeight 44) */}
-      <div style={{ position: 'absolute', left: 18, top: 18, display: 'flex', gap: 8, alignItems: 'center', zIndex: 2 }}>
+      <div className="mira-cam-row" style={{ position: 'absolute', left: 18, top: 18, display: 'flex', gap: 8, alignItems: 'center', zIndex: 2 }}>
         {onExit && (
           <button style={{ ...btnStyle(false), minHeight: 44 }} onClick={onExit} aria-label="Exit" data-testid="mira-exit">
             EXIT

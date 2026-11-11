@@ -1,7 +1,7 @@
 # Langkah 6 MIRA — tangan MediaPipe + mikrofon nyata
 
-Status: **selesai, terukur, + direvisi** · build **`dist/assets/index-6z8R68bj.js` sha256 `84655131…`** (revisi 4p)
-· build awal 4o: `index-DimN9-5N.js` sha256 `bc3c1ef0…`
+Status: **selesai, terukur, + dua revisi** · build **`dist/assets/index-C7tk2IC6.js` sha256 `b9087a0c…`** (revisi 4q)
+· 4p: `index-6z8R68bj.js` `84655131…` · 4o: `index-DimN9-5N.js` `bc3c1ef0…`
 Gerbang D langkah 6: **modul 8/8** (`gate-step6a.json`) · **aplikasi 8/8** (`gate-step6.json`, revisi 4p menambah B7/B8)
 · **MediaPipe asli 12/12** di live dan di produksi (`gate-step6-real-{live,prod}.json`)
 Regresi: build 6 vs build 5 (knob kepala nol) **MAE 0,0000** dua fase · efek kepala **MAE 3,7271**
@@ -161,3 +161,56 @@ thread-utama (GPU→CPU, 125 ms) — di live maupun di rebuild. Ini **paritas**,
 
 Alat baru: `tools/gate-mira6-real.js` (MediaPipe asli, 4 skenario × 3 uji) dan
 `tools/probe-worker-live.js` (instrumen `Worker`, dipakai membandingkan live vs produksi).
+
+
+---
+
+## 6. Gerbang D sisa + viewport 390 (paket 4q)
+
+### 6.1 Bug yang ditemukan di layar ponsel (W-1)
+Panggung MIRA **tidak pernah menyesuaikan ukuran gambar terhadap bentuk layar**: matriks & geseran memakai
+angka tetap hasil pengukuran di 1440×900. Di 390×844 akibatnya gambar **terlalu besar** (figur mengisi
+seluruh layar, MAE vs live **70,6**).
+
+Port dari live (`X` di komponen panggung):
+
+```
+D0   = HT·tan25° = 4,8·0,46631 = 2,2383          // jarak bidang pada z=0
+fh0  = 2·D0·fit  = 3,96·1,01… (fit 0,9) ≈ 4,029   // tinggi gambar penuh
+fw0  = fh0·(lebar/tinggi gambar)                  // gambar 1145×1374 → 0,833
+bila fw0 > 2·halfW·0,94  →  fh = 2·halfW·0,94  dan  fw = fh·(tinggi/lebar)
+   (halfW = D0·aspect layar)                        // potong lebar, gambar menempel di dasar layar
+t = fh / fh0   →  semua matriks kini berskala S·t, TY = −D0 + fh0·t, offset z dipetakan (−D0 + (z+D0)·t)
+```
+
+Di 1440×900 (aspect 1,6) `t = 1` → **piksel tidak berubah** (regresi 0,0000). Di 390×844 `t = 0,5786`
+(sebelumnya `t = 1`) → figur kini duduk di dasar layar seperti live. Ada knob kalibrasi `?fitk=` (default 1).
+
+### 6.2 Baris tombol menempel di atas (W-2)
+CSS live menaruh `mira-own-row` (REPLAY/SPEED/SOUND) di **72 px dari atas, kiri 18** dan `mira-page-row`
+(IDLE/LISTENING/TALKING/MIC) di **124 px**, dengan media query ≤720 px (padding tombol 8×11, font 11 px,
+kiri 12). Port kita sebelumnya menaruhnya di **bawah**. Sekarang `src/index.css` disamakan dengan live
+(termasuk `--mira-status-top: 176px`, sehingga status kamera tidak menimpa tombol).
+
+### 6.3 Angka (build 4q)
+| uji | hasil |
+|---|---|
+| D5 reproduktibilitas @t=8 & t=11,5 | kita **MAE 0,0000** / 0,0492 · live 0,3135 / 0,0014 (**kita lebih stabil**) |
+| D6 seam (lonjakan baris) | kita rasio **1,46** baris 548 · live **1,45** baris 529 |
+| D7 fps (lingkungan sama) | kita **0,78 fps** · live 0,73 fps |
+| D8 stabil 120 s | frame 7 → **153**, konteks WebGL hidup, 0 error, jam naik |
+| D9 390×844 | reproduktif **0,0474** (live 0,1729) · **korelasi profil 0,9887** · MAE 10,84 |
+| D9 414×896 | reproduktif **0,0000** (live 0,5605) · **korelasi profil 0,9886** · MAE 10,64 |
+| regresi piksel 4q vs 4p | **MAE 0,0000 · 0 piksel** (`?t=8,0` & `?t=11,5`) |
+| paritas 1440 (6 fase acuan) | rata-rata **2,54** (build37: 2,55) — tidak berubah |
+| gerbang lama | A **8/8** · B **10/10** · langkah 5 B **6/6** · audio aplikasi **9/9** · hand **8/8** |
+
+Sisa selisih di ponsel **bukan geometri** (korelasi 0,9887; posisi baris puncak sama) melainkan
+**kecerahan**: kita 47,6 vs live 40,7 (≈ +17 %). Ini kandidat berikutnya, bukan cacat tata letak.
+
+### 6.4 Alat
+- `tools/gate-d.js` — D5…D9 sekaligus (reproduktibilitas, seam, fps, stabilitas 120 s, viewport 390 & 414),
+  keluaran `verification/mira/gate-d.json`. Metrik D9 memakai **korelasi profil baris** karena MAE
+  didominasi kecerahan (state animasi tak bisa dipin di lingkungan ~1 fps).
+- `tools/gate-mira6.js` BAGIAN B kini memakai **satu halaman** untuk B2…B8 (sandbox ~2 GB: beberapa
+  konteks WebGL sekaligus membuat target crash), plus `--renderer-process-limit=1`.

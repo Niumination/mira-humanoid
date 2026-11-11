@@ -713,3 +713,18 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | **G-6C** | Gerbang 6 bertambah dua uji yang **terbukti membedakan**: B7 (kamera OFF → `close()`, titik & status hilang) dan B8 (SOUND OFF tetap memicu bolt). Terhadap produksi 4o keduanya **GAGAL** (`close=0`, `id 12→12`); terhadap build 4p **LULUS**. | 8/8 (dari 6/6) |
 | **G-6D** | **MediaPipe sungguhan** (tanpa tiruan, CDN asli): status akhir `camera on - show your hand` · worker gagal rapi lalu cadangan aktif · izin ditolak → `camera blocked - allow it in the browser settings` · CDN diblokir → `camera unavailable` (0,9–3,1 s, tidak menggantung). **Live 12/12 = produksi 12/12.** | 12/12 dua sisi |
 | **R-5** | Tanpa regresi piksel: build 4p vs 4o (knob kepala nol) `?t=8,0` & `?t=11,5` **MAE 0,0000 · 0 piksel**; langkah 5 B **6/6**; audio D1 **31/31**; audio aplikasi **9/9**; Gerbang A **8/8**; B **10/10**. | — |
+
+## Sesi 44 (2026-10-29) — verifikasi 4p di produksi + Gerbang D sisa + viewport 390 (paket 4q)
+
+| # | temuan | angka |
+|---|---|---|
+| **V-4p** | Paket 4p terpasang benar: produksi `assets/index-6z8R68bj.js` sha256 `84655131…` · repo head **`5db599c`** · 5 blob identik · **build ulang dari tarball → sha identik**. Gerbang di produksi: hand **8/8** (B7 `close=1`, B8 `id 11→12`) · MediaPipe asli **12/12** · audio **9/9**. | 3 lapis |
+| **W-1** | **Panggung tidak pernah menyesuaikan diri terhadap bentuk layar.** Matriks/geseran memakai angka tetap 1440×900; di 390×844 figur mengisi seluruh layar (MAE vs live **70,6**). Port rumus live (`fh0 = 2·D0·fit`, potong lebar `2·halfW·0,94`, `halfW = D0·aspect`, `t = fh/fh0`, `TY = −D0 + fh0·t`) → korelasi profil **0,9887**, MAE 10,84. Di 1440×900 `t = 1` sehingga **piksel tidak berubah**. | 1 bug besar |
+| **W-2** | **Baris tombol salah tempat.** CSS live: `mira-own-row` 72 px dari atas + `mira-page-row` 124 px (kiri 18, media ≤720 px padding 8×11). Port kita menaruhnya di bawah. `src/index.css` disamakan; `--mira-status-top: 176px` mencegah status kamera menimpa tombol. | 1 berkas |
+| **W-3** | **Gerbang 6 sendiri OOM** di sandbox 2 GB: beberapa browser/konteks WebGL sekaligus → `Target crashed`/timeout. Diubah: **satu halaman** (`goto` ulang) untuk B2…B8 + `--renderer-process-limit=1` + `--js-flags=--max-old-space-size=512`. | 8/8 stabil |
+| **G-D5** | Reproduktibilitas dua run: kita **0,0000** (t=8) / 0,0492 (t=11,5) · live 0,3135 / 0,0014 → **kita lebih deterministik** daripada live. | 2/2 |
+| **G-D6** | Seam: rasio lonjakan baris kita **1,46** (baris 548) vs live **1,45** (baris 529) → tidak ada sambungan buatan. | 1/1 |
+| **G-D7** | fps di lingkungan yang sama: kita **0,78** vs live **0,73** (SwiftShader; keduanya tidak bisa lebih cepat). | 1/1 |
+| **G-D8** | Stabil 120 s: frame 7 → **153**, konteks WebGL tidak hilang, 0 error halaman, jam build naik 3,64. | 1/1 |
+| **G-D9** | Viewport ponsel: 390×844 reproduktif **0,0474** (live 0,1729) · **korelasi profil 0,9887** · 414×896 **0,0000** / **0,9886**. Sisa selisih = kecerahan (+17 %), bukan tata letak. | 2/2 |
+| **R-6** | Tanpa regresi: 4q vs 4p (knob kepala nol) `?t=8,0` & `?t=11,5` **MAE 0,0000 · 0 piksel** · paritas 1440 6 fase **2,54** (build37 2,55) · Gerbang A **8/8** · B **10/10** · langkah 5 B **6/6** · audio aplikasi **9/9** · hand **8/8**. | — |

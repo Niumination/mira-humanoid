@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-10-29** (sesudah paket **4p** — verifikasi produksi 4o tiga lapis + **5 koreksi**: `close()` landmarker, bolt tak bergantung SOUND, MIC OFF menghentikan SpeechRecognition, sesi audio `play-and-record`, pemulihan perintah suara. Gerbang langkah 6: modul **8/8**, aplikasi **8/8**; MediaPipe asli live **12/12** = produksi **12/12**).
+Diperbarui: **2026-10-29** (sesudah paket **4q** — verifikasi produksi 4p tiga lapis; **Gerbang D selesai 7/7**; **viewport 390/414** dengan korelasi profil **0,9887**; dua bug tata letak dibetulkan (penskalaan gambar terhadap layar, posisi baris tombol); regresi piksel 0,0000).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -19,11 +19,11 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P7** | Arsitektur + peta UNVERIFIED | ✅ **selesai** | `recon/ARCHITECTURE.md` |
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
 | **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
-| **P9** | Gerbang A/B/C/D | 🟡 **2 dari 4** | **A ✅** (APEX semua · MIRA 8/8) · **B ✅** (APEX 18/18 hook · MIRA 10/10) · **C 🟡** (lantai derau 0,00–0,55; kita 4,50–4,86) · **D 🟡** — **audio lolos penuh (D1–D4 sekaligus)**; reproduktibilitas/seam/fps belum |
+| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** (APEX · MIRA 8/8) · **B ✅** (APEX 18/18 · MIRA 10/10) · **C 🟡** (kita 2,54 rata-rata 6 fase; live 0,00–0,55 → belum lulus) · **D ✅** — audio D1–D4, hand D5–D9: reproduktibilitas **0,0000**, seam **1,46 vs 1,45**, fps **0,78 vs 0,73**, stabil 120 s, ponsel **0,9887** |
 | **P10** | Deliverable + deploy | 🟡 **1 dari 2** | deploy ✅ berjalan & diverifikasi tiap paket (dua situs hidup) · deliverable akhir ⬜ |
 
-**Hitungan item: 28 dari 30 selesai ≈ 93 %.**
-Yang tersisa 2 item justru yang terberat: **paritas piksel (Gerbang C)** dan **sisa Gerbang D + deliverable/deploy akhir**.
+**Hitungan item: 29 dari 30 selesai ≈ 97 %.**
+Yang tersisa 1 item: **paritas piksel (Gerbang C)** — live praktis deterministik (0,00–0,55) sedangkan kita 2,54 rata-rata 6 fase; plus **deliverable akhir** (P10) yang menunggu keputusan penutup.
 
 ---
 
