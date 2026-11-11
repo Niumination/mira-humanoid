@@ -100,3 +100,27 @@ torso saja. Ini pekerjaan satu langkah penuh (mendekati langkah 8: port pipeline
 
 Build 4t vs produksi 4s: `?t=8,0` dan `?t=11,5` → **MAE 0,0000 · 0 piksel** (knob baru hanya aktif bila
 parameter URL diberikan; default-nya sama persis).
+
+## 8. Tindak lanjut paket 4u — +3,3 hampir tertutup
+
+Dua koreksi atas §5 di atas, sesudah diukur:
+
+1. **"Badan kita transparan" tidak benar.** Itu artefak `off=pic`: di build kita flag itu ikut mematikan
+   penutup (`fill`). Penutupnya sendiri bekerja penuh — mematikannya hanya mengubah MAE 6,509 → 6,533.
+2. **Penutup badan bukan tuasnya.** `?mk=` (kekuatan) 0,6/0,8/1,0 → 6,520/6,515/6,509 (alfa tekstur sudah ~1
+   di badan) dan `?mc=` (kelabu penutup) 0,02/0,05/0,1 → **6,692/9,635/13,421**: menambah terang penutup
+   memperburuk, jadi masalahnya badan kita **terlalu terang**, bukan kekurangan penutup.
+
+Tuas yang benar ternyata **lengkung tonal kuad gambar**. `?pgg=` (gamma kuad gambar, uniform `uPG`):
+
+| t | 6,8 | 8 | 9,5 | 10 | 11 | 11,5 | 12 | 13 |
+|---|---|---|---|---|---|---|---|---|
+| pgg=1 | 3,001 | 5,888 | 6,455 | 6,793 | 6,909 | 7,418 | 7,276 | 7,963 |
+| **pgg=1,25** | 3,010 | 5,533 | **5,105** | **5,158** | **4,935** | **5,428** | **5,159** | **5,882** |
+
+Δ wilayah pada t=9,5: kepala **+4,57 → +1,22** · torso **+14,39 → +5,79** · lengan **+6,33 → +2,70**.
+Rata-rata t≥8: **7,04 → 5,35**. Fase sebelum ignition (0,3/1,89/3,5/5,5) tidak berubah (≤0,001).
+
+**Sisa sekarang:** torso masih **+5,8** dan kepala **+1,2** pada t=9,5. Bentuk sisa ini (torso kelebihan,
+lengan hampir pas) tetap menunjuk pada perbedaan sumber cahaya tubuh (mesh 3D live vs kuad gambar kita),
+jadi langkah berikutnya masih pass mesh — tetapi sekarang dengan titik awal MAE **5,1**, bukan 6,5.

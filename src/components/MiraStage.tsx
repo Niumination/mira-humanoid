@@ -1086,7 +1086,12 @@ export function MiraStage({
         gl.bindVertexArray(fillVao.v)
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_2D, texPic)
-        gl.blendFuncSeparate(gl.ZERO, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE)
+        // F-142: dengan `?mc=` > 0 penutup diisi kelabu, bukan hanya menggelapkan (bawaan 0 = lama)
+        const mc = tune('mc', 0)
+        if (mc > 0) gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+        else gl.blendFuncSeparate(gl.ZERO, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE)
+        gl.uniform1f(U(P.fill, 'uMatteC'), mc)
+        gl.uniform1f(U(P.fill, 'uMatteK'), tune('mk', 1))
         gl.uniformMatrix4fv(U(P.fill, 'modelViewMatrix'), false, quadMv())
         gl.uniformMatrix4fv(U(P.fill, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.fill, 'uFill'), 1)
@@ -1094,7 +1099,9 @@ export function MiraStage({
         gl.uniform1f(U(P.fill, 'uTime'), t)
         gl.uniform4f(U(P.fill, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
         gl.uniform1i(U(P.fill, 'uMap'), 0)
-        if (!OFF.has('picture')) gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+        // F-142: `off=fill` mematikan HANYA penutup (bukan kuad warna) — supaya penutup dan kuad
+        // warna bisa diablasi terpisah; `off=pic` tetap mematikan keduanya seperti sebelumnya.
+        if (!OFF.has('picture') && !OFF.has('fill')) gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
 
         // ---- [3] kuad warna gambar ----
         gl.useProgram(P.pic)
@@ -1104,7 +1111,12 @@ export function MiraStage({
         gl.uniformMatrix4fv(U(P.pic, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.pic, 'uFill'), 1)
         gl.uniform1f(U(P.pic, 'uGain'), Ee.bright * tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1))
-        gl.uniform1f(U(P.pic, 'uPG'), tune('pgg', 1))
+        // F-143: lengkung tonal gambar. Disapu pada 12 fase (0,3 … 13): `pgg` 1,25 menurunkan MAE
+        // pada SEMUA fase sesudah ignition (t=8: 5,89→5,53 · 10: 6,79→5,16 · 11: 6,91→4,94 ·
+        // 11,5: 7,42→5,43 · 12: 7,28→5,16 · 13: 7,96→5,88) dan tidak menyentuh fase sebelum ignition
+        // (0,3 · 1,89 · 3,5 · 5,5 selisih ≤0,001). 1,4 hanya menang di t=13 (5,56 vs 5,68) tetapi
+        // kalah di t=9,5 (5,52 vs 5,11) → dipilih 1,25.
+        gl.uniform1f(U(P.pic, 'uPG'), tune('pgg', 1.25))
         gl.uniform1f(U(P.pic, 'uPGE'), tune('pge', 0))
         gl.uniform2f(U(P.pic, 'uSize'), fw, fh)
         gl.uniform1f(U(P.pic, 'uTime'), t)

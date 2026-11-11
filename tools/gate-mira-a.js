@@ -5,7 +5,7 @@
 const { chromium } = require(process.env.PW || '/tmp/pw/node_modules/playwright')
 const fs = require('fs')
 const LIVE = 'https://mira-humanoid.vercel.app/'
-const BASE = (process.argv[2] || 'http://127.0.0.1:5190').replace(/\/$/, '')
+const BASE = (process.env.BASE || process.argv[2] || 'http://127.0.0.1:8804').replace(/\/$/, '')
 const OUT = '/home/user/Kerja-Arena/verification/mira'
 
 const probe = () => ({

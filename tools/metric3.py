@@ -26,9 +26,13 @@ def blur(a, r):
 
 def pair(prefix, t):
     import os
+    # W-6: acuan `live-ref-v2` TERBUKTI BASI (vs live hari ini: MAE 3,83 pada t=9,5) — set itu yang
+    # selama ini dipakai metrik paritas dan membuat perubahan nyata tampak "tidak berubah".
+    # Urutan baru: v4 (tangkapan segar pada 6 fase acuan) → v3 → v2.
+    p4 = f'{ROOT}/recon/live-ref-v4/live-{t}.png'
     p3 = f'{ROOT}/recon/live-ref-v3/ref_-{t}.png'
     p2 = f'{ROOT}/recon/live-ref-v2/live-t{t}.png'
-    L = A(p3 if os.path.exists(p3) else p2)
+    L = A(p4 if os.path.exists(p4) else (p3 if os.path.exists(p3) else p2))
     O = A(f'{ROOT}/verification/langkah3/{prefix}-{t}.png')
     return O, L
 

@@ -19,7 +19,7 @@ const PW = process.env.PW || '/tmp/pw/node_modules/playwright/index.js'
 const ARG = process.argv.slice(2)
 const OUT = ARG.includes('--json') ? ARG[ARG.indexOf('--json') + 1] : null
 const PART = process.env.BAGIAN || 'AB'
-const BASE = process.env.BASE || 'http://127.0.0.1:8802/'
+const BASE = process.env.BASE || 'http://127.0.0.1:8804/'
 
 const rows = []
 const check = (name, ok, detail) => {

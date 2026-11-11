@@ -70,6 +70,12 @@ float luminance( const in vec3 rgb ) {
   uniform sampler2D uMap; uniform float uFill; uniform vec2 uSize; uniform float uTime; varying vec2 vUv;
 
   uniform vec4 uReveal;    // her heart (x, y px), her ignition (s), the wave's speed (px/s)
+  // F-142: penutup badan (matte). Di live badan/kepala adalah MESH 3D gelap yang menutupi latar;
+  // di sini penutupnya kuad citra dengan alfa tekstur. Alfa tekstur hampir biner (49% < 0,1 ·
+  // 49% > 0,9), jadi `?mk=` (kekuatan) dan `?mc=` (kelabu penutup) disapu untuk mencocokkan
+  // seberapa gelap badan yang terlihat. Bawaan 1 dan 0 = perilaku lama, piksel identik.
+  uniform float uMatteK;
+  uniform float uMatteC;
   // when her ignition's wave reaches p: her picture, her lines and her hair appear there
   float revealAt(vec2 p) {
     float r = length(p - uReveal.xy), s = uReveal.w;
@@ -79,5 +85,6 @@ float luminance( const in vec3 rgb ) {
   void main() {
     vec2 p = vec2(vUv.x * uSize.x, (1.0 - vUv.y) * uSize.y);
     float at = revealAt(p);
-    gl_FragColor = vec4(0.0, 0.0, 0.0, texture2D(uMap, vUv).a * smoothstep(at - 0.04, at + 0.4, uTime) * uFill);
+    float a = clamp(texture2D(uMap, vUv).a * uMatteK, 0.0, 1.0);
+    gl_FragColor = vec4(vec3(uMatteC), a * smoothstep(at - 0.04, at + 0.4, uTime) * uFill);
   }

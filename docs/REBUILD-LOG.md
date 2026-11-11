@@ -769,3 +769,19 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | C-14 | ambang derau acuan | live↔live 3,2 s: 0,017 · 3,2 s vs 7,0 s: **0,408** |
 | A-9 | alat baru | `tools/gate-c-layer.js`, `tools/fit-field.js` |
 | R-9 | regresi build 4t vs produksi 4s | `?t=8,0` & `11,5` → **MAE 0,0000 · 0 piksel** |
+
+## Sesi 48 — 2026-11-11
+
+| kode | temuan | angka |
+|---|---|---|
+| V-4t | verifikasi 3 lapis produksi 4t | aset `df3071b7…` = repo `5448da1` = build ulang byte-identik |
+| D-4t | Gerbang D terhadap produksi | **7/7**; D7 0,90 fps vs live 0,51; D9 0,9886 / 0,9883 |
+| **W-6** | acuan paritas (`live-ref-v2`) basi | vs live hari ini: 0,03/0,29/0,04/0,03/0,55/**3,83** → set baru `live-ref-v4`; urutan metric3 v4→v3→v2; v2 dihapus |
+| C-15 | koreksi: "badan transparan" = artefak `off=pic` | `off=fill` hanya 6,509 → 6,533 |
+| C-16 | penutup badan bukan tuas | `mk` 0,6/0,8/1,0 → 6,520/6,515/6,509 · `mc` 0,02/0,05/0,1 → 6,692/9,635/13,421 |
+| **F-143** | lengkung tonal gambar `pgg`=1,25 jadi bawaan | 12 fase: rata-rata t≥8 **7,041 → 5,349**; t=9,5 6,455 → 5,105; torso +14,39 → +5,79 |
+| R-10 | paritas vs acuan segar | produksi 4t **2,93** → build 4u **2,76** (t=9,5 6,58 → 5,56) |
+| G-4u | gerbang build 4u | A 8/8 · B 10/10 · langkah5 B 6/6 · hand B 8/8 · audio 9/9 |
+| S-6 | port bawaan gerbang A/B/5/4c salah (5190/8802) | diganti 8804 (bisa `BASE=`) |
+| A-10 | alat baru | `tools/sweep-knob.js`, `tools/sweep-matte.js` |
+| B-7 | bersih-bersih | `.cache` playwright 554 MB + `.npm` 197 MB dihapus; `live-ref-v2` 5,4 MB; `b4t-*` & `b4q/b4s` PNG |

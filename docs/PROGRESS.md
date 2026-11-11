@@ -783,7 +783,7 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
 - **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
   B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
-- Paket **`niu-update-langkah4t.zip`** (menggantikan 4s).
+- Paket **`niu-update-langkah4u.zip`** (menggantikan 4t).
 
 ## Bersih-bersih workspace (sesi 46, atas permintaan: over budget)
 
@@ -813,3 +813,17 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **Alat baru**: `tools/gate-c-layer.js`, `tools/fit-field.js`, knob F-140/F-141 (bawaan tak berubah).
 - **Tanpa regresi**: build 4t vs produksi 4s @8 & @11,5 → **MAE 0,0000 · 0 piksel**.
 - Dokumen: `docs/langkah6/ANALISIS-GERBANG-C.md`, STATE §9.
+
+## Sesi 48 — produksi 4t diperiksa, W-6, dan Gerbang C hampir tertutup
+
+- **Produksi 4t lulus 3 lapis** (`df3071b7…` = repo `5448da1` = build ulang) dan **Gerbang D 7/7 di produksi**.
+- **W-6:** acuan paritas kita (`live-ref-v2`) basi — pada t=9,5 beda **3,83** dari live hari ini, sehingga
+  perbaikan nyata tampak "tidak berubah". Set baru `recon/live-ref-v4` + urutan metric3 diperbaiki.
+- **Koreksi 4t:** "badan kita transparan" itu artefak `off=pic` (ikut mematikan penutup); penutup badan
+  sendiri sudah penuh dan **bukan** tuasnya (`?mk=`/`?mc=` diuji, tidak menolong).
+- **F-143:** gamma kuad gambar `pgg` 1,25 dijadikan bawaan — rata-rata MAE t≥8 **7,04 → 5,35**, t=9,5
+  **6,46 → 5,11**, torso **+14,4 → +5,8**. Fase sebelum ignition tidak tersentuh.
+- **Paritas acuan segar:** 4t 2,93 → 4u **2,76**.
+- **Gerbang build 4u:** A 8/8 · B 10/10 · langkah 5 B 6/6 · hand B 8/8 · audio 9/9.
+- **Bersih-bersih:** `.cache` 554 MB + `.npm` 197 MB + `live-ref-v2` 5,4 MB dihapus; workspace (tanpa
+  node_modules) **88 MB**.

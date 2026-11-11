@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-11-11** (sesudah paket **4t** — produksi 4s **lulus 3 lapis** dan **Gerbang D 7/7 di produksi**; **Gerbang C dibongkar sampai akar**: kelebihan +3,28 berasal dari kuad `pic` di torso (+7,96) sedangkan lengan −1,24, dan akarnya struktural — live menutupi latar dengan mesh badan/kepala, build kita memakai kuad alpha sehingga nebula menembus).
+Diperbarui: **2026-11-11** (sesudah paket **4u** — produksi 4t **lulus 3 lapis** + **Gerbang D 7/7**; **W-6**: acuan paritas kita sendiri basi (live-ref-v2 meleset 3,83 pada t=9,5) → set baru `live-ref-v4`; **F-143**: gamma kuad gambar 1,25 menurunkan rata-rata MAE fase akhir **7,04 → 5,35** sehingga sisa Gerbang C menyusut dari +3,28 menjadi torso +5,8 (dari +14,4)).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -19,7 +19,7 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P7** | Arsitektur + peta UNVERIFIED | ✅ **selesai** | `recon/ARCHITECTURE.md` |
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
 | **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
-| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** · **B ✅** · **C 🟡 terukur sampai akar** — figur di atas hitam **25,16 vs 25,32 (MAE 3,79)**, seluruh kelebihan **+3,28** berasal dari kuad `pic` di torso (+7,96) sementara lengan **−1,24** ⇒ bukan salah skala; akar **struktural** (live menutupi latar dengan mesh badan, kita memakai kuad alpha) ⇒ butuh pass mesh penutup · **D ✅** — 7/7, D9 **0,9884/0,9881 di produksi 4s**, reprod 0,0000, seam 1,46, fps 0,64 vs live 0,35 |
+| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** · **B ✅** · **C 🟡 hampir tutup** — paritas vs acuan segar **2,93 → 2,76** (t=9,5 6,58 → 5,56); torso Δ **+14,4 → +5,8**, kepala +4,6 → +1,2, lengan +6,3 → +2,7; sisa = beda sumber cahaya tubuh (mesh live vs kuad kita) · **D ✅** — 7/7 di produksi 4t (D9 0,9886/0,9883, reprod 0,0000, seam 1,46, fps 0,90 vs live 0,51) |
 | **P10** | Deliverable + deploy | 🟡 **1 dari 2** | deploy ✅ berjalan & diverifikasi tiap paket (dua situs hidup) · deliverable akhir ⬜ |
 
 **Hitungan item: 29 dari 30 selesai ≈ 97 %.**

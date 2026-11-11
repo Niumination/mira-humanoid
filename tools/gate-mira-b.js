@@ -5,7 +5,7 @@
  */
 const { chromium } = require(process.env.PW || '/tmp/pw/node_modules/playwright')
 const fs = require('fs')
-const base = (process.argv[2] || 'http://127.0.0.1:5190').replace(/\/$/, '')
+const base = (process.env.BASE || process.argv[2] || 'http://127.0.0.1:8804').replace(/\/$/, '')
 const P = JSON.parse(fs.readFileSync('/home/user/Kerja-Arena/recon/mira-params.json', 'utf8'))
 
 ;(async () => {

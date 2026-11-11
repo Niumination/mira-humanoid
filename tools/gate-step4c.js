@@ -19,7 +19,7 @@ import { writeFileSync } from 'node:fs'
 const PW = process.env.PW || '/tmp/pw/node_modules/playwright/index.js'
 const pw = await import(PW)
 const chromium = pw.chromium || pw.default?.chromium
-const BASE = process.env.BASE || 'http://127.0.0.1:8802/'
+const BASE = process.env.BASE || 'http://127.0.0.1:8804/'
 const ARG = process.argv.slice(2)
 const OUT = ARG.includes('--json') ? ARG[ARG.indexOf('--json') + 1] : null
 

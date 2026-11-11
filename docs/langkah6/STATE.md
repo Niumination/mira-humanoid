@@ -372,3 +372,63 @@ penuh), bukan knob. Rincian: `docs/langkah6/ANALISIS-GERBANG-C.md`.
 ### 9.6 Alat & knob baru (bawaan tidak berubah)
 `tools/gate-c-layer.js` · `tools/fit-field.js` · F-140 (uniform medan bisa disapu) · F-141 (`?ft=`).
 Build 4t (`index-D3XcAeJi.js` `df3071b7…`) vs produksi 4s @8 & @11,5 → **MAE 0,0000 · 0 piksel**.
+
+## 10. Revisi 4u — produksi 4t terverifikasi, W-6 (acuan paritas basi), dan +3,3 hampir tertutup
+
+### 10.1 Produksi 4t lulus 3 lapis
+Produksi `assets/index-D3XcAeJi.js` **`df3071b7…`** · CSS `index-DQPaiuOr.css` **`6ad9d68a…`** · repo head
+**`5448da1`** · `npm ci` + `vite build` di tarball repo → **byte-identik**; sumber repo = workspace
+(`MiraStage.tsx cf02193a…`, `gate-c-layer.js 26330a2c…`, `fit-field.js 406442a5…`).
+**Gerbang D di produksi = 7/7** (`verification/mira/gate-d-prod4t.json`): D5 0,0000 (live 0,7946/0,4713) ·
+D6 1,46 vs live 1,48 · D7 **0,90 fps** vs live 0,51 · D8 4→95 frame err 0 · D9 390 **0,9886** · 414 **0,9883**.
+
+### 10.2 W-6: acuan paritas kita sendiri sudah basi
+`tools/metric3.py` memilih `recon/live-ref-v3` lalu **`live-ref-v2`** — dan set v3 tidak memuat fase acuan
+kita (0,3 · 1,89 · 3,5 · 5,5 · 6,8 · 9,5), jadi selama ini yang dipakai v2. Dibanding live **hari ini**:
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | **9,5** |
+|---|---|---|---|---|---|---|
+| MAE v2 vs live sekarang | 0,03 | 0,29 | 0,04 | 0,03 | 0,55 | **3,83** |
+
+⇒ angka paritas "2,54" buta terhadap perubahan di fase lambat. Set baru **`recon/live-ref-v4`** (6 fase,
+diambil hari ini) + urutan acuan metric3 diubah (v4 → v3 → v2) dan v2 dihapus (5,4 MB).
+
+### 10.3 Dua koreksi atas analisis 4t
+1. **"Badan kita transparan" — salah.** Itu artefak `off=pic`, yang di build kita ikut mematikan **penutup**
+   (`fill`). Penutupnya sendiri bekerja penuh: `off=fill` hanya mengubah MAE 6,509 → 6,533.
+2. **Penutup badan bukan tuasnya.** Disapu: `?mk=` 0,6/0,8/1,0 → 6,520/6,515/6,509 (alfa tekstur sudah ~1 di
+   badan, tidak bisa lebih kuat); `?mc=` kelabu 0,02/0,05/0,1 → **6,692/9,635/13,421** (semakin terang
+   penutup semakin buruk, jadi badan kita memang sudah terlalu terang, bukan terlalu transparan).
+   Knob `?mk=`/`?mc=` tetap disimpan (F-142) tetapi **bawaan tidak berubah**.
+
+### 10.4 F-143: lengkung tonal gambar — penyumbang terbesar yang masih tersisa
+`?pgg=` (eksponen gamma kuad gambar, sudah ada sejak F-133 tetapi bawaannya 1,0) disapu pada **12 fase**:
+
+| t | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 8 | 9,5 | 10 | 11 | 11,5 | 12 | 13 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| pgg=1 | 1,123 | 1,894 | 1,721 | 2,814 | 3,001 | 5,888 | 6,455 | 6,793 | 6,909 | 7,418 | 7,276 | 7,963 |
+| **pgg=1,25** | 1,123 | 1,895 | 1,721 | 2,814 | 3,010 | **5,533** | **5,105** | **5,158** | **4,935** | **5,428** | **5,159** | **5,882** |
+
+Rata-rata t≥8: **7,041 → 5,349**. Fase sebelum ignition tidak tersentuh (≤0,001), t=6,8 dalam derau.
+`pgg=1,4` menang hanya di t=13 (5,562 vs 5,675) tetapi kalah di t=9,5 (5,516 vs 5,105) dan t=11 (5,468 vs
+5,343) → **dipilih 1,25** dan dijadikan bawaan.
+
+Efek pada wilayah (t=9,5): kepala +4,57 → **+1,22** · torso **+14,39 → +5,79** · lengan +6,33 → **+2,70**.
+
+### 10.5 Paritas terhadap acuan segar
+| | 0,3 | 1,89 | 3,5 | 5,5 | 6,8 | 9,5 | rata-rata |
+|---|---|---|---|---|---|---|---|
+| produksi 4t | 1,13 | 2,01 | 1,92 | 2,85 | 3,09 | 6,58 | **2,93** |
+| build 4u | 1,13 | 2,01 | 1,92 | 2,85 | 3,10 | **5,56** | **2,76** |
+
+### 10.6 Gerbang lain (build 4u)
+A **8/8** · B **10/10** · langkah 5 BAGIAN B **6/6** · hand BAGIAN B **8/8** · audio **9/9**.
+Gerbang D **lokal** sengaja belum dijalankan ulang untuk 4u (akan dijalankan **terhadap produksi** setelah
+paket terpasang — pelajaran W-3/W-4: validasi lokal saja menyesatkan).
+
+### 10.7 Alat
+- **S-6:** gerbang A/B/langkah5/langkah4c masih menunjuk port dev lama (5190/8802) → gagal
+  "connection refused"; bawaannya kini `http://127.0.0.1:8804` (bisa ditimpa `BASE=`).
+- `tools/sweep-knob.js` — sapu knob vs live + penilaian per wilayah, `--t` boleh diulang.
+- `tools/sweep-matte.js` — kalibrasi penutup badan (F-142).
+- `tools/metric3.py` — urutan acuan v4 → v3 → v2.
