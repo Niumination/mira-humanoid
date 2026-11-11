@@ -106,7 +106,18 @@ const CLOCK0 = 60
 const OFF = (() => {
   try {
     const v = new URLSearchParams(window.location.search).get('off')
-    return new Set(v ? v.split(',').map((x) => x.trim()) : [])
+    const raw = v ? v.split(',').map((x) => x.trim()) : []
+    // kosakata flag live → nama internal kita (`pic` = kuad gambar, `figure` = seluruh figur,
+    // `fog` = lapisan medan latar). Flag live yang tidak punya padanan (core/head3d/lights/cutwhite)
+    // dibiarkan: tidak ada lapisan yang bisa dimatikan.
+    const ALIAS: Record<string, string[]> = {
+      pic: ['picture'],
+      // di live `off=figure` menghasilkan layar hitam (terukur rerata 0,0): medan latar ikut mati
+      figure: ['picture', 'hair', 'strands', 'twinkles', 'lines', 'matter', 'arcs', 'field', 'waves', 'bloom'],
+      fog: ['field'],
+    }
+    const out = [...raw, ...raw.flatMap((k) => ALIAS[k] || [])]
+    return new Set(out)
   } catch {
     return new Set<string>()
   }
@@ -801,18 +812,17 @@ export function MiraStage({
       const face = [575.2919921875, 359.9880065917969, 112.30799865722656, 222.58799743652344]
       const U = (p: WebGLProgram, n: string) => gl.getUniformLocation(p, n)
 
-      const mvQuad = new Float32Array([S, 0, 0, 0, 0, S, 0, 0, 0, 0, 1, 0, 0, QUAD_TY, -4.8, 1])
+      // Matriks kuad/titik DIBUAT PER FRAME: skala `S`, `TY`, `QUAD_TY` bergantung pada bentuk layar
+      // (lihat blok "faktor kecocokan gambar" di dalam loop). Dibuat sekali di init = figur tidak
+      // ikut mengecil di layar sempit (bug W-3, terukur di produksi 4q).
       // F-124: geseran kuad gambar (`?qdy=` dalam piksel gambar, `?qdx=` sama untuk mendatar)
       const quadMv = () => {
         const dx = tune('qdx', 0) * S
         const dy = tune('qdy', 0) * S
-        if (dx === 0 && dy === 0) return mvQuad
-        const m = new Float32Array(mvQuad)
-        m[12] += dx
-        m[13] += dy
-        return m
+        return new Float32Array([S, 0, 0, 0, 0, S, 0, 0, 0, 0, 1, 0, dx, QUAD_TY + dy, -4.8, 1])
       }
-      const mvPoints = new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, PTS_OFF_X * FIT_T, TY, -4.8, 1])
+      const mkPointsMv = () =>
+        new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, PTS_OFF_X * FIT_T, TY, -4.8, 1])
 
       // live: dt = min(0,05 s, dt asli) → jam build ikut lambat bila fps rendah (terukur: ~0,1 s/s di SwiftShader)
       let clockT = 0
@@ -879,6 +889,7 @@ export function MiraStage({
           TY = -D0 + fh0 * FIT_T
           QUAD_TY = -D0 + (QUAD_TY0 + D0) * FIT_T
         }
+        const mvPoints = mkPointsMv()
         const dpr = Math.min(window.devicePixelRatio || 1, 2)
         const pw = Math.max(1, Math.round(cw * dpr))
         const ph = Math.max(1, Math.round(ch * dpr))

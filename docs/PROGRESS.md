@@ -755,3 +755,18 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   A **8/8** · B **10/10** · langkah 5 B **6/6** · audio **9/9** · hand **8/8**.
 - Sisa selisih ponsel = **kecerahan** (kita 47,6 vs live 40,7), bukan tata letak — kandidat berikutnya.
 - Paket **`niu-update-langkah4q.zip`**.
+
+### Sesi 45 (2026-10-29) — verifikasi 4q di produksi + **bug W-3** + Gerbang C dimulai (paket 4r)
+
+- **Produksi 4q terverifikasi 3 lapis**, tetapi **Gerbang D di produksi gagal di D9** (korelasi 0,714,
+  terang kita 69,0 vs live 40,7) padahal di lokal 0,9887 → pemeriksaan produksi memang perlu.
+- **Bug W-3 ditemukan:** matriks kuad gambar & awan titik dibuat **sekali saat init** (sebelum faktor
+  skala layar dihitung), jadi hanya sebagian lapisan ikut mengecil. Dibuat per frame → 390 **0,9887**,
+  414 **0,9886**, reproduktif **0,0000**, dan di 1440 **MAE 0,0000** (t=1).
+- **Bug W-4:** kosakata `?off=` disamakan dengan live (`pic`/`fog`/`figure` + alias) — `&off=figure` kini
+  memberi layar hitam di kedua sisi (MAE **0,0000**).
+- **Gerbang C dimulai** (`tools/gate-c-ablation.js`, 10 lapisan × 2 aplikasi, t=9,5): latar **identik**
+  (`off=figure` → 0,0000), sisa selisih **terpusat di tubuh** (+7…+14,8 per sel), dan **bloom kita jauh
+  lebih lemah** (live turun 13,5 saat bloom dimatikan, kita 2,2). Sweep `fg` 1,00–1,15 hanya menggeser
+  0,39 → bukan penyebab utama.
+- Paket **`niu-update-langkah4r.zip`**.

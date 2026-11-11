@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-10-29** (sesudah paket **4q** — verifikasi produksi 4p tiga lapis; **Gerbang D selesai 7/7**; **viewport 390/414** dengan korelasi profil **0,9887**; dua bug tata letak dibetulkan (penskalaan gambar terhadap layar, posisi baris tombol); regresi piksel 0,0000).
+Diperbarui: **2026-10-29** (sesudah paket **4r** — verifikasi produksi 4q tiga lapis; **bug matriks kuad (W-3)** dibetulkan → ponsel **0,9887** juga di produksi; kosakata `?off=` disamakan; **Gerbang C dimulai**: latar identik `off=figure` **0,0000**, sisa selisih terpusat di tubuh, **bloom kita 6× lebih lemah** dari live).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -19,7 +19,7 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P7** | Arsitektur + peta UNVERIFIED | ✅ **selesai** | `recon/ARCHITECTURE.md` |
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
 | **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
-| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** (APEX · MIRA 8/8) · **B ✅** (APEX 18/18 · MIRA 10/10) · **C 🟡** (kita 2,54 rata-rata 6 fase; live 0,00–0,55 → belum lulus) · **D ✅** — audio D1–D4, hand D5–D9: reproduktibilitas **0,0000**, seam **1,46 vs 1,45**, fps **0,78 vs 0,73**, stabil 120 s, ponsel **0,9887** |
+| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** · **B ✅** · **C 🟡 berjalan** — latar **identik** (`off=figure` **0,0000**), sisa selisih di tubuh (+7…+14,8/sel), **bloom kita 2,2 vs live 13,5**; kita 2,54 rata-rata 6 fase vs live 0,00–0,55 · **D ✅** — audio D1–D4 + hand D5–D9 (reproduktibilitas **0,0000**, seam **1,46/1,45**, fps **0,70/0,66**, stabil 120 s, ponsel **0,9887 / 0,9886**) |
 | **P10** | Deliverable + deploy | 🟡 **1 dari 2** | deploy ✅ berjalan & diverifikasi tiap paket (dua situs hidup) · deliverable akhir ⬜ |
 
 **Hitungan item: 29 dari 30 selesai ≈ 97 %.**

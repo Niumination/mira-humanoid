@@ -728,3 +728,15 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | **G-D8** | Stabil 120 s: frame 7 → **153**, konteks WebGL tidak hilang, 0 error halaman, jam build naik 3,64. | 1/1 |
 | **G-D9** | Viewport ponsel: 390×844 reproduktif **0,0474** (live 0,1729) · **korelasi profil 0,9887** · 414×896 **0,0000** / **0,9886**. Sisa selisih = kecerahan (+17 %), bukan tata letak. | 2/2 |
 | **R-6** | Tanpa regresi: 4q vs 4p (knob kepala nol) `?t=8,0` & `?t=11,5` **MAE 0,0000 · 0 piksel** · paritas 1440 6 fase **2,54** (build37 2,55) · Gerbang A **8/8** · B **10/10** · langkah 5 B **6/6** · audio aplikasi **9/9** · hand **8/8**. | — |
+
+## Sesi 45 (2026-10-29) — verifikasi 4q + bug matriks kuad + Gerbang C dimulai (paket 4r)
+
+| # | temuan | angka |
+|---|---|---|
+| **V-4q** | Produksi 4q terverifikasi 3 lapis (produksi `index-C7tk2IC6.js` `b9087a0c…` = repo `19751da` = build ulang; CSS `index-DQPaiuOr.css` `6ad9d68a…`). **Tetapi Gerbang D dijalankan terhadap produksi → D9 GAGAL**: korelasi 0,714 · terang 69,0 vs 40,7. | 5/7 |
+| **W-3** | **Matriks kuad gambar & awan titik dibuat SEKALI saat init**, sebelum blok faktor kecocokan menghitung `S/TY/QUAD_TY`. Di lokal campurannya kebetulan mirip live (ada remount), di produksi tidak → figur tetap besar di ponsel. Perbaikan: `quadMv()`/`mkPointsMv()` per frame. Hasil: 390 **0,9887**, 414 **0,9886**, reproduktif **0,0000**, dan di 1440 **MAE 0,0000** (t=1). | 1 bug |
+| **W-4** | **Kosakata `?off=` berbeda** antara live dan kita (`pic` vs `picture`, `fog` vs `field`, `figure`). URL yang sama memberi hasil berbeda → alat pembanding tidak sah. Ditambahkan alias; bukti `&off=figure` → kedua sisi layar hitam, MAE **0,0000**. | 1 bug |
+| **C-1** | Ablasi lapisan (t=9,5): penuh **6,7512**; `off=figure` **0,0000** ⇒ **latar identik**; selisih terpusat di tubuh (grid 6×4: sel tengah +7,0…+14,8, tepi ±0,3). | — |
+| **C-2** | **Bloom kita jauh lebih lemah**: mematikan bloom menurunkan live **13,5** satuan, kita hanya **2,2** (fog: live −13,9 vs kita −1,6). | kandidat utama |
+| **C-3** | Kalibrasi `fg` bukan penyebab utama: 1,00 → 6,353 · 1,05 → 6,380 · 1,10 → 6,502 · 1,15 → 6,739. | Δ 0,39 |
+| **R-7** | Tanpa regresi: 4r vs 4q (1440, knob kepala nol) `?t=8,0` & `?t=11,5` **MAE 0,0000 · 0 piksel**; Gerbang D 1440 **7/7**. | — |

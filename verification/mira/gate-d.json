@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-11T03:13:05.486Z",
+  "when": "2026-11-11T04:48:24.197Z",
   "build": "http://127.0.0.1:8804/",
   "live": "https://mira-humanoid.vercel.app/",
   "ok": true,
@@ -10,13 +10,13 @@
       "id": "D5",
       "name": "reproduktibilitas @t=8 (kita vs live)",
       "ok": true,
-      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.3135 (34322 px)"
+      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.0114 (721 px)"
     },
     {
       "id": "D5",
       "name": "reproduktibilitas @t=11.5 (kita vs live)",
       "ok": true,
-      "detail": "kita MAE 0.0492 (4277 px) · live MAE 0.0014 (129 px)"
+      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.5630 (82856 px)"
     },
     {
       "id": "D6",
@@ -28,25 +28,25 @@
       "id": "D7",
       "name": "fps di lingkungan yang sama (kita ≥ 0,8× live)",
       "ok": true,
-      "detail": "kita 0.78 fps (8 frame/10.3 s) · live 0.73 fps"
+      "detail": "kita 0.70 fps (7 frame/10.0 s) · live 0.66 fps"
     },
     {
       "id": "D8",
       "name": "stabil 120 s (tanpa error, konteks hidup, frame bertambah)",
       "ok": true,
-      "detail": "frame 7 → 153 · konteks hilang=false · err=0 · jam 3.64"
+      "detail": "frame 7 → 129 · konteks hilang=false · err=0 · jam 3.04"
     },
     {
       "id": "D9",
       "name": "viewport 390×844: reproduktif & geometri cocok (korelasi ≥ 0,95)",
       "ok": true,
-      "detail": "kita reproduktif MAE 0.0474 · live 0.1729 · korelasi profil 0.9887 · MAE 10.84 (terang: kita 47.6 vs live 40.7)"
+      "detail": "kita reproduktif MAE 0.0000 · live 0.0856 · korelasi profil 0.9887 · MAE 10.83 (terang: kita 47.6 vs live 40.7)"
     },
     {
       "id": "D9",
       "name": "viewport 414×896: reproduktif & geometri cocok (korelasi ≥ 0,95)",
       "ok": true,
-      "detail": "kita reproduktif MAE 0.0000 · live 0.5605 · korelasi profil 0.9886 · MAE 10.64 (terang: kita 47.3 vs live 40.4)"
+      "detail": "kita reproduktif MAE 0.0000 · live 0.0407 · korelasi profil 0.9886 · MAE 10.63 (terang: kita 47.3 vs live 40.4)"
     }
   ]
 }

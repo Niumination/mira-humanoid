@@ -1,0 +1,82 @@
+{
+  "when": "2026-11-11T04:59:39.974Z",
+  "build": "http://127.0.0.1:8804/",
+  "live": "https://mira-humanoid.vercel.app/",
+  "phases": [
+    {
+      "t": 9.5,
+      "rows": [
+        {
+          "off": "none",
+          "total": 6.7512,
+          "meanOurs": 42.62,
+          "meanLive": 39.34,
+          "weight": null
+        },
+        {
+          "off": "fog",
+          "total": 17.0953,
+          "meanOurs": 41.01,
+          "meanLive": 25.35,
+          "weight": 22.5669
+        },
+        {
+          "off": "waves",
+          "total": 5.5123,
+          "meanOurs": 41.99,
+          "meanLive": 38.65,
+          "weight": 0.634
+        },
+        {
+          "off": "pic",
+          "total": 8.6937,
+          "meanOurs": 31.35,
+          "meanLive": 30.49,
+          "weight": 11.2775
+        },
+        {
+          "off": "figure",
+          "total": 0,
+          "meanOurs": 0,
+          "meanLive": 0,
+          "weight": 42.6158
+        },
+        {
+          "off": "matter",
+          "total": 6.7235,
+          "meanOurs": 42.51,
+          "meanLive": 39.25,
+          "weight": 0.1063
+        },
+        {
+          "off": "lines",
+          "total": 6.384,
+          "meanOurs": 41.04,
+          "meanLive": 37.85,
+          "weight": 1.5767
+        },
+        {
+          "off": "bloom",
+          "total": 15.5355,
+          "meanOurs": 40.35,
+          "meanLive": 25.79,
+          "weight": 2.2646
+        },
+        {
+          "off": "hair",
+          "total": 6.703,
+          "meanOurs": 35.4,
+          "meanLive": 32.16,
+          "weight": 7.2149
+        },
+        {
+          "off": "arcs",
+          "total": 6.7505,
+          "meanOurs": 42.62,
+          "meanLive": 39.34,
+          "weight": 0
+        }
+      ]
+    }
+  ]
+}

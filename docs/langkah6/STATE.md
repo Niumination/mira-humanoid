@@ -1,7 +1,7 @@
 # Langkah 6 MIRA — tangan MediaPipe + mikrofon nyata
 
-Status: **selesai, terukur, + dua revisi** · build **`dist/assets/index-C7tk2IC6.js` sha256 `b9087a0c…`** (revisi 4q)
-· 4p: `index-6z8R68bj.js` `84655131…` · 4o: `index-DimN9-5N.js` `bc3c1ef0…`
+Status: **selesai, terukur, + tiga revisi** · build **`dist/assets/index-BZ3xQRZB.js` sha256 `a3b71641…`** (revisi 4r)
+· 4q: `index-C7tk2IC6.js` `b9087a0c…` · 4p: `index-6z8R68bj.js` `84655131…` · 4o: `index-DimN9-5N.js` `bc3c1ef0…`
 Gerbang D langkah 6: **modul 8/8** (`gate-step6a.json`) · **aplikasi 8/8** (`gate-step6.json`, revisi 4p menambah B7/B8)
 · **MediaPipe asli 12/12** di live dan di produksi (`gate-step6-real-{live,prod}.json`)
 Regresi: build 6 vs build 5 (knob kepala nol) **MAE 0,0000** dua fase · efek kepala **MAE 3,7271**
@@ -214,3 +214,61 @@ Sisa selisih di ponsel **bukan geometri** (korelasi 0,9887; posisi baris puncak 
   didominasi kecerahan (state animasi tak bisa dipin di lingkungan ~1 fps).
 - `tools/gate-mira6.js` BAGIAN B kini memakai **satu halaman** untuk B2…B8 (sandbox ~2 GB: beberapa
   konteks WebGL sekaligus membuat target crash), plus `--renderer-process-limit=1`.
+
+
+---
+
+## 7. Revisi 4r — produksi 4q diperiksa, satu bug tata letak tersisa + Gerbang C dimulai
+
+### 7.1 Produksi 4q terverifikasi, tetapi D9 gagal di produksi
+`index-C7tk2IC6.js` `b9087a0c…` = repo `19751da` = build ulang (3 lapis) · CSS `index-DQPaiuOr.css`
+`6ad9d68a…`. Gerbang D dijalankan **terhadap produksi**: D5/D6/D7/D8 lulus, tetapi **D9 gagal**:
+korelasi profil **0,714** (bukan 0,9887 seperti di lokal), terang kita **69,0** vs live 40,7.
+
+### 7.2 Bug W-3: matriks kuad dibuat sekali saat init
+`mvQuad` dan `mvPoints` disusun **satu kali** saat init — sebelum blok "faktor kecocokan gambar"
+(di dalam loop) menghitung `S`, `TY`, `QUAD_TY`. Akibatnya lapisan yang matriksnya per-frame
+(rambut/helai/bintik/poin) mengecil, sedangkan **kuad gambar & awan titik tetap besar**. Di lokal
+campuran itu kebetulan mendekati live (0,9887) karena ada remount yang membuat init memakai `S` sisa
+frame sebelumnya; di produksi tidak ada remount → gambar tetap besar (69,0).
+**Perbaikan:** `quadMv()` dan `mkPointsMv()` membuat matriks **per frame** dari `S/TY/QUAD_TY/FIT_T`
+terkini. Hasil: 390×844 **0,9887**, 414×896 **0,9886**, reproduktif **0,0000**, dan di 1440×900
+(`t = 1`) **tidak berubah sama sekali** (4r vs 4q **MAE 0,0000 · 0 piksel**).
+
+### 7.3 Kosakata `?off=` disamakan dengan live
+Flag live: `arcs, bloom, core, cutwhite, figure, fog, hair, head3d, lights, lines, matter, pic, waves`.
+Flag kita sebelumnya: `picture, strands, twinkles, field, …` — **URL yang sama memberi hasil berbeda**.
+Sekarang ada alias: `pic → picture`, `fog → field`, `figure → semua lapisan termasuk field/waves/bloom`.
+Bukti: `&off=figure` di kedua aplikasi → **layar hitam, MAE 0,0000** (sebelumnya live 0,0 vs kita 18,6).
+
+### 7.4 Gerbang C dimulai — ablasi lapisan (`tools/gate-c-ablation.js`, t = 9,5)
+| lapisan dimatikan | MAE(4r vs live) | terang kita / live | bobot lapisan pada gambar kita |
+|---|---|---|---|
+| — (penuh) | **6,7512** | 42,6 / 39,3 | — |
+| `figure` | **0,0000** | 0,0 / 0,0 | 42,62 → **latar (nebula+fog) sudah identik** |
+| `waves` | 5,5123 | 42,0 / 38,7 | 0,63 |
+| `lines` | 6,3840 | 41,0 / 37,8 | 1,58 |
+| `hair` | 6,7030 | 35,4 / 32,2 | 7,21 |
+| `matter` | 6,7235 | 42,5 / 39,2 | 0,11 |
+| `arcs` | 6,7505 | 42,6 / 39,3 | 0,00 |
+| `pic` | 8,6937 | 31,4 / 30,5 | 11,28 |
+| `bloom` | 15,5355 | 40,4 / **25,8** | 2,26 (live: −13,5) |
+| `fog` | 17,0953 | 41,0 / **25,4** | 1,60 (live: −13,9) |
+
+**Tiga kesimpulan terukur:**
+1. **Latar (medan nebula + fog) sudah identik** — dengan `off=figure` selisih **0,0000**; sudut-sudut
+   gambar pun berbeda 0,1–0,3 satuan.
+2. Sisa selisih **terpusat di tubuh figur**: grid 6×4 menunjukkan sel tengah-bawah **+7,0 … +14,8**
+   sedangkan tepi **±0,3**.
+3. **Bloom kita jauh lebih lemah** daripada live: mematikan bloom menurunkan live **13,5** satuan tetapi
+   kita hanya **2,2**. Sebagian energi yang di live lewat bloom, di kita keluar sebagai warna langsung —
+   itu menjelaskan tubuh yang lebih terang tanpa bloom yang setara.
+4. Kalibrasi `fg` bukan penyebab utama: sweep `?fg=` 1,00 → MAE **6,353**, 1,05 → 6,380, 1,10 → 6,502,
+   1,15 → 6,739 (default 1,15). Arah perbaikan benar tapi kecil (0,39); perlu uji multi-fase sebelum diubah.
+
+### 7.5 Langkah berikutnya untuk Gerbang C (rencana konkret)
+1. **Bloom**: samakan kernel/intensitas dengan live (bobot 2,2 → ~13,5) memakai fase terkunci
+   (`?t=`) + ukur ulang ablasi; ini kandidat terbesar.
+2. **Tubuh**: setelah bloom seimbang, ulangi grid 6×4 untuk melihat sisa energi langsung (diduga
+   `uGain` lapisan gambar + helai).
+3. Kalibrasi `fg`/`pg`/`hg` baru dilakukan **setelah** bloom setara, dengan rata-rata 6 fase acuan.
