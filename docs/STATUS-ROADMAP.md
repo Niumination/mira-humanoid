@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-11-11** (sesudah paket **4x** — produksi 4w lulus 3 lapis; **W-8**: gambar kita belum deterministik saat `?t=` dipin (D5 t=11,5 0,1165) karena jam sekunder, percikan pita, dan pose kepala bergantung jumlah frame — ketiganya dibekukan/dihangatkan ⇒ reprod **0,0000 termasuk cold start**, paritas **2,72**).
+Diperbarui: **2026-11-11** (sesudah paket **4y** — produksi 4x diverifikasi penuh di URL produksi: D 7/7 dengan reprod 0,0000 di semua viewport, A 8/8, B 10/10, langkah 5 6/6, langkah 6 8/8, audio 9/9; **Gerbang C terjelaskan**: kita +9,2 pada piksel gelap & −1,9 pada piksel terang, dan percobaan penutup siluet menunjukkan terang torso kita 80 % berasal dari nebula bocor ⇒ langkah berikutnya **port mesh badan/kepala**).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---

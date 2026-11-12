@@ -1,0 +1,36 @@
+{
+  "when": "2026-11-10T14:07:25.211Z",
+  "score": "6/6",
+  "rows": [
+    {
+      "name": "TALKING menaikkan talk",
+      "ok": true,
+      "detail": "talk 0.000 → 1.000 · voice 0.057"
+    },
+    {
+      "name": "LISTENING menaikkan listen",
+      "ok": true,
+      "detail": "listen 0.000 → 0.431"
+    },
+    {
+      "name": "pin `?talk/&listen/&voice` dipakai apa adanya",
+      "ok": true,
+      "detail": "talk 0.8 · listen 0.25 · voice 0.6"
+    },
+    {
+      "name": "SPEED 0,3× memperlambat jam (rasio ≈ 0,3)",
+      "ok": true,
+      "detail": "Δ1× 0.150 s · Δ0,3× 0.045 s · rasio 0.300"
+    },
+    {
+      "name": "REPLAY mengulang jam dari 0",
+      "ok": true,
+      "detail": "t 0.05 → 0.10"
+    },
+    {
+      "name": "tanpa error halaman",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

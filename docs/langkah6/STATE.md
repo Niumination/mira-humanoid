@@ -557,3 +557,50 @@ masih bergerak tiap frame saat `?t=` dipin:
 
 **Pelajaran metodologi baru:** gerbang reproduktibilitas harus dijalankan **tiga kali termasuk cold start** —
 dua tangkapan berurutan bisa sama karena cache hangat, menyembunyikan transien.
+
+## 14. Revisi 4y — produksi 4x diverifikasi penuh, dan Gerbang C akhirnya terjelaskan angka
+
+### 14.1 Produksi 4x lulus 3 lapis + semua gerbang DI PRODUKSI
+Aset `assets/index-BSvMDaTx.js` **`d6d6b2e5…`** · CSS `6ad9d68a…` · repo **`9a2d8db`** · build ulang di tarball
+repo = **byte-identik**. Gerbang dijalankan terhadap URL produksi:
+
+| gerbang | hasil |
+|---|---|
+| D (D5–D9) | **7/7** — D5 t=8 **0,0000** · t=11,5 **0,0000** · D6 1,43 (live 1,46) · D7 0,80 fps (live 0,51) · D8 3→93 frame err 0 · D9 390 **0,9904** MAE 8,73 · 414 **0,9906** MAE 8,55 — **reprod 0,0000 di semua viewport** (sebelumnya 414 pernah 0,3181) ⇒ W-8 terbukti di produksi |
+| A · B · langkah 5 · langkah 6 · audio | **8/8 · 10/10 · 6/6 · 8/8 · 9/9** |
+
+### 14.2 Di mana sebenarnya sisa selisih torso berada (analisis piksel)
+Crop torso t=9,5 (ambang sama di kedua aplikasi):
+
+| ukuran | nilai |
+|---|---|
+| korelasi kita vs live | **0,969** · kemiringan regresi 0,987 |
+| MAE torso | 9,34 · rerata Δ **+3,26** · simpangan 16,55 |
+| piksel yang di live **gelap (<20)** | 16 % piksel, kita **+9,2** lebih terang |
+| piksel yang di live **terang (>180)** | kita **−1,9** lebih gelap |
+
+⇒ kita tidak "terlalu terang" merata: kita **kehilangan kontras di celah gelap** dan sedikit kurang di puncak.
+Ablasi per lapisan untuk celah gelap: `off=hair` +7,7 · `off=lines` +8,7 · `off=matter` +9,2 · `off=waves` +8,7 —
+**tidak ada satu lapisan pun** yang menjadi sumbernya (`off=bloom` di live tidak bisa dipakai: mengubah seluruh
+encode, MAE 36).
+
+### 14.3 Tiga tuas diuji, tiga-tiganya GUGUR (dengan angka)
+| tuas | uji | hasil |
+|---|---|---|
+| F-147 peredupan torso bergerbang waktu `?tv=` | t=11,5: 0 / 0,2 / 0,35 / 0,5 | Δtorso turun (4,78 → 0,96) **tetapi MAE naik** (5,359 → 5,758) ⇒ yang salah bukan kecerahan |
+| kecerahan seluruh figur `?gm=` (gamma komposit) | t=9,5: 1 / 1,1 / 1,2 / 1,35 | MAE 4,89 → 5,48 → 6,48 → 7,91 ⇒ **memburuk** |
+| **F-148 penutup siluet** (occluder dari alfa citra, blur+ambang) | t=9,5: `?ock=` 0 / 0,4 / 0,7 / 1,0 | torso kita jatuh ke **16,9** padahal live **80,0** |
+
+**Kesimpulan besar dari F-148:** terang torso kita **~80 % berasal dari nebula yang menembus badan**, bukan dari
+gambar. Begitu latar ditutup, badan kita tinggal 17 dari 80. Artinya live menerangi badan dengan **mesh 3D**-nya
+sendiri (permukaan gelap + rim + bloom), dan itulah bagian yang belum kita port. Ini bukan lagi soal knob —
+ini **langkah 8 lanjutan: port mesh badan**.
+
+### 14.4 W-9 (jebakan alat, bukan bug produk)
+Saat menguji F-148: siluet diikat ke unit tekstur 0 membuat **seluruh badan hitam**, karena pass kuad warna gambar
+memakai tekstur yang masih terikat di unit 0. Siluet harus di unit 1. (Kode uji sudah dibuang; `dist` dikembalikan
+**byte-identik** dengan produksi `d6d6b2e5…`.)
+
+### 14.5 Usulan langkah berikutnya (satu langkah penuh, bukan knob)
+Port **mesh badan + kepala** dari live: siluet gelap bertekstur (occluder sudah siap sebagai basis), rim-light
+dari tepi, lalu bloom di atasnya. Target terukur: piksel gelap torso dari +9,2 → ≤ +2, piksel terang dari −1,9 → ±0.

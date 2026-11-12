@@ -821,3 +821,16 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | C-20 | sesudah W-8 | reprod **0,0000 di semua fase, termasuk cold start**; paritas 2,74 → **2,72** (t=9,5 5,45 → 5,31) |
 | G-4x | gerbang build 4x (lokal) | D 7/7 · A 8/8 · B 10/10 · langkah5 6/6 · audio 9/9 |
 | M-3 | protokol gerbang reprod | wajib **3 tangkapan termasuk cold start** — dua berurutan bisa sama karena cache hangat |
+
+## Sesi 52 — 2026-11-11
+
+| kode | temuan | angka |
+|---|---|---|
+| V-4x | verifikasi 3 lapis produksi 4x | aset `d6d6b2e5…` = repo `9a2d8db` = build ulang byte-identik |
+| G-4x-prod | semua gerbang di produksi | D **7/7** (reprod 0,0000 di semua viewport) · A 8/8 · B 10/10 · langkah5 6/6 · langkah6 8/8 · audio 9/9 |
+| C-21 | analisis piksel torso | korelasi 0,969 · kemiringan 0,987 · gelap(<20) **+9,2** · terang(>180) **−1,9** |
+| C-22 | ablasi celah gelap per lapisan | hair +7,7 · lines +8,7 · matter +9,2 · waves +8,7 ⇒ tak ada satu pun penyebab |
+| C-23 | F-147 `?tv=` bergerbang | Δtorso 4,78 → 0,96 tetapi MAE 5,359 → **5,758** ⇒ gugur |
+| C-24 | `?gm=` gamma komposit | 4,89 → 5,48 → 6,48 → 7,91 ⇒ gugur |
+| **F-148** | penutup siluet (occluder) | torso kita **16,9** vs live **80,0** ⇒ terang torso kita 80 % dari nebula bocor, bukan gambar ⇒ **mesh badan adalah langkah berikutnya** |
+| W-9 | siluet di unit tekstur 0 = badan hitam | pindahkan ke unit 1 |

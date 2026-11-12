@@ -1,0 +1,160 @@
+{
+ "checks": [
+  {
+   "n": "title",
+   "a": "MIRA Humanoid",
+   "b": "MIRA Humanoid",
+   "pass": true
+  },
+  {
+   "n": "entry: teks (semua node daun)",
+   "a": [
+    "MIRA HUMANOID",
+    "a figure of light that weaves herself out of her own heart",
+    "ENTER",
+    "the click opens the audio - her build has a sound"
+   ],
+   "b": [
+    "MIRA HUMANOID",
+    "a figure of light that weaves herself out of her own heart",
+    "ENTER",
+    "the click opens the audio - her build has a sound"
+   ],
+   "pass": true
+  },
+  {
+   "n": "entry: body innerText",
+   "a": "MIRA HUMANOID a figure of light that weaves herself out of her own heart ENTER the click opens the audio - her build has a sound",
+   "b": "MIRA HUMANOID a figure of light that weaves herself out of her own heart ENTER the click opens the audio - her build has a sound",
+   "pass": true
+  },
+  {
+   "n": "entry: tombol + gaya",
+   "a": [
+    {
+     "t": "ENTER",
+     "aria": null,
+     "pressed": null,
+     "style": {
+      "color": "rgb(196, 168, 255)",
+      "bg": "rgba(16, 6, 30, 0.72)",
+      "border": "1px solid rgba(196, 168, 255, 0.333)",
+      "radius": "9px",
+      "font": "\"Share Tech Mono\", monospace",
+      "size": "14px",
+      "ls": "3.5px",
+      "pad": "12px 34px"
+     }
+    }
+   ],
+   "b": [
+    {
+     "t": "ENTER",
+     "aria": null,
+     "pressed": null,
+     "style": {
+      "color": "rgb(196, 168, 255)",
+      "bg": "rgba(16, 6, 30, 0.72)",
+      "border": "1px solid rgba(196, 168, 255, 0.333)",
+      "radius": "9px",
+      "font": "\"Share Tech Mono\", monospace",
+      "size": "14px",
+      "ls": "3.5px",
+      "pad": "12px 34px"
+     }
+    }
+   ],
+   "pass": true
+  },
+  {
+   "n": "mode: label tombol",
+   "a": [
+    "ENABLE CAMERA",
+    "IDLE",
+    "LISTENING",
+    "MIC OFF",
+    "REPLAY",
+    "SOUND ON",
+    "SPEED 1x",
+    "TALKING"
+   ],
+   "b": [
+    "ENABLE CAMERA",
+    "IDLE",
+    "LISTENING",
+    "MIC OFF",
+    "REPLAY",
+    "SOUND ON",
+    "SPEED 1x",
+    "TALKING"
+   ],
+   "pass": true
+  },
+  {
+   "n": "mode: gaya tombol REPLAY",
+   "a": {
+    "color": "rgb(196, 168, 255)",
+    "bg": "rgba(16, 6, 30, 0.72)",
+    "border": "1px solid rgba(196, 168, 255, 0.333)",
+    "radius": "9px",
+    "font": "\"Share Tech Mono\", monospace",
+    "size": "12px",
+    "ls": "1.68px",
+    "pad": "8px 13px"
+   },
+   "b": {
+    "color": "rgb(196, 168, 255)",
+    "bg": "rgba(16, 6, 30, 0.72)",
+    "border": "1px solid rgba(196, 168, 255, 0.333)",
+    "radius": "9px",
+    "font": "\"Share Tech Mono\", monospace",
+    "size": "12px",
+    "ls": "1.68px",
+    "pad": "8px 13px"
+   },
+   "pass": true
+  },
+  {
+   "n": "mode: aria-pressed status",
+   "a": [
+    [
+     "IDLE",
+     "true"
+    ],
+    [
+     "LISTENING",
+     "false"
+    ],
+    [
+     "TALKING",
+     "false"
+    ]
+   ],
+   "b": [
+    [
+     "IDLE",
+     "true"
+    ],
+    [
+     "LISTENING",
+     "false"
+    ],
+    [
+     "TALKING",
+     "false"
+    ]
+   ],
+   "pass": true
+  },
+  {
+   "n": "mode: aria-label kamera",
+   "a": "Turn the camera (hand tracking) on or off",
+   "b": "Turn the camera (hand tracking) on or off",
+   "pass": true
+  }
+ ],
+ "summary": {
+  "passed": 8,
+  "total": 8
+ }
+}
