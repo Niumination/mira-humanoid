@@ -887,3 +887,13 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **Kesimpulan:** paritas **2,72** mentok untuk semua tuas level-knob; sisa = port mesh badan + pencahayaan
   permukaan dari live (beberapa sesi).
 - Tanpa regresi: t=8/11,5/13 **MAE 0,0000 · 0 piksel**. Workspace dibersihkan **125 → 62 MB** (verification 18→9 MB, recon 73→37 MB, cache + /tmp kosong).
+
+## Sesi 54 — 2026-11-12
+
+- **F-149** penutup badan berpermukaan (normal dari medan tinggi siluet, diffuse + rim): dieksekusi penuh,
+  disapu 6 tuas → **GUGUR** (bias torso +3,69 → +1,31 tetapi MAE 5,012 → 5,217).
+- **F-150** gerbang kecerahan pada penutup F-148 → **GUGUR** (5,315).
+- **Diagnosis penutup Gerbang C:** skala 1,000 · geser 0 · skala-geometri 1,000 · HF 1,00 · matriks warna 9 %
+  · tanda galat berimbang ⇒ sisa = pola per-filamen. **Gerbang C ditutup dengan bukti batas** (2,72).
+- Tanpa regresi: build 5b vs produksi **MAE 0,0000 · 0 piksel**; paritas **2,72**; `__MIRA_ERR = null`.
+- Paket **`niu-update-langkah5b.zip`** (superset 5a).

@@ -28,6 +28,7 @@ import quadVert from '../lib/shaders/quad.vert.glsl?raw'
 import picFillFrag from '../lib/shaders/picFill.frag.glsl?raw'
 import picColorFrag from '../lib/shaders/picColor.frag.glsl?raw'
 import occluderFrag from '../lib/shaders/occluder.frag.glsl?raw'
+import bodymeshFrag from '../lib/shaders/bodymesh.frag.glsl?raw'
 import ptsVert from '../lib/shaders/pts.vert.glsl?raw'
 import ptsFrag from '../lib/shaders/pts.frag.glsl?raw'
 import fieldVert from '../lib/shaders/field.vert.glsl?raw'
@@ -375,6 +376,7 @@ export function MiraStage({
           fill: program(gl, quadVert, picFillFrag, 'fill'),
           pic: program(gl, quadVert, picColorFrag, 'pic'),
           occl: program(gl, quadVert, occluderFrag, 'occl'),
+          body: program(gl, quadVert, bodymeshFrag, 'body'),
           points: program(gl, ptsVert, ptsFrag, 'points'),
           sprite: program(gl, spriteVert, spriteFrag, 'sprite'),
           field: program(gl, fieldVert, fieldFrag, 'field'),
@@ -590,6 +592,7 @@ export function MiraStage({
       const quad = quadGeometry(fw, fh)
       const fillVao = mk(P.fill, [['position', quad.position, 3], ['uv', quad.uv, 2]], quad.index)
       const occlVao = mk(P.occl, [['position', quad.position, 3], ['uv', quad.uv, 2]], quad.index)
+      const bodyVao = mk(P.body, [['position', quad.position, 3], ['uv', quad.uv, 2]], quad.index)
       const picVao = mk(P.pic, [['position', quad.position, 3], ['uv', quad.uv, 2]], quad.index)
 
       // awan titik
@@ -658,6 +661,7 @@ export function MiraStage({
       // F-148: SILUET penutup badan. Alfa citra diburamkan (box blur, ½ resolusi) lalu di-ambang —
       // "closing" sederhana yang mengisi celah antar garis cahaya. `?ocr=` radius blur, `?oct=` ambang.
       const texOccl = gl.createTexture()!
+      const texBodyH = gl.createTexture()!   // F-149: medan tinggi (R32F, ½ res)
       {
         const cr = tune('ocr', 9)
         const thr = tune('oct', 0.06)
@@ -705,6 +709,15 @@ export function MiraStage({
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cv)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+        // F-149: MEDAN TINGGI untuk normal permukaan badan. Sumbernya `m` = siluet yang sudah
+        // diburamkan TANPA ambang (halus), float ½ resolusi supaya turunannya tidak jadi tangga 1/255.
+        gl.bindTexture(gl.TEXTURE_2D, texBodyH)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.R32F, ow, oh, 0, gl.RED, gl.FLOAT, m)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
       }
@@ -1093,6 +1106,7 @@ export function MiraStage({
           gl.uniform2f(U(P.occl, 'uSize'), fw, fh)
           gl.uniform1f(U(P.occl, 'uTime'), t)
           gl.uniform1f(U(P.occl, 'uK'), occlK)
+          gl.uniform1f(U(P.occl, 'uGateW'), tune('ogw', 0))
           gl.uniform4f(U(P.occl, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
           gl.uniform1i(U(P.occl, 'uMap'), 1)
           gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
@@ -1198,6 +1212,39 @@ export function MiraStage({
         // F-142: `off=fill` mematikan HANYA penutup (bukan kuad warna) — supaya penutup dan kuad
         // warna bisa diablasi terpisah; `off=pic` tetap mematikan keduanya seperti sebelumnya.
         if (!OFF.has('picture') && !OFF.has('fill')) gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+
+        // ---- [2b] penutup badan BERPERMUKAAN (F-149) ----
+        // SESUDAH penutup matte, SEBELUM kuad warna: badan jadi opak (nebula tidak menembus),
+        // dengan pencahayaan permukaan; garis cahaya citra tetap ditambahkan di atasnya.
+        const bodyK = tune('bmk', 0)
+        if (bodyK > 0.001) {
+          gl.useProgram(P.body)
+          gl.bindVertexArray(bodyVao.v)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+          gl.activeTexture(gl.TEXTURE1)
+          gl.bindTexture(gl.TEXTURE_2D, texOccl)
+          gl.activeTexture(gl.TEXTURE2)
+          gl.bindTexture(gl.TEXTURE_2D, texBodyH)
+          gl.uniformMatrix4fv(U(P.body, 'modelViewMatrix'), false, quadMv())
+          gl.uniformMatrix4fv(U(P.body, 'projectionMatrix'), false, proj)
+          gl.uniform2f(U(P.body, 'uSize'), fw, fh)
+          gl.uniform2f(U(P.body, 'uTexel'), 2 / fw, 2 / fh)
+          gl.uniform1f(U(P.body, 'uTime'), t)
+          gl.uniform1f(U(P.body, 'uK'), bodyK)
+          gl.uniform1f(U(P.body, 'uBase'), tune('bmb', 0.06))
+          gl.uniform1f(U(P.body, 'uDiff'), tune('bmd', 0.10))
+          gl.uniform1f(U(P.body, 'uRim'), tune('bmr', 0.35))
+          gl.uniform1f(U(P.body, 'uHgt'), tune('bmh', 24))
+          gl.uniform1f(U(P.body, 'uGate'), tune('bmg', 0.15))
+          gl.uniform1f(U(P.body, 'uBright'), tune('bmw', 1))
+          gl.uniform3f(U(P.body, 'uBaseCol'), 0.05, 0.035, 0.10)
+          gl.uniform3f(U(P.body, 'uRimCol'), 0.62, 0.52, 0.95)
+          gl.uniform4f(U(P.body, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
+          gl.uniform1i(U(P.body, 'uSil'), 1)
+          gl.uniform1i(U(P.body, 'uH'), 2)
+          gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+          gl.activeTexture(gl.TEXTURE0)
+        }
 
         // ---- [3] kuad warna gambar ----
         gl.useProgram(P.pic)

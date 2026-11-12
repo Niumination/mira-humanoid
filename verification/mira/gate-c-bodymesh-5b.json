@@ -1,0 +1,187 @@
+{
+ "judul": "Gerbang C — F-149 penutup badan berpermukaan (mesh-normal) + F-150 gerbang kecerahan; batas terukur",
+ "sesi": 54,
+ "tanggal": "2026-11-12",
+ "build": {
+  "aset": "index-DCR382kJ.js",
+  "sha256": "e215b5a76220a3ddf6ab398f57d6eacf86e742eef142c24cc8129f97e3d4a203",
+  "knob_bawaan": "bmk=0 bmw=1 bmg=0.15 bmb=0.06 bmd=0.10 bmr=0.35 bmh=24 ogw=0 ⇒ pass dilewati"
+ },
+ "produksi": {
+  "aset": "index-BSvMDaTx.js",
+  "sha256": "d6d6b2e5dfec4156503aac0e6c28e0156071985e0d33945bf6dbf12d4d10f2c0"
+ },
+ "regresi_build_vs_produksi": [
+  {
+   "t": 8,
+   "mae": 0.0,
+   "piksel": 0
+  },
+  {
+   "t": 11.5,
+   "mae": 0.0,
+   "piksel": 0
+  },
+  {
+   "t": 13,
+   "mae": 0.0,
+   "piksel": 0
+  }
+ ],
+ "mira_err": null,
+ "paritas_6_fase_5b": {
+  "0.3": 1.13,
+  "1.89": 2.01,
+  "3.5": 1.92,
+  "5.5": 2.85,
+  "6.8": 3.09,
+  "9.5": 5.31,
+  "rata2": 2.72
+ },
+ "f149_bmk_3fase": {
+  "catatan": "rata-rata MAE bawaan 5,012 (live diambil ulang hari ini; bukan 5,307 sesi 53)",
+  "baris": [
+   {
+    "bmk": 0.0,
+    "t9.5": 4.499,
+    "t11": 4.873,
+    "t13": 5.663,
+    "rata": 5.012
+   },
+   {
+    "bmk": 0.35,
+    "rata": 5.217
+   },
+   {
+    "bmk": 0.5,
+    "t9.5": 4.767,
+    "t13": 5.792,
+    "rata": 5.28
+   },
+   {
+    "bmk": 0.7,
+    "rata": 5.477
+   },
+   {
+    "bmk": 0.9,
+    "t9.5": 5.021,
+    "t13": 5.951,
+    "rata": 5.486
+   },
+   {
+    "bmk": 1.0,
+    "rata": 5.728
+   }
+  ],
+  "bias_torso_t9.5": {
+   "bmk0": 3.69,
+   "bmk0.35": 1.31,
+   "bmk0.5": 1.39,
+   "bmk0.7": -1.48,
+   "bmk0.9": -0.71,
+   "bmk1.0": -4.1
+  },
+  "bias_kepala_t9.5": {
+   "bmk0": 0.2,
+   "bmk0.5": -1.01,
+   "bmk0.9": -2.32
+  },
+  "keputusan": "GUGUR — bias torso membaik, MAE memburuk monoton pada semua fase; kepala ikut memburuk"
+ },
+ "f149_tuas_lain": {
+  "bmr 0.2 vs 2.0 (bmk=0.35 bmb=0 bmd=0, t=9.5)": "4,703 vs 4,703 ⇒ rim tidak berpengaruh (fres≠0 hanya di pita tepi ~10 px)",
+  "bmr 0.2 vs 0.6 (3 fase)": "5,238 vs 5,238",
+  "bmg (erosi)": "0,05 vs 0,15 hampir sama; dinaikkan ⇒ makin gelap"
+ },
+ "f150_gerbang_kecerahan": {
+  "ogw": 1,
+  "rows": [
+   {
+    "ock": 0.35,
+    "t9.5": 4.716,
+    "t11": 5.452,
+    "t13": 5.778,
+    "rata": 5.315
+   },
+   {
+    "ock": 0.6,
+    "t9.5": 5.063,
+    "t11": 5.775,
+    "t13": 6.044,
+    "rata": 5.628
+   }
+  ],
+  "keputusan": "GUGUR — gerbang kecerahan tidak menyelamatkan F-148; kepala memburuk −2,3"
+ },
+ "diagnosis_t9.5_torso_box_y400_740_x540_860": {
+  "bias_luma": 3.69,
+  "mae_luma": 10.41,
+  "piksel_lebih_terang_gt2": 65843,
+  "piksel_lebih_gelap_minta2": 47035,
+  "skala_optimum": {
+   "torso": 1.0,
+   "torso_inti": 1.0,
+   "kepala": 1.0,
+   "lengan": 1.02
+  },
+  "per_pita_kecerahan_live": {
+   "0-20": {
+    "n": 11168,
+    "bias": 11.56,
+    "skala_opt": 0.6,
+    "mae_skala": 3.61
+   },
+   "20-60": {
+    "n": 39924,
+    "bias": 6.54,
+    "skala_opt": 0.9,
+    "mae_skala": 6.89
+   },
+   "60-120": {
+    "n": 46981,
+    "bias": 2.41,
+    "skala_opt": 1.0
+   },
+   "120-200": {
+    "n": 26932,
+    "bias": 2.02,
+    "skala_opt": 1.0
+   },
+   "200-256": {
+    "n": 14315,
+    "bias": -3.04,
+    "skala_opt": 1.0
+   }
+  },
+  "registrasi": {
+   "geser": "±5 px pada dua sumbu (121 kombinasi) → optimum dx=0 dy=0",
+   "skala_geometri": "0,985–1,015 → optimum 1,000 (10,01 ; 0,995 → 14,3)"
+  },
+  "ketajaman": {
+   "hf_torso_kita": 17.42,
+   "hf_torso_live": 17.44,
+   "rasio": 1.0,
+   "blur_0.4": 10.24
+  },
+  "warna": {
+   "bias_rgb_torso": [
+    0.22,
+    -1.97,
+    11.38
+   ],
+   "mae_per_kanal": [
+    10.29,
+    10.97,
+    14.38
+   ],
+   "sisa_setelah_matriks_3x4": 10.76,
+   "skala_kanal_opt": [
+    0.995,
+    0.957,
+    1.056
+   ]
+  },
+  "kesimpulan": "galat bersign berimbang, skala optimum 1,000, geser 0, skala-geometri 1,000, HF 1,00, matriks warna hanya menutup 9% ⇒ sisa galat = POLA per-filamen live, bukan pencahayaan/bias/warna/registrasi/ketajaman"
+ },
+ "kesimpulan": "Gerbang C ditutup dengan bukti batas: 2,72 pada 6 fase tidak bisa diturunkan oleh tuas sisi-render apa pun yang terukur. Bukan lulus."
+}

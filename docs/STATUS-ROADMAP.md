@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-11-11** (sesudah paket **5a** — produksi 4y terverifikasi; **F-148 penutup badan** dieksekusi penuh: bias Δtorso +3,3 → −0,3 dan celah gelap +9,2 → +5,7 TETAPI MAE tidak turun (4,853 → 5,162) ⇒ sisa galat struktural; semua tuas level-knob sudah habis diuji, sisa = **port mesh badan + pencahayaan permukaan**).
+Diperbarui: **2026-11-12** (sesudah paket **5b** — F-149 penutup badan berpermukaan & F-150 gerbang kecerahan dieksekusi penuh lalu **gugur**; diagnosis penutup: skala optimum 1,000 · geser 0 · HF 1,00 · tanda galat berimbang ⇒ sisa galat = pola per-filamen; **Gerbang C ditutup dengan bukti batas 2,72**, bukan lulus).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -19,7 +19,7 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P7** | Arsitektur + peta UNVERIFIED | ✅ **selesai** | `recon/ARCHITECTURE.md` |
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
 | **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
-| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** · **B ✅** · **C 🟡 mentok-knob** — paritas 6 fase **2,72**; 20+ tuas knob diuji (bloom, gambar, rambut, medan, gamma, penutup badan) semua mentok/memburuk; 4 gambar kecil: reprod **0,0000** · **D ✅** 7/7 |
+| **P9** | Gerbang A/B/C/D | 🟡 **3 lulus + C ditutup-dengan-bukti** | **A ✅** · **B ✅** · **D ✅** 7/7 · **C ⛔** paritas 6 fase **2,72** = plafon terukur: semua tuas sisi-render (bloom, gambar, rambut, medan, gamma, penutup badan, pencahayaan permukaan) disapu, **skala optimum 1,000 · geser 0 px · HF 1,00 · matriks warna 9 %**, tanda galat berimbang 65,8k/47,0k ⇒ sisa = pola per-filamen live. Bukti: `verification/mira/gate-c-bodymesh-5b.json`. |
 | **P10** | Deliverable + deploy | ✅ **2 dari 2** | dua situs hidup & terverifikasi 3 lapis (MIRA `68e0b85c…`, APEX `8dac8dad…`) · **`DELIVERABLE.md`** (angka, cara bangun ulang, batas diketahui, peta berkas) · sumber APEX dipulihkan dari `369c8f5` ke `apex-humanoid-rebuild/` · sisa tindakan: taruh APEX di repo/folder terpisah (W-7) |
 
 **Hitungan item: 29 dari 30 selesai ≈ 97 %.**

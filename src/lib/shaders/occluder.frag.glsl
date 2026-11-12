@@ -12,6 +12,8 @@ layout(location = 0) out highp vec4 pc_fragColor;
 // `uMap` = SILUET (alfa citra diburamkan lalu di-ambang), bukan citra asli.
 uniform sampler2D uMap;
 uniform float uK;          // kekuatan penutup (0 = mati)
+uniform float uGateW;      // F-150: 0 = menutup SELURUH siluet (perilaku F-148) ·
+                           // 1 = hanya bagian GELAP citra (piksel yang di live memang terang tidak ikut)
 uniform vec2 uSize;        // ukuran gambar px (untuk reveal)
 uniform float uTime;       // jam build
 uniform vec4 uReveal;      // (x, y), ignite, kecepatan gelombang — sama dengan picFill
@@ -26,5 +28,9 @@ void main() {
   vec2 p = vec2(vUv.x * uSize.x, (1.0 - vUv.y) * uSize.y);
   float at = revealAt(p);
   float m = clamp(texture2D(uMap, vUv).a * uK, 0.0, 1.0);
+  // F-150: gerbang kecerahan. Siluet menyimpan WARNA citra di RGB — piksel yang di live terang
+  // (garis cahaya) tidak boleh diredupkan, hanya celah gelap yang tertembus nebula.
+  float lum = dot(texture2D(uMap, vUv).rgb, vec3(0.2126, 0.7152, 0.0722));
+  m *= mix(1.0, 1.0 - smoothstep(0.06, 0.30, lum), uGateW);
   gl_FragColor = vec4(vec3(0.0), m * smoothstep(at - 0.04, at + 0.4, uTime));
 }

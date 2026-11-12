@@ -645,3 +645,47 @@ badan + pencahayaan permukaannya dari live** — proyek beberapa sesi, bukan sat
 
 ### 15.6 Tanpa regresi
 Build 5a vs produksi `?t=8 / 11,5 / 13` → **MAE 0,0000 · 0 piksel**; paritas 6 fase **2,72** (tidak berubah).
+
+## 16. Sesi 54 — F-149 penutup badan berpermukaan + F-150 gerbang kecerahan, dan **batas Gerbang C diukur sampai habis**
+
+Build **`index-DCR382kJ.js`** `e215b5a7…` · produksi tetap `index-BSvMDaTx.js` `d6d6b2e5…`
+Regresi build vs produksi (`?t=8 / 11,5 / 13`): **MAE 0,0000 · 0 piksel** · `__MIRA_ERR = null` ·
+paritas 6 fase **2,72** (tidak berubah).
+
+### 16.1 Yang dibangun (F-149)
+Shader baru `bodymesh.frag.glsl`: badan digambar **opak dengan pencahayaan permukaan**, bukan kuad
+citra biasa. Normal diturunkan dari **medan tinggi siluet** (alfa yang diburamkan, `R32F` ½ resolusi,
+`texBodyH`): `N = normalize(-dh/dx·k, -dh/dy·k, 1)`, lalu diwarnai **dasar gelap + diffuse satu lampu
+kunci + rim Fresnel** — meniru mesh 3D live (tepi terang, tengah gelap). Digambar **sesudah penutup
+matte dan sebelum kuad warna**, jadi badan menutup nebula tetapi garis cahaya citra tetap ditambahkan
+di atasnya. Knob: `?bmk` kekuatan · `?bmb` dasar · `?bmd` diffuse · `?bmr` rim · `?bmh` ketajaman
+normal · `?bmg` erosi cakupan · `?bmw` gerbang kecerahan citra.
+
+### 16.2 Hasil: bias turun, MAE naik — pola yang sama seperti F-148
+
+| bmk | t=9,5 | t=11 | t=13 | rata | Δtorso t=9,5 |
+|---|---|---|---|---|---|
+| **0 (bawaan)** | **4,499** | **4,873** | **5,663** | **5,012** | **+3,69** |
+| 0,35 | 4,771 | 5,071 | 5,808 | 5,217 | +1,31 |
+| 0,5 | 4,767 | — | 5,792 | 5,280 | +1,39 |
+| 0,7 | 5,082 | 5,345 | 6,003 | 5,477 | −1,48 |
+| 0,9 | 5,021 | — | 5,951 | 5,486 | −0,71 |
+| 1,0 | 5,374 | 5,606 | 6,206 | 5,728 | −4,10 |
+
+F-150 (gerbang kecerahan pada penutup F-148, `ogw=1`): `ock` 0,35 → **5,315** · 0,6 → 5,628 ⇒ **gugur**,
+kepala ikut memburuk (−2,27). Rim (`bmr` 0,2 vs 2,0 → **4,703 vs 4,703**) tidak berpengaruh: Fresnel ≠ 0
+hanya di pita tepi ~10 px.
+
+### 16.3 Diagnosis yang menutup Gerbang C (t=9,5, kotak torso y400–740 × x540–860)
+| uji | hasil | artinya |
+|---|---|---|
+| tanda galat | 65.843 piksel kita **lebih terang**, 47.035 **lebih gelap** | galat **berimbang**, bukan bias |
+| skala optimum | torso **1,000** · torso-inti 1,000 · kepala 1,000 · lengan 1,02 | bukan kesalahan gain |
+| registrasi | geser ±5 px (121 kombinasi) → optimum **dx=0 dy=0**; skala geometri 0,985–1,015 → optimum **1,000** | bukan salah posisi/skala |
+| ketajaman | HF kita **17,42** vs live **17,44** (rasio 1,00); blur 0,4 → MAE **naik** ke 10,24 | bukan beda ketajaman |
+| warna | bias RGB torso `[+0,22 −1,97 +11,38]`; matriks warna 3×4 terbaik hanya menutup 11,88 → 10,76 | bukan salah warna |
+| pita gelap | live 0–20 (0,86 % bingkai, 8 % torso): bias **+11,56**, skala-opt 0,60 (MAE 11,56 → 3,61) | kebocoran nebula **nyata tetapi kecil** (~0,07 MAE bingkai) |
+
+**Kesimpulan:** sisa galat adalah **pola per-filamen** live. Tidak ada tuas sisi-render — cahaya, bias,
+gain, warna, registrasi, ketajaman — yang bisa menutupnya. Gerbang C **ditutup dengan bukti batas**:
+paritas **2,72** adalah plafon arsitektur kuad-citra, bukan kelalaian.

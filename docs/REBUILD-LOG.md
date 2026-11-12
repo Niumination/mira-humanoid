@@ -846,3 +846,22 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | C-26 | detail rambut `stg`/`hgg` | stg 0,9 → 5,449 · 0,8 → 5,455 · hgg 0,92 → 5,450 (bawaan 5,307) ⇒ gugur |
 | R-12 | regresi build 5a | t=8/11,5/13 → **MAE 0,0000 · 0 piksel**; paritas 6 fase **2,72** |
 | B-8 | bersih-bersih | `verification` 18 MB → 7 MB, `terapan-2026-10-30` dihapus, workspace 99 → **85 MB** |
+
+## Sesi 54 — 2026-11-12 · F-149/F-150 + Gerbang C ditutup dengan bukti
+
+1. **Verifikasi awal:** `/tmp` kosong (tmpfs) → `tools/siapkan-alat.sh`; `npm ci`; preview 8804 mati → dihidupkan
+   lewat `start_process` (vite preview, 0.0.0.0).
+2. **F-149** — `bodymesh.frag.glsl` (baru) + plumbing `texBodyH` (R32F ½ res) + pass `[2b]` di `MiraStage.tsx`.
+   Dua kali patch pertama gagal karena blok kecil terduplikasi/brace bergeser → tsc menolak, saya pulihkan dari
+   `/tmp/MiraStage.before-149.tsx` lalu patch ulang dengan assert `count==1` tiap anchor (W-9c diulang dan
+   berhasil ditangkap lebih cepat). Build `index-BHzRbbL2.js` → `index-UJ9AspiX.js` (tambah gerbang kecerahan
+   `bmw`) → `index-DCR382kJ.js` (F-150 `ogw`).
+3. **Sapuan:** `bmk` 0/0,35/0,5/0,7/0,9/1,0 pada 3 fase; `bmr` 0,2/0,6/2,0; `bmg`; `ogw=1` dengan `ock` 0,35/0,6.
+   Semua **gugur**: bias membaik, MAE memburuk monoton.
+4. **Diagnosis penutup** (numpy pada tangkapan yang sama): skala optimum **1,000**, geser **0 px**, skala
+   geometri **1,000**, HF **1,00**, matriks warna menutup 9 %, tanda galat berimbang **65,8k / 47,0k**.
+   ⇒ sisa galat = pola per-filamen; Gerbang C ditutup dengan bukti.
+5. **Regresi:** build 5b vs produksi `?t=8/11,5/13` → **MAE 0,0000 · 0 piksel**, `err=null`; paritas 6 fase
+   (`capture.js` prefix `b5b`) **2,72** — tidak berubah.
+6. **Alat baru:** `tools/reg-build.js` (regresi build vs produksi + laporan `__MIRA_ERR`, menggantikan skrip
+   `/tmp/reg3.js` yang hilang tiap sesi).
