@@ -689,3 +689,29 @@ hanya di pita tepi ~10 px.
 **Kesimpulan:** sisa galat adalah **pola per-filamen** live. Tidak ada tuas sisi-render — cahaya, bias,
 gain, warna, registrasi, ketajaman — yang bisa menutupnya. Gerbang C **ditutup dengan bukti batas**:
 paritas **2,72** adalah plafon arsitektur kuad-citra, bukan kelalaian.
+
+## 17. Sesi 55 — penerapan 5a+5b diverifikasi 5 lapis, W-7 ditutup, dan jebakan W-10
+
+### 17.1 Hasil verifikasi (rincian di `verification/VERIFIKASI-5b-2026-11-12.md`)
+| lapis | hasil |
+|---|---|
+| aset produksi | `index-DCR382kJ.js` **`e215b5a7…`** |
+| blob repo `mira-humanoid@367acf2` | `MiraStage.tsx ac80e448…` · `bodymesh frag 4fec2e10…` · `occluder frag dfb5910c…` = workspace |
+| build bersih | **byte-identik** dengan produksi |
+| gerbang produksi | D **7/7** · A **8/8** · B **10/10** · langkah 5 **12/12** · step4c **9/9** |
+| paritas piksel produksi | **2,72** (sama dengan build lokal) |
+
+### 17.2 W-7 ditutup
+`Niumination/apex-humanoid-rebuild@a5535a0` lengkap → tarball + `npm ci` + `vite build` menghasilkan
+`index-DyoQ8hKN.js` `8dac8dad…` dan `index-WDCbnnbD.css` `1b66a34b…` — **persis produksi**. Sumber APEX
+tidak lagi bergantung pada repo MIRA.
+
+### 17.3 W-10 — jebakan garis miring ganda
+`curl` ke `…vercel.app//assets/index-*.js` dijawab **halaman redirect 15 byte** (`Redirecting...`), bukan
+berkas aset. Skrip verifikasi baru sempat menyimpulkan “build BEDA dari produksi”; yang benar: **alatnya**
+yang salah. Aturan sekarang: `PROD=${PROD%/}` · `curl -sL` · tolak unduhan < 10 KB.
+
+### 17.4 Sisa yang diketahui (jujur)
+APEX Gerbang C masih **10,66 / 8,58** (derau 4,54 / 0,77) — sama dengan catatan P8a, **bukan regresi**;
+wilayah terang produksi asli masih **37–46 satuan lebih gelap** di deploy kita ⇒ pekerjaan bloom/tonal
+APEX berikutnya, bukan bagian paket ini.

@@ -897,3 +897,13 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
   · tanda galat berimbang ⇒ sisa = pola per-filamen. **Gerbang C ditutup dengan bukti batas** (2,72).
 - Tanpa regresi: build 5b vs produksi **MAE 0,0000 · 0 piksel**; paritas **2,72**; `__MIRA_ERR = null`.
 - Paket **`niu-update-langkah5b.zip`** (superset 5a).
+
+## Sesi 55 — 2026-11-12 · verifikasi penerapan 5a+5b
+
+- Produksi: `index-DCR382kJ.js` `e215b5a7…` = build 5b byte-identik · repo `367acf2` (MIRA) · `3e543ea` (docs).
+- Gerbang produksi: **D 7/7 · A 8/8 · B 10/10 · langkah 5 12/12 · step4c 9/9**.
+- Paritas piksel **produksi** 6 fase = **2,72** (sama dengan build lokal).
+- **W-7 ditutup:** APEX `a5535a0` → build ulang byte-identik dengan produksi (`8dac8dad…`, CSS `1b66a34b…`).
+- APEX Gerbang C tidak regresi: 10,66/9,68 (1440) · 8,58/7,30 (390) vs catatan 10,73/11,93 · 7,71/9,01.
+- **W-10** ditemukan & dibetulkan: redirect 15 byte pada URL bergaris-miring ganda.
+- Alat baru: `tools/verifikasi-produksi.sh`.

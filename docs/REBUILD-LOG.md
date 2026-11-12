@@ -865,3 +865,18 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
    (`capture.js` prefix `b5b`) **2,72** — tidak berubah.
 6. **Alat baru:** `tools/reg-build.js` (regresi build vs produksi + laporan `__MIRA_ERR`, menggantikan skrip
    `/tmp/reg3.js` yang hilang tiap sesi).
+
+## Sesi 55 — 2026-11-12 · paket 5a+5b diterapkan: verifikasi 5 lapis + W-7 ditutup + W-10
+
+1. `curl` produksi → aset **`index-DCR382kJ.js`** `e215b5a7…` (artinya 5b benar-benar ter-deploy, bukan hanya 5a).
+2. Repo `mira-humanoid@367acf2` (pesan commit 5b) dan `Niu-Humanoid@3e543ea`; tarball → tiga berkas sumber
+   **identik** dengan workspace.
+3. `npm ci` + `tsc` + `vite build` dari workspace → **byte-identik** dengan aset produksi (`cmp` lolos).
+4. Gerbang di URL produksi: D **7/7** · A **8/8** · B **10/10** · langkah 5 **12/12** · step4c **9/9**.
+5. `capture.js` 6 fase di **URL produksi** (prefix `prod5b`) + `metric3.py` → **2,72**, sama dengan build lokal.
+6. **W-7 ditutup:** repo `apex-humanoid-rebuild@a5535a0` lengkap → build ulang menghasilkan
+   `index-DyoQ8hKN.js 8dac8dad…` + `index-WDCbnnbD.css 1b66a34b…` = produksi. Gerbang piksel deploy APEX
+   diukur ulang: 10,66/9,68 (1440) · 8,58/7,30 (390) — sama dengan P8a, tanpa regresi.
+7. **W-10:** `curl` ke URL dengan garis miring ganda menerima halaman redirect 15 byte → skrip verifikasi
+   sempat salah menyimpulkan “build BEDA”. Dibetulkan (`PROD=${PROD%/}`, `curl -sL`, penjaga ukuran ≥10 KB).
+8. Alat baru `tools/verifikasi-produksi.sh` (lapis 1–3 cepat, `--gates` untuk lapis 4).

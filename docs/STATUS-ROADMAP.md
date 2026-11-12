@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-11-12** (sesudah paket **5b** — F-149 penutup badan berpermukaan & F-150 gerbang kecerahan dieksekusi penuh lalu **gugur**; diagnosis penutup: skala optimum 1,000 · geser 0 · HF 1,00 · tanda galat berimbang ⇒ sisa galat = pola per-filamen; **Gerbang C ditutup dengan bukti batas 2,72**, bukan lulus).
+Diperbarui: **2026-11-12** (sesi 55 — paket **5a+5b diterapkan dan diverifikasi 5 lapis**: aset produksi = build byte-identik, gerbang produksi **D 7/7 · A 8/8 · B 10/10 · 12/12 · 9/9**, paritas produksi **2,72**. **W-7 ditutup** (APEX direproduksi byte-identik dari repo sendiri). **W-10** ditemukan & dibetulkan. Gerbang C tetap **ditutup dengan bukti**.)
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -20,10 +20,10 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
 | **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
 | **P9** | Gerbang A/B/C/D | 🟡 **3 lulus + C ditutup-dengan-bukti** | **A ✅** · **B ✅** · **D ✅** 7/7 · **C ⛔** paritas 6 fase **2,72** = plafon terukur: semua tuas sisi-render (bloom, gambar, rambut, medan, gamma, penutup badan, pencahayaan permukaan) disapu, **skala optimum 1,000 · geser 0 px · HF 1,00 · matriks warna 9 %**, tanda galat berimbang 65,8k/47,0k ⇒ sisa = pola per-filamen live. Bukti: `verification/mira/gate-c-bodymesh-5b.json`. |
-| **P10** | Deliverable + deploy | ✅ **2 dari 2** | dua situs hidup & terverifikasi 3 lapis (MIRA `68e0b85c…`, APEX `8dac8dad…`) · **`DELIVERABLE.md`** (angka, cara bangun ulang, batas diketahui, peta berkas) · sumber APEX dipulihkan dari `369c8f5` ke `apex-humanoid-rebuild/` · sisa tindakan: taruh APEX di repo/folder terpisah (W-7) |
+| **P10** | Deliverable + deploy | ✅ **2 dari 2** | dua situs hidup & **terverifikasi 5 lapis** (aset produksi = build byte-identik · gerbang produksi D 7/7 · A 8/8 · B 10/10 · 12/12 · 9/9 · paritas produksi 2,72) · **`DELIVERABLE.md`** · **W-7 DITUTUP**: `apex-humanoid-rebuild@a5535a0` → build ulang byte-identik (`8dac8dad…` + `1b66a34b…`) · alat tetap `tools/verifikasi-produksi.sh` |
 
-**Hitungan item: 29 dari 30 selesai ≈ 97 %.**
-Yang tersisa: **paritas piksel (Gerbang C)** — live praktis deterministik (0,00–0,55), kita **2,76** rata-rata 6 fase (dari 2,54 pada acuan basi; dengan acuan segar semula **2,93**) — dan **W-7** (APEX perlu repo/folder sendiri supaya sumbernya tidak tertimpa lagi).
+**Hitungan item: 29 dari 30 selesai · 1 ditutup-dengan-bukti** (nyaris 100 %; satu-satunya yang tidak "lulus" adalah paritas piksel Gerbang C yang plafonnya sudah dibuktikan, bukan yang belum dikerjakan).
+Yang tersisa: **tidak ada item rencana**. Pekerjaan lanjutan yang mungkin (di luar rencana P0–P10): bloom/tonal APEX (wilayah terang masih −37…−46) dan pola per-filamen MIRA — keduanya struktural, bukan knob.
 
 ---
 

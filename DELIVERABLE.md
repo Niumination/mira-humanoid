@@ -1,6 +1,6 @@
 # DELIVERABLE — APEX & MIRA humanoid (rebuild)
 
-Diperbarui: **2026-11-12** (sesi 54). Semua angka di bawah diukur di mesin yang sama (Chromium headless,
+Diperbarui: **2026-11-12** (sesi 55 — penerapan 5a+5b diverifikasi 5 lapis). Semua angka di bawah diukur di mesin yang sama (Chromium headless,
 SwiftShader), membandingkan **situs produksi kita** dengan **situs live aslinya**.
 
 ---
@@ -71,12 +71,21 @@ cd mira-humanoid-rebuild && npm ci && npm run build && npx vite preview --host 0
 
 ---
 
+## 3b. Memverifikasi paket yang SUDAH diterapkan (5 lapis, satu perintah)
+```
+bash tools/verifikasi-produksi.sh            # aset produksi → blob repo → build bersih byte-identik (±15 s)
+bash tools/verifikasi-produksi.sh --gates    # + gerbang D/A/B/langkah5/step4c di URL produksi (±12 menit)
+```
+Lapis 1–3 menangkap: repo tidak memuat perubahan, build tidak reprodusibel, aset produksi bukan build kita.
+Lapis 4 menangkap: deploy memuat bundel lain. Terakhir dijalankan 2026-11-12 → **semua lapis lulus**.
+
 ## 4. Batas yang diketahui (jujur)
 
 | # | hal | status |
 |---|---|---|
 | W-7 | Sumber APEX **tertimpa** MIRA di repo `Niu-Humanoid`; kini hanya ada di commit `369c8f5`. Sudah dipulihkan ke `apex-humanoid-rebuild/` dan build-nya = produksi byte-identik. **Perlu repo terpisah atau folder `apex/`** supaya tidak hilang lagi. | ⚠️ butuh tindakan Hermes |
 | C | Paritas piksel MIRA rata-rata **2,72** (live 0,00–0,55). **Ditutup dengan bukti batas**, bukan lulus: semua tuas sisi-render disapu (bloom, gambar, rambut, medan, gamma, penutup badan F-148, pencahayaan permukaan F-149) dan sebuah diagnosis langsung menunjukkan sisa galat **bukan** bias (skala optimum **1,000**), **bukan** posisi (geser optimum **0 px**, skala-geometri **1,000**), **bukan** ketajaman (HF **1,00**), **bukan** warna (matriks 3×4 hanya menutup **9 %**). Tanda galat berimbang (65,8k lebih terang / 47,0k lebih gelap di torso) ⇒ sisa = **pola per-filamen live**. | ⛔ ditutup dengan bukti (`gate-c-bodymesh-5b.json`) |
+| — | **APEX direproduksi byte-identik dari repo sendiri** (`apex-humanoid-rebuild@a5535a0` → `8dac8dad…` + `1b66a34b…`); gerbang piksel deploy diukur ulang hari ini **10,66/9,68** (1440, derau 4,54) · **8,58/7,30** (390, derau 0,77) ⇒ **sama dengan P8a, tanpa regresi**. Sisa terbesar: wilayah terang produksi asli di deploy kita **−37 s.d. −46** (bloom/tonal belum meniru sumber). | 🟡 diketahui, proyek lanjutan |
 | — | APEX belum punya gerbang piksel segar sejak 2026-10-29 (gerbang 17/17 & piksel 10,73 %/11,93 % dari sesi itu); build-nya terverifikasi byte-identik, jadi tidak berubah. | 🟡 tercatat |
 | — | Semua pengukuran di SwiftShader (±0,5–1 fps); angka fps **relatif**, bukan fps pengguna. | catatan |
 

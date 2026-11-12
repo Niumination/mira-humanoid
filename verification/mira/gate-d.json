@@ -1,5 +1,5 @@
 {
-  "when": "2026-11-12T04:12:40.934Z",
+  "when": "2026-11-12T14:28:37.074Z",
   "build": "http://127.0.0.1:8804/",
   "live": "https://mira-humanoid.vercel.app/",
   "ok": true,
@@ -10,43 +10,43 @@
       "id": "D5",
       "name": "reproduktibilitas @t=8 (kita vs live)",
       "ok": true,
-      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.8199 (134780 px)"
+      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.7617 (122585 px)"
     },
     {
       "id": "D5",
       "name": "reproduktibilitas @t=11.5 (kita vs live)",
       "ok": true,
-      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.0026 (206 px)"
+      "detail": "kita MAE 0.0000 (0 px) · live MAE 0.6743 (104330 px)"
     },
     {
       "id": "D6",
       "name": "tanpa seam buatan (lonjakan baris ≤ live)",
       "ok": true,
-      "detail": "kita rasio 1.43 (baris 547, 9.16 vs lokal 6.39) · live 1.46 (baris 529)"
+      "detail": "kita rasio 1.43 (baris 547, 9.16 vs lokal 6.39) · live 1.45 (baris 529)"
     },
     {
       "id": "D7",
       "name": "fps di lingkungan yang sama (kita ≥ 0,8× live)",
       "ok": true,
-      "detail": "kita 0.74 fps (8 frame/10.8 s) · live 0.73 fps"
+      "detail": "kita 0.69 fps (8 frame/11.6 s) · live 0.62 fps"
     },
     {
       "id": "D8",
       "name": "stabil 120 s (tanpa error, konteks hidup, frame bertambah)",
       "ok": true,
-      "detail": "frame 4 → 140 · konteks hilang=false · err=0 · jam 6.86"
+      "detail": "frame 7 → 127 · konteks hilang=false · err=0 · jam 2.99"
     },
     {
       "id": "D9",
       "name": "viewport 390×844: reproduktif & geometri cocok (korelasi ≥ 0,95)",
       "ok": true,
-      "detail": "kita reproduktif MAE 0.0000 · live 0.6873 · korelasi profil 0.9906 · MAE 8.87 (terang: kita 43.4 vs live 40.7)"
+      "detail": "kita reproduktif MAE 0.0000 · live 0.1112 · korelasi profil 0.9906 · MAE 8.87 (terang: kita 43.4 vs live 40.7)"
     },
     {
       "id": "D9",
       "name": "viewport 414×896: reproduktif & geometri cocok (korelasi ≥ 0,95)",
       "ok": true,
-      "detail": "kita reproduktif MAE 0.0000 · live 0.5715 · korelasi profil 0.9907 · MAE 8.60 (terang: kita 43.1 vs live 40.3)"
+      "detail": "kita reproduktif MAE 0.0000 · live 0.0184 · korelasi profil 0.9908 · MAE 8.68 (terang: kita 43.1 vs live 40.4)"
     }
   ]
 }
