@@ -809,3 +809,15 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | R-11 | paritas 6 fase | 2,76 → **2,74** (t=9,5 5,56 → 5,45) |
 | G-4w | gerbang build 4w (lokal) | D **7/7** (D9 0,9906/0,9908, MAE 8,79/8,51) · A 8/8 · B 10/10 · langkah5 6/6 · audio 9/9 |
 | A-11 | `tools/capture.js` dibuat tetap | skrip tangkap dulu selalu di /tmp dan hilang tiap sesi |
+
+## Sesi 51 — 2026-11-11
+
+| kode | temuan | angka |
+|---|---|---|
+| V-4w | verifikasi 3 lapis produksi 4w | aset `9c31ce15…` = repo `4b9d7a2` = build ulang byte-identik |
+| **W-8a** | jam sekunder dihitung dari jumlah frame | reprod t=11,5 0,1165/20.432 px; `?ac=0,1` → 5,175 vs 5,198 |
+| **W-8b** | percikan pita maju tiap frame saat dipin | dibekukan (`?sd=0`) |
+| **W-8c** | pose kepala transient dari 0 | tangkapan pertama 0,0553 vs 0,0000 → dihangatkan 240 iterasi |
+| C-20 | sesudah W-8 | reprod **0,0000 di semua fase, termasuk cold start**; paritas 2,74 → **2,72** (t=9,5 5,45 → 5,31) |
+| G-4x | gerbang build 4x (lokal) | D 7/7 · A 8/8 · B 10/10 · langkah5 6/6 · audio 9/9 |
+| M-3 | protokol gerbang reprod | wajib **3 tangkapan termasuk cold start** — dua berurutan bisa sama karena cache hangat |

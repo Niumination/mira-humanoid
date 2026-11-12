@@ -859,6 +859,10 @@ export function MiraStage({
       ;(window as any).__MIRA_ERR = null
       let Ee = { speed: 1, bright: 1 }
       let headState: HeadPose = { yaw: 0, pitch: 0, roll: 0 }
+      // W-8c: saat `?t=` dipin, pose kepala dihaluskan per frame dari 0 → hasil tangkapan bergantung
+      // berapa frame sempat jalan sebelum jepretan (terukur: tangkapan pertama 0,0553 vs berikutnya
+      // 0,0000 pada t=11,5). Live sudah tenang saat dipin, jadi pose dihangatkan sampai konvergen.
+      let headWarm = false
       const draw = () => {
         if (dead) return
         raf = requestAnimationFrame(draw)
@@ -930,6 +934,10 @@ export function MiraStage({
             ? { x: voice.x, y: voice.y, idle: 0 }
             : { x: attn?.x || 0, y: attn?.y || 0, idle: (nowMs - lastAt) / 1000 }
         const hp = live.current.dial ? headParams((k) => live.current.dial!.get(k)) : { follow: 1, life: 1, speed: 1 }
+        if (!headWarm && pin !== null && Number.isFinite(pin)) {
+          for (let i = 0; i < 240; i++) headState = updateHead(headState, rr, auraNow, t, 0.016, hp)
+          headWarm = true
+        }
         headState = updateHead(headState, rr, auraNow, t, eF ? 5 : 0.016, hp)
         const headOn = xs(t, reveal[2] + 1.6, reveal[2] + 2.6)
                 const pose: [number, number, number] = [headState.yaw * headOn, headState.pitch * headOn, headState.roll * headOn]
@@ -938,7 +946,11 @@ export function MiraStage({
         setPresence({ waves: ramp.waves, matter: ramp.matterN, orb: ramp.orb })
         const fieldClock = pin !== null && Number.isFinite(pin) ? fieldPin : t
         animT += 0.016
-        const animClock = pin !== null && Number.isFinite(pin) ? Math.min(animT, 0.2) : animT
+        // W-8: saat `?t=` dipin, jam sekunder (rambut/helai/bintik) dulu = min(animT, 0,2) — yaitu
+        // DIHITUNG DARI JUMLAH FRAME. Karena fps mesin berubah-ubah, dua tangkapan pada `?t` yang sama
+        // bisa berbeda (terukur D5 t=11,5: MAE 0,1165 · 20.432 piksel; D9 414: 0,3181). Di live nilainya
+        // praktis tetap (0,0098–0,0303), jadi jam ini harus KONSTAN saat dipin. `?ac=` untuk menyapu.
+        const animClock = pin !== null && Number.isFinite(pin) ? tune('ac', 0.1) : animT
         ;(window as any).__MIRA_RAMP = { t, ...ramp }
         const proj = perspective(FOV, pw / ph, NEAR, FAR)
         gl.disable(gl.DEPTH_TEST)
@@ -1039,7 +1051,10 @@ export function MiraStage({
             gl.drawElements(gl.TRIANGLES, wv.count, gl.UNSIGNED_SHORT, 0)
           }
           // percikan pita (168 titik, gN)
-          updateWaveSparks(waveSparks, 0.0166, waveClock, (i) => waveRibbons[i].pts.map((q) => q.cur), (i) => waveRibbons[i].width, 0.8)
+          // W-8b: saat `?t=` dipin, percikan pita dulu tetap MAJU 16,6 ms tiap frame → hasil tangkapan
+          // bergantung berapa frame sempat jalan (terukur: D5 t=11,5 MAE 0,1165 · 20.432 piksel, lalu
+          // 0,0699 pada percobaan lain, kadang 0,0000). Di live nilainya praktis tetap. `?sd=` untuk menyapu.
+          updateWaveSparks(waveSparks, pin !== null && Number.isFinite(pin) ? tune('sd', 0) : 0.0166, waveClock, (i) => waveRibbons[i].pts.map((q) => q.cur), (i) => waveRibbons[i].width, 0.8)
           gl.useProgram(P.wavespark)
           gl.bindVertexArray(sparksVao.v)
           gl.bindBuffer(gl.ARRAY_BUFFER, sparksVao.pb)

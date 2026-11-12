@@ -526,3 +526,34 @@ Dipilih **0,8** (1,1 seri di t=13 tetapi kalah di t=11).
   kita kini setara live dan kelebihan fase lambat berkurang.
 - Gerbang D di atas dijalankan **lokal** untuk build 4w; setelah paket terpasang saya jalankan **di produksi**
   (aturan W-3/W-4).
+
+## 13. Revisi 4x — W-8: gambar kita TIDAK benar-benar deterministik saat `?t=` dipin
+
+### 13.1 Produksi 4w lulus 3 lapis + gerbang produksi
+Produksi `assets/index-H7qR2EeI.js` **`9c31ce15…`** · CSS `6ad9d68a…` · repo `4b9d7a2` · build ulang di tarball
+repo = **byte-identik**; `MiraStage.tsx dbabdf5f…`, `capture.js aa21290c…`, `sweep-torso.js e86b8188…` = workspace.
+Gerbang D di produksi **7/7** — tetapi D5 t=11,5 keluar **0,1165 (20.432 piksel)** padahal sebelumnya 0,0000.
+
+### 13.2 W-8: tiga sumber ketergantungan-jumlah-frame
+Gerbang D lolos ambang, tetapi klaim "reprodusitas 0,0000" **tidak sah** kalau nilainya berubah-ubah. Terukur
+berturut-turut pada build 4w: t=11,5 → 0,1165 · 0,0699 · 0,0000; D9 414 → 0,3181. Penyebabnya tiga hal yang
+masih bergerak tiap frame saat `?t=` dipin:
+
+| # | sumber | bukti | perbaikan |
+|---|---|---|---|
+| W-8a | jam sekunder `animClock = min(animT, 0,2)` — `animT` **dihitung dari jumlah frame** | diganti `?ac=` → 0,1 terbaik (t=11,5 5,198→5,175 · t=9,5 5,051→5,020), bawaan 0,1 | konstan saat dipin |
+| W-8b | percikan pita `updateWaveSparks(…, 0,0166, …)` tetap maju 16,6 ms tiap frame | `?sd=` → 0 saat dipin | dibekukan saat dipin |
+| W-8c | pose kepala dihaluskan dari 0 tiap frame | tangkapan **pertama** 0,0553 vs berikutnya 0,0000 | dihangatkan 240 iterasi saat frame pertama bila dipin |
+
+### 13.3 Hasil
+| uji | sebelum | sesudah |
+|---|---|---|
+| reprod t=11,5 (3 tangkapan, termasuk cold start) | 0,1165 / 0,0699 / 0,0553 | **0,0000 / 0,0000 / 0,0000** |
+| reprod t=9,5 · t=8 | 0,0000 | **0,0000** |
+| D9 390 / 414 reprod | 0,0000 / 0,3181 | **0,0000 / 0,0000** |
+| paritas 6 fase | 2,74 | **2,72** (t=9,5 5,45 → **5,31**) |
+| Gerbang D lokal | 7/7 | **7/7** |
+| A · B · langkah 5 · audio | — | **8/8 · 10/10 · 6/6 · 9/9** |
+
+**Pelajaran metodologi baru:** gerbang reproduktibilitas harus dijalankan **tiga kali termasuk cold start** —
+dua tangkapan berurutan bisa sama karena cache hangat, menyembunyikan transien.

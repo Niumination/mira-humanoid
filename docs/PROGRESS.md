@@ -783,7 +783,7 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
 - **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
   B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
-- Paket **`niu-update-langkah4w.zip`** (menggantikan 4v).
+- Paket **`niu-update-langkah4x.zip`** (menggantikan 4w).
 
 ## Bersih-bersih workspace (sesi 46, atas permintaan: over budget)
 
@@ -852,3 +852,13 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
   t≤10 tidak tersentuh.
 - **Paritas 6 fase 2,76 → 2,74**; gerbang build 4w: D **7/7** (ponsel 0,9906/0,9908), A 8/8, B 10/10,
   langkah 5 6/6, audio 9/9.
+
+## Sesi 51 — W-8: determinisme saat `?t=` dipin
+
+- Produksi 4w lulus 3 lapis + Gerbang D 7/7, **tetapi** D5 t=11,5 keluar 0,1165 (20.432 px) — klaim
+  "reprodusitas 0,0000" ternyata rapuh.
+- **Tiga penyebab ditemukan dan dibetulkan:** jam sekunder dihitung dari jumlah frame (W-8a), percikan pita
+  maju tiap frame (W-8b), pose kepala transient dari 0 (W-8c).
+- Sesudahnya: reprod **0,0000 di semua fase termasuk cold start**; paritas 6 fase 2,74 → **2,72** (t=9,5 → 5,31).
+- Gerbang lokal: D 7/7 · A 8/8 · B 10/10 · langkah 5 6/6 · audio 9/9.
+- **M-3:** gerbang reproduktibilitas wajib 3 tangkapan termasuk cold start.
