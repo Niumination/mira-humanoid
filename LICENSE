@@ -1,0 +1,34 @@
+NIU/MIRAI Humanoid Reconstruction — LICENSE
+==========================================
+
+Copyright (c) 2026 Afrizal Munthe (Niumination). All rights reserved.
+
+STATUS: PROPRIETARY / INTERNAL — TAHAP VERIFIKASI (sebelum Gerbang E)
+
+1. IZIN TERBATAS
+   Kode sumber di repositori ini boleh dibaca, dijalankan, dan diubah oleh pemilik proyek dan
+   kolaborator yang ditunjuk secara tertulis, semata-mata untuk keperluan rekonstruksi, verifikasi,
+   dan pengembangan internal. Tidak ada izin lain yang diberikan, baik tersurat maupun tersirat.
+
+2. LARANGAN
+   Dilarang menyalin, menerbitkan, mendistribusikan, menjual, menyewakan, atau membuat karya turunan
+   dari kode ini untuk dipakai publik atau komersial tanpa izin tertulis dari pemegang hak.
+
+3. ASET PIHAK KETIGA (PENTING)
+   Berkas di `public/humanoid/*.webp` pada repositori ini adalah salinan verbatim dari aset produk
+   pihak lain dan TIDAK dilisensikan di bawah dokumen ini, serta bukan milik pemegang hak di atas.
+   Berkas tersebut disertakan SEMENTARA untuk pembandingan/verifikasi (lihat NOTICE). Lihat
+   `docs/LISENSI-BRANDING.md` dan `verification/provenance.json`. Berkas itu wajib diganti dengan
+   karya sendiri (fase P13) sebelum repositori dinyatakan bersih.
+
+4. MEREK
+   "APEX" dan "MIRA" adalah nama produk pihak lain dan tidak diklaim di sini, baik sebagai merek
+   maupun sebagai identitas. Penggunaannya di repositori ini bersifat deskriptif untuk merujuk pada
+   objek rekonstruksi. Merek "NIU" dan "MIRAI" baru akan dipakai setelah Gerbang E lulus
+   (lihat `docs/RENCANA-LANJUTAN.md`).
+
+5. TANPA JAMINAN
+   Perangkat lunak ini disediakan "SEBAGAIMANA ADANYA", tanpa jaminan apa pun.
+
+6. KONTAK
+   Niumination — untuk permintaan lisensi atau kerja sama.

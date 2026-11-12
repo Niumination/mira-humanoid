@@ -907,3 +907,18 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - APEX Gerbang C tidak regresi: 10,66/9,68 (1440) · 8,58/7,30 (390) vs catatan 10,73/11,93 · 7,71/9,01.
 - **W-10** ditemukan & dibetulkan: redirect 15 byte pada URL bergaris-miring ganda.
 - Alat baru: `tools/verifikasi-produksi.sh`.
+
+## Sesi 56 — 2026-11-12 · verifikasi 5c, dokumentasi ditata ulang, rencana P11–P15, lisensi & mesin produksi
+
+- **Verifikasi 5c:** paket 5c ternyata tidak mengubah kode; aset produksi tetap `index-DCR382kJ.js` `e215b5a7…`
+  (benar). Repo `mira-humanoid@0ffb82a`, `Niu-Humanoid@8fc18db`; `tools/verifikasi-produksi.sh` dan
+  `verification/VERIFIKASI-5b-2026-11-12.md` benar-benar ada di repo; lapis 1–3 lulus (build byte-identik).
+- **Koreksi dokumentasi:** `STATUS-ROADMAP.md` **ditulis ulang** — versi lama masih menyebut langkah 4/5/6
+  belum ada dan Gerbang C belum diukur, padahal semua sudah selesai. §3/§4 lama dihapus.
+- **Dokumen baru:** `docs/PETA-DOKUMEN.md` (peta dokumen), `docs/RENCANA-LANJUTAN.md` (**P11–P15** + Gerbang E
+  + aturan anti-drift), `docs/LISENSI-BRANDING.md`, `docs/MESIN-PRODUKSI-AVATAR.md`, `templates/avatar.manifest.json`.
+- **Hukum:** `LICENSE` (All Rights Reserved) + `NOTICE` di kedua repo; `package.json` → `license` + `private`.
+  **Audit aset: 12/12 salinan verbatim** (`tools/audit-provenance.py` → `verification/provenance.json`).
+- **Alat baru:** `tools/audit-provenance.py` (gerbang hukum otomatis) · `tools/avatar-baru.py` (scaffold +
+  validator manifest avatar; sudah dicoba: `python3 tools/avatar-baru.py mirai` → 0 masalah).
+- Tanpa regresi: build MIRA tetap `e215b5a7…` (byte-identik produksi) sesudah LICENSE/NOTICE/package.json.

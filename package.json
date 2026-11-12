@@ -1,6 +1,7 @@
 {
   "name": "mira-humanoid-rebuild",
   "private": true,
+  "license": "UNLICENSED",
   "version": "0.1.0",
   "type": "module",
   "scripts": {

@@ -1,0 +1,35 @@
+{
+  "id": "avatar-baru",
+  "nama": "AVATAR BARU",
+  "kanvas": { "lebar": 1440, "tinggi": 900, "plate": [1145, 1374] },
+  "state": ["idle", "listening", "thinking", "speaking", "speaking-strong"],
+  "plate": {
+    "idle": "public/humanoid/avatar-idle-v1.webp",
+    "listening": "public/humanoid/avatar-listening-v1.webp",
+    "thinking": "public/humanoid/avatar-thinking-v1.webp",
+    "speaking": "public/humanoid/avatar-speaking-v1.webp",
+    "speaking-strong": "public/humanoid/avatar-speaking-strong-v1.webp"
+  },
+  "rambut": {
+    "berkas": "public/humanoid/avatar-hair-v1.webp",
+    "lebar": 1385,
+    "tinggi": 1422,
+    "offset": [120, 48],
+    "pivot": [694.79, 322.8],
+    "catatan": "offset & pivot WAJIB diukur dari acuan, bukan dikira (lihat docs/MESIN-PRODUKSI-AVATAR.md §9)"
+  },
+  "siluet": { "sumber": "alfa-plate", "blur": 9, "ambang": 0.06 },
+  "waktu": { "ignite": 6.55, "kecepatan_gelombang": 1060, "titik": [0, 0] },
+  "dial": { "jumlah": 82, "berkas": "src/lib/avatarDial.ts", "seksi": 20, "alias": 7 },
+  "warna": { "utama": "#cfc9ff", "aksen": "#f0c46a", "badan": "#0d0918" },
+  "post": { "bloom_mip": 8, "ambang": 0.6, "halus": 0.9, "intensitas": 0.9 },
+  "gerbang": {
+    "A": "tools/gate-mira-a.js",
+    "B": "tools/gate-mira-b.js",
+    "C": "tools/metric3.py",
+    "D": "tools/gate-d.js",
+    "deploy": "tools/verifikasi-produksi.sh",
+    "hukum": "tools/audit-provenance.py"
+  },
+  "lisensi": { "aset": "milik-sendiri", "kode": "proprietary" }
+}

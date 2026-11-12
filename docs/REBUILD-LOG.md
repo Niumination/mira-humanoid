@@ -880,3 +880,17 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 7. **W-10:** `curl` ke URL dengan garis miring ganda menerima halaman redirect 15 byte → skrip verifikasi
    sempat salah menyimpulkan “build BEDA”. Dibetulkan (`PROD=${PROD%/}`, `curl -sL`, penjaga ukuran ≥10 KB).
 8. Alat baru `tools/verifikasi-produksi.sh` (lapis 1–3 cepat, `--gates` untuk lapis 4).
+
+## Sesi 56 — 2026-11-12 · verifikasi 5c + penataan dokumentasi + lisensi + mesin produksi avatar
+
+1. `curl` produksi → `index-DCR382kJ.js`; repo `mira-humanoid@0ffb82a` (5c) & `Niu-Humanoid@8fc18db`.
+   `bash tools/verifikasi-produksi.sh` lapis 1–3 → **SEMUA LAPIS LULUS** (5c tidak menyentuh kode: benar).
+2. Tarball repo 5c dibandingkan berkas-per-berkas: `tools/verifikasi-produksi.sh` (sha 27064ae9d2d2),
+   `verification/VERIFIKASI-5b-2026-11-12.md`, `DELIVERABLE.md`, `docs/langkah6/STATE.md` ada & sama.
+3. Audit dokumentasi: `STATUS-ROADMAP.md` usang (§3 menyebut langkah 4/5/6 belum ada) → **ditulis ulang**.
+4. Audit aset: `tools/audit-provenance.py` (baru) → **12/12 salinan verbatim**; sempat salah alat (hanya
+   memeriksa origin aplikasi sendiri) → dibetulkan memeriksa kedua origin, hasil jadi 12 (dari 10).
+5. Lisensi: `LICENSE` + `NOTICE` di kedua repo, `package.json` (`license`, `private`). Build MIRA tetap
+   `e215b5a7…` ⇒ tidak ada regresi.
+6. Dokumen baru: `PETA-DOKUMEN.md`, `RENCANA-LANJUTAN.md` (P11–P15 + Gerbang E), `LISENSI-BRANDING.md`,
+   `MESIN-PRODUKSI-AVATAR.md`, `templates/avatar.manifest.json`, `tools/avatar-baru.py` (dicoba → lulus).

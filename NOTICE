@@ -1,0 +1,39 @@
+NOTICE — asal-usul & komponen pihak ketiga
+==========================================
+
+Proyek ini adalah REKONSTRUKSI yang ditulis ulang dari pengamatan terhadap dua aplikasi web publik
+(selanjutnya "produk asli"): APEX humanoid dan MIRA humanoid. Kode di dalam repositori ini disusun
+ulang per rumus dari berkas yang sudah dibaca (bundle produksi, daftar uniform, dan perilaku runtime),
+lalu diverifikasi dengan gerbang berangka; kode itu bukan salinan berkas sumber produk asli.
+
+1. ASET GAMBAR (SALINAN VERBATIM — BUKAN MILIK KITA, TIDAK IKUT LISENSI)
+   Berkas berikut byte-identik dengan aset produk asli (dibuktikan `tools/audit-provenance.py`,
+   hasil tersimpan di `verification/provenance.json`):
+
+   public/humanoid/mira-idle-v1.webp            sha256 35911d6e8517ca75…
+   public/humanoid/mira-hair-v1.webp            sha256 8dc958e1750ee348…
+   public/humanoid/apex-idle-v1.webp            (lihat provenance.json)
+   public/humanoid/apex-listening-v1.webp
+   public/humanoid/apex-thinking-v1.webp
+   public/humanoid/apex-speaking-v1.webp
+   public/humanoid/apex-speaking-strong-v1.webp
+   public/humanoid/apex-assembly-25-v1.webp
+   public/humanoid/apex-assembly-60-v1.webp
+   public/humanoid/backdrop-v1.webp
+
+   Status: 12 dari 12 berkas publik masih salinan (lihat provenance.json). Semua berkas ini akan
+   diganti dengan karya sendiri pada fase P13. Sampai itu terjadi, repositori ini TIDAK boleh
+   dipublikasikan sebagai produk dengan merek apa pun.
+
+2. KODE PIHAK KETIGA (dependensi)
+   React, TypeScript, Vite, dan pustaka lain dipakai di bawah lisensi masing-masing (MIT/Apache-2.0).
+   MediaPipe (untuk pelacakan tangan) dipakai di bawah lisensi Apache-2.0 milik Google.
+
+3. KUMPULAN ARSIP PENGAMATAN
+   Direktori `recon/` berisi artefak pengamatan (HTML/bundle/PNG) yang dipakai sebagai spesifikasi
+   pembandingan. Isinya milik pihak asli dan hanya dipakai untuk verifikasi internal; ia tidak
+   dilisensikan dan tidak boleh didistribusikan ulang.
+
+4. METRIK & SKRIP
+   Semua skrip gerbang di `tools/` dan hasil di `verification/` adalah karya kita dan dapat dipakai
+   ulang untuk penelitian internal.

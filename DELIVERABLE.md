@@ -103,3 +103,22 @@ Lapis 4 menangkap: deploy memuat bundel lain. Terakhir dijalankan 2026-11-12 →
 | `Kerja-Arena/{PROGRESS,REBUILD-LOG,STATUS-ROADMAP}.md` | riwayat kerja, temuan (V/W/C/F/S/A/O), posisi roadmap |
 | `tools/` | semua alat ukur: gerbang, sweep, metric, probe |
 | `niu-update-langkah4v.zip` | paket terakhir siap terap |
+
+## 6. Lisensi, merek, dan asal-usul aset (status 2026-11-12)
+- **Kode**: ditulis ulang oleh kita; sekarang **`LICENSE` = All Rights Reserved** (proprietary, tahap verifikasi)
+  di kedua repo, dengan `NOTICE` yang menyebut asal-usul pengamatan dan komponen pihak ketiga.
+- **Aset**: `public/humanoid/*.webp` masih **12/12 salinan verbatim** aset produk asli
+  (`python3 tools/audit-provenance.py` → `verification/provenance.json`). Aset itu **tidak ikut** lisensi kita
+  dan wajib diganti sebelum rilis dengan merek apa pun (fase **P13**).
+- **Merek**: "APEX"/"MIRA" dipakai deskriptif sebagai objek rekonstruksi; merek **NIU & MIRAI** baru dipakai
+  setelah **Gerbang E** lulus. Rincian & checklist cut-over: `docs/LISENSI-BRANDING.md`.
+- **Catatan**: dokumen ini bukan nasihat hukum; kajian pengacara tetap perlu sebelum rilis komersial.
+
+## 7. Dokumen pendamping
+| kebutuhan | dokumen |
+|---|---|
+| peta seluruh dokumen | `docs/PETA-DOKUMEN.md` |
+| rencana lanjutan (P11–P15) & Gerbang E | `docs/RENCANA-LANJUTAN.md` |
+| lisensi, merek, asal-usul aset | `docs/LISENSI-BRANDING.md` |
+| cetak biru avatar baru (NIU/MIRAI) | `docs/MESIN-PRODUKSI-AVATAR.md` |
+| status per fase & angka mutu | `STATUS-ROADMAP.md` |
