@@ -1,0 +1,65 @@
+{
+ "what": "F-148 \u2014 penutup badan (occluder) diuji pada build 5a; alat: /tmp/grid.js & /tmp/combo.js (skrip sesi)",
+ "cara": "siluet dari alfa citra (blur+ambang) digambar ke KANVAS sebelum figur dikomposit; `?ock=` kekuatan, `?obk=` penguat cahaya kuad gambar",
+ "hasil_rata3fase": {
+  "bawaan": 5.307,
+  "ock=0.35": 5.589,
+  "ock=0.35&obk=1.15": 5.591,
+  "ock=0.35&obk=1.3": 6.001
+ },
+ "bias": {
+  "bawaan": {
+   "t9.5": {
+    "dTorso": 3.3,
+    "gelap": 9.2,
+    "terang": -3.4
+   },
+   "t11": {
+    "dTorso": 4.1,
+    "gelap": 7.9,
+    "terang": -0.8
+   },
+   "t13": {
+    "dTorso": 6.0,
+    "gelap": 8.5,
+    "terang": 1.1
+   }
+  },
+  "ock=0.35": {
+   "t9.5": {
+    "dTorso": -0.3,
+    "gelap": 5.7,
+    "terang": -5.0
+   },
+   "t11": {
+    "dTorso": 0.5,
+    "gelap": 4.4,
+    "terang": -2.4
+   },
+   "t13": {
+    "dTorso": 2.4,
+    "gelap": 4.9,
+    "terang": -0.5
+   }
+  },
+  "ock=1.0": {
+   "t9.5": {
+    "dTorso": -7.1,
+    "gelap": -0.9,
+    "terang": -8.8
+   },
+   "t11": {
+    "dTorso": -6.3,
+    "gelap": -2.2,
+    "terang": -6.0
+   }
+  }
+ },
+ "kesimpulan": "Penutup badan MEMPERBAIKI bias (\u0394torso +3,3 \u2192 \u22120,3; celah gelap +9,2 \u2192 +5,7) tetapi MAE bingkai penuh TIDAK turun (4,853 \u2192 5,162; rata-rata 3 fase 5,307 \u2192 5,589). Sisa galat bukan bias, melainkan struktur (detail halus & posisi). Knob disimpan, bawaan 0 (gambar identik).",
+ "tuas_lain_gugur": {
+  "stg=0.9": 5.449,
+  "stg=0.8": 5.455,
+  "hgg=0.92": 5.45,
+  "catatan": "rata-rata MAE 3 fase; bawaan 5,307"
+ }
+}

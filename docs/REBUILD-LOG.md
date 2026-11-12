@@ -834,3 +834,15 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | C-24 | `?gm=` gamma komposit | 4,89 → 5,48 → 6,48 → 7,91 ⇒ gugur |
 | **F-148** | penutup siluet (occluder) | torso kita **16,9** vs live **80,0** ⇒ terang torso kita 80 % dari nebula bocor, bukan gambar ⇒ **mesh badan adalah langkah berikutnya** |
 | W-9 | siluet di unit tekstur 0 = badan hitam | pindahkan ke unit 1 |
+
+## Sesi 53 — 2026-11-11
+
+| kode | temuan | angka |
+|---|---|---|
+| V-4y | produksi 4y | repo `f06115d` (docs+bukti), aset tetap `d6d6b2e5…`, build ulang byte-identik |
+| **W-9b** | `bindVertexArray(occlVao)` tanpa `.v` → seluruh loop gambar galat; tampak seperti hasil eksperimen (torso 18,5) | dibetulkan |
+| **F-148** | penutup badan dieksekusi penuh (siluet dari alfa, blur+ambang, ke kanvas) | bias Δtorso +3,3 → **−0,3**, celah gelap +9,2 → **+5,7**, tetapi MAE 4,853 → **5,162** (rata 3 fase 5,307 → 5,589) ⇒ **gugur sebagai perbaikan** |
+| C-25 | `obk` penguat cahaya badan | 1,15 → 5,591 · 1,3 → 6,001 ⇒ gugur |
+| C-26 | detail rambut `stg`/`hgg` | stg 0,9 → 5,449 · 0,8 → 5,455 · hgg 0,92 → 5,450 (bawaan 5,307) ⇒ gugur |
+| R-12 | regresi build 5a | t=8/11,5/13 → **MAE 0,0000 · 0 piksel**; paritas 6 fase **2,72** |
+| B-8 | bersih-bersih | `verification` 18 MB → 7 MB, `terapan-2026-10-30` dihapus, workspace 99 → **85 MB** |

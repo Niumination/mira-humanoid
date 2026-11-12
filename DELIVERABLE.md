@@ -1,6 +1,6 @@
 # DELIVERABLE — APEX & MIRA humanoid (rebuild)
 
-Diperbarui: **2026-11-11** (sesi 49). Semua angka di bawah diukur di mesin yang sama (Chromium headless,
+Diperbarui: **2026-11-11** (sesi 53). Semua angka di bawah diukur di mesin yang sama (Chromium headless,
 SwiftShader), membandingkan **situs produksi kita** dengan **situs live aslinya**.
 
 ---
@@ -76,7 +76,7 @@ cd mira-humanoid-rebuild && npm ci && npm run build && npx vite preview --host 0
 | # | hal | status |
 |---|---|---|
 | W-7 | Sumber APEX **tertimpa** MIRA di repo `Niu-Humanoid`; kini hanya ada di commit `369c8f5`. Sudah dipulihkan ke `apex-humanoid-rebuild/` dan build-nya = produksi byte-identik. **Perlu repo terpisah atau folder `apex/`** supaya tidak hilang lagi. | ⚠️ butuh tindakan Hermes |
-| C | Paritas piksel MIRA rata-rata **2,76** (live 0,00–0,55). Sisa di torso; tuas knob sudah habis (diuji: `?bb=`, `?fg=`, `?mk=`, `?mc=`, `?tv=`, 7 uniform medan, `?ft=` — semuanya tidak menolong atau memperburuk). | 🟡 diketahui |
+| C | Paritas piksel MIRA rata-rata **2,72** (live 0,00–0,55). **Semua tuas level-knob sudah habis diuji** (bloom `bb/blt/bg/fb`; gambar `fg/pg/pgg/pge/mk/mc/tv/obk/ock`; rambut `nh/hgg/stg`; medan `fcx/fcy/frig/fspread/fnear/fclr/fk/ft`; gamma `gm`). Yang tersisa **struktural**: live menerangi badan dengan mesh 3D + rim, kita dengan kuad citra. Terukur: dengan latar ditutup (`?ock=0.35`) bias torso turun dari +3,3 ke −0,3 **tetapi MAE bingkai penuh tidak turun** (4,85 → 5,16) ⇒ perlu **port mesh badan**, bukan knob. | 🟡 diketahui, butuh 1 proyek lanjutan |
 | — | APEX belum punya gerbang piksel segar sejak 2026-10-29 (gerbang 17/17 & piksel 10,73 %/11,93 % dari sesi itu); build-nya terverifikasi byte-identik, jadi tidak berubah. | 🟡 tercatat |
 | — | Semua pengukuran di SwiftShader (±0,5–1 fps); angka fps **relatif**, bukan fps pengguna. | catatan |
 

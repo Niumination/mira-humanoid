@@ -27,6 +27,7 @@ import wireFrag from '../lib/shaders/wire.frag.glsl?raw'
 import quadVert from '../lib/shaders/quad.vert.glsl?raw'
 import picFillFrag from '../lib/shaders/picFill.frag.glsl?raw'
 import picColorFrag from '../lib/shaders/picColor.frag.glsl?raw'
+import occluderFrag from '../lib/shaders/occluder.frag.glsl?raw'
 import ptsVert from '../lib/shaders/pts.vert.glsl?raw'
 import ptsFrag from '../lib/shaders/pts.frag.glsl?raw'
 import fieldVert from '../lib/shaders/field.vert.glsl?raw'
@@ -373,6 +374,7 @@ export function MiraStage({
           wire: program(gl, wireVert, wireFrag, 'wire'),
           fill: program(gl, quadVert, picFillFrag, 'fill'),
           pic: program(gl, quadVert, picColorFrag, 'pic'),
+          occl: program(gl, quadVert, occluderFrag, 'occl'),
           points: program(gl, ptsVert, ptsFrag, 'points'),
           sprite: program(gl, spriteVert, spriteFrag, 'sprite'),
           field: program(gl, fieldVert, fieldFrag, 'field'),
@@ -587,6 +589,7 @@ export function MiraStage({
       // gambar
       const quad = quadGeometry(fw, fh)
       const fillVao = mk(P.fill, [['position', quad.position, 3], ['uv', quad.uv, 2]], quad.index)
+      const occlVao = mk(P.occl, [['position', quad.position, 3], ['uv', quad.uv, 2]], quad.index)
       const picVao = mk(P.pic, [['position', quad.position, 3], ['uv', quad.uv, 2]], quad.index)
 
       // awan titik
@@ -651,6 +654,60 @@ export function MiraStage({
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+
+      // F-148: SILUET penutup badan. Alfa citra diburamkan (box blur, ½ resolusi) lalu di-ambang —
+      // "closing" sederhana yang mengisi celah antar garis cahaya. `?ocr=` radius blur, `?oct=` ambang.
+      const texOccl = gl.createTexture()!
+      {
+        const cr = tune('ocr', 9)
+        const thr = tune('oct', 0.06)
+        const ow = Math.max(1, Math.round(1145 / 2))
+        const oh = Math.max(1, Math.round(1374 / 2))
+        const cv = document.createElement('canvas')
+        cv.width = ow
+        cv.height = oh
+        const ctx = cv.getContext('2d')!
+        ctx.drawImage(img, 0, 0, ow, oh)
+        const id = ctx.getImageData(0, 0, ow, oh)
+        const n = ow * oh
+        const a0 = new Float32Array(n)
+        for (let i = 0; i < n; i++) a0[i] = id.data[i * 4 + 3] / 255
+        const pass = (src: Float32Array, r: number, horiz: boolean) => {
+          const out = new Float32Array(n)
+          const R = Math.max(1, Math.round(r))
+          for (let y = 0; y < oh; y++) {
+            for (let x = 0; x < ow; x++) {
+              let sum = 0
+              let cnt = 0
+              for (let d = -R; d <= R; d++) {
+                const xx = horiz ? x + d : x
+                const yy = horiz ? y : y + d
+                if (xx < 0 || xx >= ow || yy < 0 || yy >= oh) continue
+                sum += src[yy * ow + xx]
+                cnt++
+              }
+              out[y * ow + x] = sum / cnt
+            }
+          }
+          return out
+        }
+        let m = a0
+        for (let k = 0; k < 3; k++) {
+          m = pass(m, cr, true)
+          m = pass(m, cr, false)
+        }
+        for (let i = 0; i < n; i++) {
+          const v = Math.min(1, Math.max(0, (m[i] - thr) / 0.06))
+          id.data[i * 4 + 3] = Math.round(v * 255)
+        }
+        ctx.putImageData(id, 0, 0)
+        gl.bindTexture(gl.TEXTURE_2D, texOccl)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cv)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      }
 
       const texRows = gl.createTexture()!         // rowTexture kepala 1×H RGBA32F
       gl.bindTexture(gl.TEXTURE_2D, texRows)
@@ -1018,6 +1075,30 @@ export function MiraStage({
           gl.clear(gl.COLOR_BUFFER_BIT)
         }
 
+        // ---- [0b] penutup badan di KANVAS (F-148) ----
+        // Di live badan adalah mesh 3D gelap yang menutupi nebula. Di sini nebula di dalam siluet
+        // diredupkan SEBELUM figur dikomposit, lalu cahaya figur menimpanya. `?ock=` kekuatannya.
+        const occlK = tune('ock', 0)
+        if (occlK > 0.001) {
+          gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+          gl.viewport(0, 0, pw, ph)
+          gl.useProgram(P.occl)
+          gl.bindVertexArray(occlVao.v)
+          gl.enable(gl.BLEND)
+          gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+          gl.activeTexture(gl.TEXTURE1)
+          gl.bindTexture(gl.TEXTURE_2D, texOccl)
+          gl.uniformMatrix4fv(U(P.occl, 'modelViewMatrix'), false, quadMv())
+          gl.uniformMatrix4fv(U(P.occl, 'projectionMatrix'), false, proj)
+          gl.uniform2f(U(P.occl, 'uSize'), fw, fh)
+          gl.uniform1f(U(P.occl, 'uTime'), t)
+          gl.uniform1f(U(P.occl, 'uK'), occlK)
+          gl.uniform4f(U(P.occl, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
+          gl.uniform1i(U(P.occl, 'uMap'), 1)
+          gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+          gl.activeTexture(gl.TEXTURE0)
+        }
+
         // lapisan figur digambar ke render target (latar sudah ada di kanvas)
         gl.bindFramebuffer(gl.FRAMEBUFFER, figure.fbo)
         gl.viewport(0, 0, pw, ph)
@@ -1125,7 +1206,7 @@ export function MiraStage({
         gl.uniformMatrix4fv(U(P.pic, 'modelViewMatrix'), false, quadMv())
         gl.uniformMatrix4fv(U(P.pic, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.pic, 'uFill'), 1)
-        gl.uniform1f(U(P.pic, 'uGain'), Ee.bright * tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1))
+        gl.uniform1f(U(P.pic, 'uGain'), Ee.bright * tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1) * tune('obk', 1))
         // F-143: lengkung tonal gambar. Disapu pada 12 fase (0,3 … 13): `pgg` 1,25 menurunkan MAE
         // pada SEMUA fase sesudah ignition (t=8: 5,89→5,53 · 10: 6,79→5,16 · 11: 6,91→4,94 ·
         // 11,5: 7,42→5,43 · 12: 7,28→5,16 · 13: 7,96→5,88) dan tidak menyentuh fase sebelum ignition

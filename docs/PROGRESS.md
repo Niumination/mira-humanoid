@@ -783,7 +783,7 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
 - **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
   B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
-- Paket **`niu-update-langkah4y.zip`** (menggantikan 4x).
+- Paket **`niu-update-langkah5a.zip`** (menggantikan 4y).
 
 ## Bersih-bersih workspace (sesi 46, atas permintaan: over budget)
 
@@ -874,3 +874,16 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
   (17 dari 80), bukan dari gambar.
 - **Kesimpulan:** sisa Gerbang C = **mesh badan/kepala belum di-port**. Itu satu langkah penuh, bukan knob.
 - `dist` dikembalikan byte-identik dengan produksi (percobaan dibuang).
+
+## Sesi 53 — penutup badan dieksekusi penuh, batas Gerbang C dinyatakan
+
+- Produksi 4y terverifikasi (repo `f06115d`, aset tetap — paket 4y memang hanya dokumen).
+- **F-148 penutup badan** dibuat lengkap (siluet dari alfa citra, blur+ambang, digambar ke kanvas sebelum
+  figur dikomposit). Hasil: **bias diperbaiki** (Δtorso +3,3 → −0,3; celah gelap +9,2 → +5,7) tetapi
+  **MAE bingkai penuh tidak turun** (4,853 → 5,162) ⇒ bukan bias yang tersisa, melainkan struktur.
+- **W-9b** (jebakan alat): `bindVertexArray(occlVao)` tanpa `.v` membuat seluruh loop gambar galat dan
+  hasilnya *tampak* seperti eksperimen yang berhasil. Ketahuan dari `__MIRA_ERR`.
+- Tuas lain diuji dan gugur: `obk`, `stg`, `hgg`.
+- **Kesimpulan:** paritas **2,72** mentok untuk semua tuas level-knob; sisa = port mesh badan + pencahayaan
+  permukaan dari live (beberapa sesi).
+- Tanpa regresi: t=8/11,5/13 **MAE 0,0000 · 0 piksel**. Workspace dibersihkan **125 → 62 MB** (verification 18→9 MB, recon 73→37 MB, cache + /tmp kosong).

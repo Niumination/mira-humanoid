@@ -604,3 +604,44 @@ memakai tekstur yang masih terikat di unit 0. Siluet harus di unit 1. (Kode uji 
 ### 14.5 Usulan langkah berikutnya (satu langkah penuh, bukan knob)
 Port **mesh badan + kepala** dari live: siluet gelap bertekstur (occluder sudah siap sebagai basis), rim-light
 dari tepi, lalu bloom di atasnya. Target terukur: piksel gelap torso dari +9,2 → ≤ +2, piksel terang dari −1,9 → ±0.
+
+## 15. Revisi 5a — produksi 4y terverifikasi, penutup badan (F-148) dieksekusi penuh, dan batas nyata Gerbang C
+
+### 15.1 Produksi 4y (tanpa perubahan gambar, sesuai rencana)
+Repo `mira-humanoid` **`f06115d`**, `Niu-Humanoid` **`2737749`**; aset produksi tetap
+`index-BSvMDaTx.js` **`d6d6b2e5…`** — paket 4y memang hanya dokumentasi + bukti, jadi tidak ada deploy.
+Verifikasi: tarball `f06115d` → `MiraStage.tsx cda29772…` = workspace → `vite build` = **byte-identik**.
+
+### 15.2 F-148 dieksekusi sampai selesai (bukan sekadar knob)
+Siluet badan dibuat dari **alfa citra** (box blur 3 lintasan di ½ resolusi + ambang), digambar ke **kanvas**
+sebelum figur dikomposit — meniru mesh badan gelap milik live. Dua jebakan ditemukan dan dibetulkan:
+
+| kode | jebakan | akibat |
+|---|---|---|
+| W-9 | siluet diikat ke unit tekstur 0 | kuad warna gambar memakai tekstur itu juga → badan hitam total |
+| **W-9b** | `gl.bindVertexArray(occlVao)` (objek, bukan `.v`) | seluruh loop gambar melempar galat; hanya nebula yang tergambar — dan itu **tampak seperti "hasil eksperimen"** (torso 18,5) |
+
+### 15.3 Hasilnya: bias diperbaiki, MAE tidak
+| keadaan | rata-rata MAE 3 fase | Δtorso t=9,5 | celah gelap | piksel terang |
+|---|---|---|---|---|
+| bawaan | **5,307** | +3,3 | +9,2 | −3,4 |
+| `ock=0,35` | 5,589 | **−0,3** | **+5,7** | −5,0 |
+| `ock=0,35 & obk=1,15` | 5,591 | +3,5 | +7,5 | −0,2 |
+| `ock=0,35 & obk=1,3` | 6,001 | +7,3 | +9,6 | +3,7 |
+
+⇒ penutup badan memang menutup kebocoran nebula (bias hampir nol pada 0,35), **tetapi** MAE bingkai penuh
+tidak membaik: piksel terang menjadi terlalu gelap. Artinya sisa galat **bukan bias kecerahan**, melainkan
+**struktur** (detail halus & posisi). Knob `?ock/?obk/?ocr/?oct` disimpan untuk penelitian lanjutan,
+**bawaan 0** ⇒ gambar tetap identik dengan produksi.
+
+### 15.4 Dua tuas lain diuji dan gugur
+`stg` 0,9 → 5,449 · `stg` 0,8 → 5,455 · `hgg` 0,92 → 5,450 (bawaan 5,307). Detail kita memang sudah setara live.
+
+### 15.5 Kesimpulan jujur tentang Gerbang C
+Paritas **2,72** (6 fase) sudah mentok untuk semua tuas level-knob yang tersedia: bloom (`bb`, `blt`, `bg`, `fb`),
+gambar (`fg`, `pg`, `pgg`, `pge`, `mk`, `mc`, `tv`, `obk`, `ock`), rambut (`nh`, `hgg`, `stg`, `stg*`), medan
+(`fcx, fcy, frig, fspread, fnear, fclr, fk, ft`), dan gamma komposit (`gm`). Yang tersisa adalah **port mesh
+badan + pencahayaan permukaannya dari live** — proyek beberapa sesi, bukan satu paket.
+
+### 15.6 Tanpa regresi
+Build 5a vs produksi `?t=8 / 11,5 / 13` → **MAE 0,0000 · 0 piksel**; paritas 6 fase **2,72** (tidak berubah).
