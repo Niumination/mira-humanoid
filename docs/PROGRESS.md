@@ -783,7 +783,7 @@ pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu ger
   2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
 - **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
   B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
-- Paket **`niu-update-langkah4v.zip`** (menggantikan 4u).
+- Paket **`niu-update-langkah4w.zip`** (menggantikan 4v).
 
 ## Bersih-bersih workspace (sesi 46, atas permintaan: over budget)
 
@@ -840,3 +840,15 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **S-7:** `waitForFunction` salah posisi argumen timeout → gerbang langkah 5 palsu gagal di produksi.
 - **P10 deliverable:** `DELIVERABLE.md` ditulis (dua aplikasi, angka, cara membangun ulang, batas yang
   diketahui, peta berkas).
+
+## Sesi 50 — laporan Hermes diverifikasi + dua tuas baru untuk Gerbang C
+
+- **Semua klaim Hermes lulus angka**: repo `apex-humanoid-rebuild` (`a5535a0`) isinya = workspace, build
+  ulang **byte-identik** dengan produksi APEX (`8dac8dad…` / `1b66a34b…`); MIRA `3d3abcb` & Niu `eb4144b`
+  cocok; kedua situs tidak berubah (memang tidak perlu deploy).
+- **C-18:** detail frekuensi tinggi torso kita **22,2** vs live **25,5** — jadi sisa selisih bukan sekadar terang.
+- **F-145:** tekstur rambut tanpa mipmap → menang **5/5 fase** (t=9,5 5,298 → 5,210), detail jadi 25,9 ≈ live 25,5.
+- **F-146:** potongan bloom fase lambat disapu (`?blt=`) → 0,8: t=11 **5,268 → 5,090**, t=13 **5,853 → 5,567**,
+  t≤10 tidak tersentuh.
+- **Paritas 6 fase 2,76 → 2,74**; gerbang build 4w: D **7/7** (ponsel 0,9906/0,9908), A 8/8, B 10/10,
+  langkah 5 6/6, audio 9/9.

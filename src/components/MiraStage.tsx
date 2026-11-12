@@ -730,7 +730,7 @@ export function MiraStage({
           gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)   // shader memakai uv = posisi/uSize (y turun)
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, gl.RGBA, gl.UNSIGNED_BYTE, hairImg)
           gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
-          const noMipHair = tune('nh', 0) > 0.5      // F-132b: sama untuk citra rambut
+          const noMipHair = tune('nh', 1) > 0.5      // F-132b/F-145: bawaan TANPA mipmap (5/5 fase lebih cocok)
           if (!noMipHair) gl.generateMipmap(gl.TEXTURE_2D)
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, noMipHair ? gl.LINEAR : gl.LINEAR_MIPMAP_LINEAR)
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -744,7 +744,7 @@ export function MiraStage({
       gl.bindTexture(gl.TEXTURE_2D, texLifted)
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, 1385, 1422, 0, gl.RGBA, gl.UNSIGNED_BYTE, hairTex.lifted)
-      const noMipLift = tune('nh', 0) > 0.5
+      const noMipLift = tune('nh', 1) > 0.5      // F-145: ikut bawaan baru
       if (!noMipLift) gl.generateMipmap(gl.TEXTURE_2D)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, noMipLift ? gl.LINEAR : gl.LINEAR_MIPMAP_LINEAR)
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -1695,7 +1695,12 @@ export function MiraStage({
           // Penyebab: kernel bloom kita lebih lemah pada masukan terang (figur baru menyala), jadi
           // kompensasi (bgK) harus lebih besar tepat sesudah ignition lalu mengecil. Knob `bbu` = amplitudo.
           const kabut = tune('bbu', 0.85) * Math.exp(-(((t - tune('bbc', 8.1)) / tune('bbw', 0.68)) ** 2))
-          const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2) - 0.15 * xs(t, 10.2, 10.6) + kabut)
+          // F-146: potongan bloom fase lambat. Kelebihan kita pada torso TUMBUH terhadap waktu
+          // (Δtorso: 6,8 → +2,6 · 8 → +4,3 · 9,5 → +3,4 · 11 → +6,5 · 13 → +8,3), dan menurunkan plato
+          // `?bg=` hanya menolong sesudah t>10. Potongan lama 0,15 disapu lewat `?blt=`: 0,8 menang di
+          // t=11 (5,090 vs 5,268) dan t=13 (5,567 vs 5,853), sedangkan t≤10 tidak tersentuh (gerbang 10,2).
+          // 1,1 lebih baik di torso t=13 tetapi kalah di t=11 (5,172) → dipilih 0,8.
+          const bgK = tune('bg', 2.0 - 0.5 * xs(t, 5.8, 7.2) - tune('blt', 0.8) * xs(t, 10.2, 10.6) + kabut)
           gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * tune('bb', 0.9) * (1 + 1.6 * qSurge * tune('bq', 0.85)) * bgK : 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
           gl.uniform1f(U(P.comp, 'uGamma'), tune('gm', 1))

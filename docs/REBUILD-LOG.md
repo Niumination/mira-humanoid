@@ -796,3 +796,16 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 | V-4v | `?tv=` peredupan badan (F-144) diuji, **tidak dipakai** | t=9,5: tv 0/0,15/0,3/0,45 → 4,711/4,846/5,076/5,351 (memanfaatkan radius lebar ikut menggelapkan kepala) ⇒ dikembalikan, `dist` = produksi byte-identik |
 | **W-7** | sumber APEX hilang dari repo (tertimpa MIRA) | hanya ada di commit `369c8f5`; dipulihkan ke `apex-humanoid-rebuild/`, build ulang = produksi `8dac8dad…` byte-identik |
 | S-7 | `waitForFunction(fn,{timeout})` salah argumen | 30 s tetap dipakai → gagal di produksi; diperbaiki → langkah5 6/6 |
+
+## Sesi 50 — 2026-11-11
+
+| kode | temuan | angka |
+|---|---|---|
+| V-4v | klaim Hermes diperiksa | repo `apex-humanoid-rebuild` `a5535a0` ada · build ulang = produksi `8dac8dad…`/`1b66a34b…` byte-identik · 12 berkas = workspace · MIRA `3d3abcb` & Niu `eb4144b` cocok · kedua situs tidak berubah |
+| C-18 | detail frekuensi tinggi torso | kita **22,2** vs live **25,5** (rerata Laplacian) ⇒ selisih bukan cuma terang |
+| **F-145** | rambut/tekstur terangkat **tanpa mipmap** jadi bawaan | menang **5/5 fase** (t=9,5 5,298 → 5,210; t=8 5,755 → 5,681; t=13 5,853 → 5,806); detail jadi 25,9 vs live 25,5 |
+| C-19 | kelebihan torso tumbuh dengan waktu | Δtorso 6,8→+2,6 · 8→+4,3 · 9,5→+3,4 · 11→+6,5 · 13→+8,3 |
+| **F-146** | potongan bloom fase lambat `?blt=` jadi bawaan 0,8 | t=11 5,268 → **5,090** · t=13 5,853 → **5,567** · t≤10 tidak tersentuh |
+| R-11 | paritas 6 fase | 2,76 → **2,74** (t=9,5 5,56 → 5,45) |
+| G-4w | gerbang build 4w (lokal) | D **7/7** (D9 0,9906/0,9908, MAE 8,79/8,51) · A 8/8 · B 10/10 · langkah5 6/6 · audio 9/9 |
+| A-11 | `tools/capture.js` dibuat tetap | skrip tangkap dulu selalu di /tmp dan hilang tiap sesi |

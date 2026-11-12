@@ -476,3 +476,53 @@ dan diverifikasi 3 lapis:
 **S-7:** `gate-step5.js` memakai `page.waitForFunction(fn, {timeout: 90000})` — argumen kedua adalah
 *argumen fungsi*, bukan opsi, jadi batas waktunya tetap 30 s dan uji pin `?talk/&listen/&voice` gagal di
 produksi Vercel yang lebih lambat. Diperbaiki (`null, {timeout: 90000}`) → **6/6 di produksi**.
+
+## 12. Revisi 4w — laporan Hermes diverifikasi, dan Gerbang C sisa torso dikejar dengan dua tuas baru
+
+### 12.1 Klaim Hermes diperiksa satu per satu (semua LULUS)
+| klaim | cara saya periksa | hasil |
+|---|---|---|
+| repo baru `Niumination/apex-humanoid-rebuild` dibuat, commit `a5535a0` | `GET /repos/...` + tarball commit itu | ada, dibuat 2026-11-11T18:03Z, 12 berkas kunci **sha256 sama** dengan `apex-humanoid-rebuild/` di workspace |
+| "clone fresh + build → `index-DyoQ8hKN.js` `8dac8dad…`" | `npm ci && vite build` di tarball commit `a5535a0` | **`8dac8dad…`** + CSS **`1b66a34b…`** = produksi `niu-humanoid.vercel.app` ⇒ byte-identik |
+| MIRA repo `3d3abcb`, Niu repo `eb4144b` | API + tarball | `MiraStage.tsx 714622f6…`, `gate-step5.js 854d2f38…` (memuat S-7), `DELIVERABLE.md 4b5318dc…` = workspace |
+| "gambar tak berubah, tanpa deploy" | `curl` kedua situs + sha256 aset | MIRA `index-DRPy0tD2.js` `68e0b85c…` · APEX `index-DyoQ8hKN.js` `8dac8dad…` — tidak berubah |
+
+### 12.2 Tuas baru #1: F-145 — tekstur rambut tanpa mipmap
+Alasan: detail frekuensi tinggi di crop torso kita **22,2** vs live **25,5** (rerata |Laplacian|), jadi selisihnya
+bukan hanya terang. `?nh=1` (rambut & tekstur terangkat tanpa mipmap) diuji pada **5 fase**:
+
+| t | 6,8 | 8 | 9,5 | 11 | 13 |
+|---|---|---|---|---|---|
+| `nh=0` | 2,959 | 5,755 | 5,298 | 5,488 | 5,853 |
+| **`nh=1`** | **2,948** | **5,681** | **5,210** | **5,424** | **5,806** |
+| detail kita (nh=1) vs live | 26,2 / 23,6 | 23,1 / 23,8 | 25,9 / 25,5 | 26,4 / 25,9 | 26,5 / 25,9 |
+
+Menang di **5 dari 5 fase** (tanda seragam ⇒ bukan derau) ⇒ dijadikan **bawaan**.
+
+### 12.3 Tuas baru #2: F-146 — potongan bloom fase lambat bisa disapu (`?blt=`)
+Kelebihan torso kita **tumbuh terhadap waktu** (Δtorso: 6,8 → +2,6 · 8 → +4,3 · 9,5 → +3,4 · 11 → +6,5 · 13 → +8,3)
+dan menurunkan plato `?bg=` menolong **hanya** sesudah t>10 (t=9,5: bg 1,5 → 5,291 vs bg 0,7 → 5,491 = memburuk).
+Jadi potongan fase lambat (dulu tetap 0,15) dibuat bisa disapu:
+
+| `?blt=` | 0,15 | 0,35 | 0,55 | **0,8** | 1,1 | 1,5 |
+|---|---|---|---|---|---|---|
+| t=11 | 5,268 | 5,183 | 5,134 | **5,090** | 5,172 | — |
+| t=13 | 5,853 | 5,749 | 5,660 | **5,567** | 5,567 | 5,628 |
+| t=10 | 5,083 | — | — | 5,083 | 5,088 | — (gerbang 10,2 ⇒ tidak tersentuh) |
+
+Dipilih **0,8** (1,1 seri di t=13 tetapi kalah di t=11).
+
+### 12.4 Hasil paket 4w
+| ukuran | produksi 4u | build 4w |
+|---|---|---|
+| paritas 6 fase (acuan v4) | 2,76 | **2,74** (t=9,5 5,56 → **5,45**) |
+| t=11 | 5,488 | **5,090** (−0,40) |
+| t=13 | 5,853 | **5,567** (−0,29) |
+| Gerbang D lokal | 7/7 | **7/7** (D6 1,43 vs live 1,46 · D9 390 **0,9906**, 414 **0,9908** · MAE 8,79/8,51) |
+| A · B · langkah 5 · audio | 8/8 · 10/10 · 6/6 · 9/9 | **8/8 · 10/10 · 6/6 · 9/9** |
+
+### 12.5 Catatan kejujuran
+- Dua tuas ini **tidak** menutup torso; sisa Δtorso masih +2,0…+8,0 tergantung fase. Yang berubah: detail
+  kita kini setara live dan kelebihan fase lambat berkurang.
+- Gerbang D di atas dijalankan **lokal** untuk build 4w; setelah paket terpasang saya jalankan **di produksi**
+  (aturan W-3/W-4).

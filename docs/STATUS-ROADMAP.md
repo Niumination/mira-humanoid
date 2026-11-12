@@ -1,6 +1,6 @@
 # STATUS PEKERJAAN — posisi terhadap roadmap P0–P10
 
-Diperbarui: **2026-11-11** (sesudah paket **4v** — produksi 4u **lulus 3 lapis** dan **semua gerbang dijalankan di URL produksi**: D 7/7 · A 8/8 · B 10/10 · langkah 5 6/6 · hand 8/8 · audio 9/9; **W-7**: sumber APEX hilang dari repo (hanya di commit `369c8f5`) → dipulihkan & diverifikasi byte-identik; **P10 deliverable ditulis**).
+Diperbarui: **2026-11-11** (sesudah paket **4w** — klaim Hermes diverifikasi (repo APEX `a5535a0`, build ulang byte-identik); **F-145** rambut tanpa mipmap menang 5/5 fase; **F-146** potongan bloom fase lambat 0,8 → t=11 5,268→5,090 & t=13 5,853→5,567; paritas 6 fase **2,74**).
 Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 2026-10-29.
 
 ---
@@ -19,7 +19,7 @@ Rujukan rencana: tabel fase **P0–P10** di `PROGRESS.md` + keputusan interview 
 | **P7** | Arsitektur + peta UNVERIFIED | ✅ **selesai** | `recon/ARCHITECTURE.md` |
 | **P8a** | **APEX** 8 langkah implementasi | ✅ **selesai** | gerbang **17/17** identik; piksel **10,73 %/11,93 %** (1440) · **7,71 %/9,01 %** (390) |
 | **P8b** | **MIRA** 8 langkah implementasi | ✅ **selesai 8/8** | langkah 1–5, **6 (MediaPipe tangan + MIC nyata: modul 8/8 · aplikasi 6/6 · regresi 0,0000 · efek kepala MAE 3,7271)**, 7, 8 ✅ |
-| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** · **B ✅** · **C 🟡 hampir tutup** — paritas vs acuan segar **2,93 → 2,76** (t=9,5 6,58 → 5,56); torso Δ **+14,4 → +5,8**, kepala +4,6 → +1,2, lengan +6,3 → +2,7; sisa = beda sumber cahaya tubuh (mesh live vs kuad kita) · **D ✅** — 7/7 di produksi 4t (D9 0,9886/0,9883, reprod 0,0000, seam 1,46, fps 0,90 vs live 0,51) |
+| **P9** | Gerbang A/B/C/D | 🟡 **3 dari 4** | **A ✅** · **B ✅** · **C 🟡** — paritas 6 fase **2,74**; detail torso kini setara live (25,9 vs 25,5), fase lambat t=11 **5,09**, t=13 **5,57**; sisa Δtorso +2…+8 per fase (bentuk: mesh 3D live vs kuad kita) · **D ✅** 7/7 di produksi 4u, lokal 7/7 untuk 4w (ponsel 0,9906/0,9908) |
 | **P10** | Deliverable + deploy | ✅ **2 dari 2** | dua situs hidup & terverifikasi 3 lapis (MIRA `68e0b85c…`, APEX `8dac8dad…`) · **`DELIVERABLE.md`** (angka, cara bangun ulang, batas diketahui, peta berkas) · sumber APEX dipulihkan dari `369c8f5` ke `apex-humanoid-rebuild/` · sisa tindakan: taruh APEX di repo/folder terpisah (W-7) |
 
 **Hitungan item: 29 dari 30 selesai ≈ 97 %.**
