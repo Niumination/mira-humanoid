@@ -990,3 +990,14 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 6. Sapu knob `bt`/`bg`/`lg`: terbaik torso 10,483 (`bt`=0,8) tetapi MAE naik 4,936 → 5,134 ⇒ knob habis.
 7. Ukur derau acuan: live tidak beku (F-170) ⇒ aturan tunggu sama untuk semua gerbang MIRA.
 8. Putusan: lanjut ke rambut (C) → bentuk cahaya garis (A) → geometri torso (B).
+
+## Sesi 57 lanjutan 8 — verifikasi 5l + P12 langkah 2 (knob habis, geometri menanti)
+
+1. Verifikasi 5l: 6 berkas inti byte-identik di repo MIRA; paket 5k juga sudah di repo NIU ⇒ 5k LULUS.
+2. Koreksi `tools/p12-sapu.js` (bug `split('=')` → varian tanpa knob). Semua angka sesudahnya memakai versi benar.
+3. Acuan live deterministik bila tunggu sama (0,003) ⇒ aturan tunggu 5 000 ms berlaku.
+4. Sapu 31 varian / 8 keluarga pada t=9,5: tidak ada yang menembus torso 10,4 tanpa merusak seluruh bingkai.
+5. Dekomposisi piksel galat: nebula 17,9 · bloom 4,9 · picture 4,0 · lines 2,6 · hair 1,6 (live 9,8 vs kita 23,6).
+6. `ock` memperbaiki pita gelap sampai −2,03 tetapi merusak baris lain ⇒ F-171: badan = permukaan bercahaya.
+7. Knob `hhx/hhy`, `pft`, `scx` dicabut; build kembali `e215b5a7…` byte-identik.
+8. Keputusan: P12 langkah 3 = geometri (B1 permukaan badan → B2 untaian rambut → B3 kuad→geometri).

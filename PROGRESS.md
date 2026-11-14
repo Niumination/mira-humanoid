@@ -1056,3 +1056,26 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - Alat baru: `tools/probe-mira-torso.js`, `tools/p12-peta.py`, `tools/p12-sapu.js`. Rincian:
   `docs/langkah6/P12-DIAGNOSIS.md` + `verification/mira/p12-diagnosis-5l.json`.
 - **Tidak ada ubahan `src/`** ⇒ build tetap `index-DCR382kJ.js` `e215b5a7…`.
+
+### Sesi 57 lanjutan 8 — verifikasi 5l + P12 langkah 2: 8 keluarga knob habis, penyebab terkunci
+
+- **Verifikasi 5l:** semua berkas di repo `Niumination/mira-humanoid` = lokal byte-identik
+  (`docs/langkah6/P12-DIAGNOSIS.md` 6eb526db · `tools/p12-peta.py` ce147791 · `tools/p12-sapu.js` e5717cf6 ·
+  `verification/mira/p12-diagnosis-5l.json` 134cd05d · PROGRESS/REBUILD-LOG/STATUS-ROADMAP 8d6a7830/92093145/8f94a972).
+  Paket 5k (APEX, dokumen) juga sudah masuk `Niumination/Niu-Humanoid` (`docs/P11-PARITAS-LATAR.md` 6d1b5437 …) ⇒ **5k LULUS**.
+  Catatan: `paket/` tidak ikut di repo mana pun — hanya berkas dokumen/alat/verifikasi.
+- **Koreksi alat:** `tools/p12-sapu.js` versi paket 5l **salah** mengurai `tag=knob=nilai` (memakai `split('=')`),
+  sehingga 11 varian pertama memakai URL tanpa knob dan hasilnya identik. Sudah dibetulkan; semua angka di
+  bawah memakai versi yang benar.
+- **Acuan live reproducible:** dua tangkapan dengan tunggu sama → **MAE 0,003 · torso 0,003** ⇒ F-170 dipertajam
+  (derau 1,04/2,16 dulu berasal dari tunggu berbeda, bukan dari live).
+- **P12 langkah 2 — 31 varian, 8 keluarga knob, semuanya gugur:** geser rambut · terang rambut · kecerahan
+  nebula · gamma · lantai gelap kuad · lengkung-S kontras · penutup badan · penutup+penguat. Torso terbaik
+  10,42 (`fk`=0,85) tetapi MAE seluruh bingkai 5,089 → 6,193.
+- **F-171 (penyebab terkunci):** pada piksel yang di live gelap dan kita >8 lebih terang (7,8 % torso;
+  live 9,8 vs kita 23,6), sumbangan terbesar = **nebula 17,9**, lalu bloom 4,9, picture 4,0, lines 2,6,
+  hair 1,6 ⇒ **nebula menembus badan**. `ock` memperbaiki pita gelap (+12,08 → +5,05 → −2,03) tetapi selalu
+  merugikan di baris lain ⇒ badan live adalah **permukaan bercahaya**, bukan penutup hitam.
+- **Tiga knob uji dicabut**: `hhx/hhy`, `pft` (`uPF`), `scx` (`uSC`) → `tsc` bersih, build kembali
+  `index-DCR382kJ.js` `e215b5a7…` (**byte-identik**).
+- Peta galat torso: y 400–496 **14,97** (bias +8,84) · y 496–620 9,22 · y 620–780 9,26.

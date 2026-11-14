@@ -1,0 +1,341 @@
+{
+ "judul": "P12 langkah 2 — sapu 8 keluarga knob pada t=9,5 (tunggu 5 000 ms, acuan live deterministik 0,003)",
+ "sesi": 57,
+ "tanggal": "2026-10-29",
+ "build": {
+  "aset": "index-DCR382kJ.js",
+  "sha256": "e215b5a76220a3ddf6ab398f57d6eacf86e742eef142c24cc8129f97e3d4a203",
+  "catatan": "tiga knob baru (hhx/hhy, pft, scx) dicabut lagi setelah terbukti tidak menolong ⇒ build kembali byte-identik"
+ },
+ "acuan_live": {
+  "tunggu_sama_dua_tangkapan": {
+   "mae": 0.003,
+   "torso": 0.003
+  },
+  "tafsir": "F-170 dipertegas: acuan live REPRODUCIBLE bila tunggu sama; derau 1,04/2,16 sebelumnya berasal dari tunggu berbeda"
+ },
+ "peta_pita_torso": {
+  "y400_496": 14.97,
+  "y496_620": 9.22,
+  "y620_780": 9.26,
+  "bias": {
+   "y400_496": 8.84,
+   "y496_620": 1.58,
+   "y620_780": 1.8
+  }
+ },
+ "dekomposisi_lapisan_piksel_galat": {
+  "definisi": "piksel torso yang di live <20 luma dan kita >8 lebih terang",
+  "n": 11332,
+  "persen_torso": 7.8,
+  "luma_live": 9.8,
+  "luma_kita": 23.6,
+  "sumbangan": {
+   "field": 17.9,
+   "bloom": 4.9,
+   "picture": 4.0,
+   "lines": 2.6,
+   "hair": 1.6,
+   "matter": 0.0,
+   "fill": -0.2,
+   "waves": 0.0
+  },
+  "tafsir": "penyumbang terbesar = NEBULA (field) menembus badan; live menutupinya dengan permukaan 3D"
+ },
+ "sapu": [
+  {
+   "varian": "bawaan",
+   "mae": 5.089,
+   "torso": 10.691,
+   "bias": 3.51,
+   "pita0_20": 12.08,
+   "pita200": -4.24,
+   "catatan": "acuan; build produksi byte-identik"
+  },
+  {
+   "varian": "hhx=+6",
+   "mae": 7.459,
+   "torso": 18.556,
+   "bias": 3.5,
+   "pita0_20": 12.32,
+   "pita200": -22.0,
+   "catatan": "geser rambut x +6 px citra"
+  },
+  {
+   "varian": "hhx=-6",
+   "mae": 7.513,
+   "torso": 18.75,
+   "bias": 3.6,
+   "pita0_20": 12.59,
+   "pita200": -22.03,
+   "catatan": "geser rambut x -6 px citra"
+  },
+  {
+   "varian": "hhy=+6",
+   "mae": 6.68,
+   "torso": 16.0,
+   "bias": 3.4,
+   "pita0_20": 12.3,
+   "pita200": -15.55,
+   "catatan": "geser rambut y +6"
+  },
+  {
+   "varian": "hhy=-6",
+   "mae": 6.639,
+   "torso": 15.548,
+   "bias": 3.68,
+   "pita0_20": 12.14,
+   "pita200": -13.9,
+   "catatan": "geser rambut y -6"
+  },
+  {
+   "varian": "hhy=+3",
+   "mae": 6.07,
+   "torso": 14.012,
+   "bias": 3.49,
+   "pita0_20": 12.26,
+   "pita200": -10.63,
+   "catatan": "geser rambut y +3"
+  },
+  {
+   "varian": "hhy=-3",
+   "mae": 6.143,
+   "torso": 14.021,
+   "bias": 3.56,
+   "pita0_20": 12.11,
+   "pita200": -10.49,
+   "catatan": "geser rambut y -3"
+  },
+  {
+   "varian": "hgg=0.85",
+   "mae": 5.219,
+   "torso": 10.644,
+   "bias": 1.16,
+   "pita0_20": 11.53,
+   "pita200": -6.97,
+   "catatan": "terang rambut 0,85"
+  },
+  {
+   "varian": "hgg=0.70",
+   "mae": 5.675,
+   "torso": 11.438,
+   "bias": -1.17,
+   "pita0_20": 11.14,
+   "pita200": -10.62,
+   "catatan": "terang rambut 0,70"
+  },
+  {
+   "varian": "fk=0.95",
+   "mae": 5.234,
+   "torso": 10.519,
+   "bias": 2.71,
+   "pita0_20": 11.26,
+   "pita200": -4.56,
+   "catatan": "kecerahan nebula 0,95"
+  },
+  {
+   "varian": "fk=0.90",
+   "mae": 5.717,
+   "torso": 10.451,
+   "bias": 1.74,
+   "pita0_20": 10.32,
+   "pita200": -5.04,
+   "catatan": "nebula 0,90"
+  },
+  {
+   "varian": "fk=0.85",
+   "mae": 6.193,
+   "torso": 10.417,
+   "bias": 0.91,
+   "pita0_20": 9.43,
+   "pita200": -5.4,
+   "catatan": "nebula 0,85 (torso terbaik dari keluarga ini)"
+  },
+  {
+   "varian": "gm=0.94",
+   "mae": 5.676,
+   "torso": 11.878,
+   "bias": 7.93,
+   "pita0_20": 14.63,
+   "pita200": -2.57,
+   "catatan": "gamma komposit 0,94"
+  },
+  {
+   "varian": "gm=1.06",
+   "mae": 5.246,
+   "torso": 11.314,
+   "bias": -0.51,
+   "pita0_20": 10.24,
+   "pita200": -5.89,
+   "catatan": "gamma 1,06"
+  },
+  {
+   "varian": "gm=1.12",
+   "mae": 5.729,
+   "torso": 13.01,
+   "bias": -4.17,
+   "pita0_20": 8.92,
+   "pita200": -7.51,
+   "catatan": "gamma 1,12"
+  },
+  {
+   "varian": "pft=0.02",
+   "mae": 5.912,
+   "torso": 14.439,
+   "bias": -3.71,
+   "pita0_20": 10.61,
+   "pita200": -6.03,
+   "catatan": "lantai gelap kuad gambar 0,02"
+  },
+  {
+   "varian": "pft=0.07",
+   "mae": 7.302,
+   "torso": 20.951,
+   "bias": -11.31,
+   "pita0_20": 9.82,
+   "pita200": -10.68,
+   "catatan": "lantai 0,07"
+  },
+  {
+   "varian": "pft=0.14",
+   "mae": 8.42,
+   "torso": 26.037,
+   "bias": -17.04,
+   "pita0_20": 9.08,
+   "pita200": -17.63,
+   "catatan": "lantai 0,14"
+  },
+  {
+   "varian": "scx=0.15",
+   "mae": 5.149,
+   "torso": 11.064,
+   "bias": 0.96,
+   "pita0_20": 11.21,
+   "pita200": -4.46,
+   "catatan": "lengkung-S kontras 0,15"
+  },
+  {
+   "varian": "scx=0.30",
+   "mae": 5.415,
+   "torso": 12.148,
+   "bias": -1.79,
+   "pita0_20": 10.3,
+   "pita200": -4.71,
+   "catatan": "S 0,30"
+  },
+  {
+   "varian": "scx=0.60",
+   "mae": 6.501,
+   "torso": 16.219,
+   "bias": -8.12,
+   "pita0_20": 8.44,
+   "pita200": -5.33,
+   "catatan": "S 0,60"
+  },
+  {
+   "varian": "ock=0.5",
+   "mae": 5.61,
+   "torso": 11.204,
+   "bias": -2.58,
+   "pita0_20": 5.05,
+   "pita200": -6.41,
+   "catatan": "penutup badan 0,5"
+  },
+  {
+   "varian": "ock=0.75",
+   "mae": 6.267,
+   "torso": 12.983,
+   "bias": -5.64,
+   "pita0_20": 1.57,
+   "pita200": -7.7,
+   "catatan": "penutup 0,75"
+  },
+  {
+   "varian": "ock=1.0",
+   "mae": 7.099,
+   "torso": 15.51,
+   "bias": -8.77,
+   "pita0_20": -2.03,
+   "pita200": -9.18,
+   "catatan": "penutup 1,0"
+  },
+  {
+   "varian": "ock=0.5 ogw=1",
+   "mae": 5.434,
+   "torso": 11.134,
+   "bias": -0.06,
+   "pita0_20": 8.29,
+   "pita200": -5.62,
+   "catatan": "penutup bergerbang kecerahan"
+  },
+  {
+   "varian": "ock=0.5 hg=1.1",
+   "mae": 5.433,
+   "torso": 10.88,
+   "bias": 0.03,
+   "pita0_20": 7.11,
+   "pita200": -4.52,
+   "catatan": "penutup + figur lebih terang"
+  },
+  {
+   "varian": "ock=0.75 hg=1.15",
+   "mae": 5.908,
+   "torso": 11.918,
+   "bias": -1.59,
+   "pita0_20": 4.77,
+   "pita200": -4.66,
+   "catatan": "penutup 0,75 + figur 1,15"
+  },
+  {
+   "varian": "ock=0.5 hg=1.2",
+   "mae": 5.584,
+   "torso": 11.193,
+   "bias": 2.93,
+   "pita0_20": 9.43,
+   "pita200": -2.41,
+   "catatan": "penutup + figur 1,20"
+  },
+  {
+   "varian": "ock=0.5 fk=1.15",
+   "mae": 6.612,
+   "torso": 10.882,
+   "bias": -0.89,
+   "pita0_20": 6.58,
+   "pita200": -5.53,
+   "catatan": "penutup + nebula 1,15"
+  },
+  {
+   "varian": "ock=0.75 fk=1.25",
+   "mae": 8.329,
+   "torso": 12.57,
+   "bias": -3.61,
+   "pita0_20": 3.23,
+   "pita200": -6.51,
+   "catatan": "penutup + nebula 1,25"
+  },
+  {
+   "varian": "ock=1.0 fk=1.35",
+   "mae": 10.5,
+   "torso": 15.764,
+   "bias": -7.02,
+   "pita0_20": -1.02,
+   "pita200": -8.02,
+   "catatan": "penutup + nebula 1,35"
+  }
+ ],
+ "putusan": {
+  "menang": "tidak ada. Torso terendah 10,42 (fk=0,85) tetapi MAE seluruh bingkai 5,089 → 6,193 (nebula di luar badan jadi terlalu gelap).",
+  "keluarga_yang_habis": [
+   "geser rambut (hhx/hhy)",
+   "terang rambut (hgg)",
+   "kecerahan nebula (fk)",
+   "gamma komposit (gm)",
+   "lantai gelap kuad gambar (pft)",
+   "lengkung-S kontras (scx)",
+   "penutup badan sendirian (ock)",
+   "penutup + penguat figur/nebula"
+  ],
+  "temuan_F-171": "penutup badan MEMPERBAIKI pita gelap (+12,08 → +5,05 pada ock=0,5, bahkan -2,03 pada ock=1,0) tetapi selalu merugikan di tempat lain ⇒ badan harus PERMUKAAN yang punya cahaya sendiri, bukan penutup hitam",
+  "konsekuensi": "P12 langkah 3 = geometri (permukaan badan + untaian rambut), bukan penyetelan; ini menegaskan F-149/F-150 dengan angka per wilayah"
+ }
+}
