@@ -28,9 +28,13 @@ ll, oo = L.mean(2), O.mean(2)
 tok = oo[400:780, 520:900]; tl = ll[400:780, 520:900]
 d = tok - tl
 dark = tl < 20
+top = tok[:96]; topl = tl[:96]
+band = (tl>=120)&(tl<200)
 print(json.dumps({'tag': tag, 'mae': round(float(np.abs(oo-ll).mean()),3),
   'torso': round(float(np.abs(tok-tl).mean()),3), 'bias': round(float(d.mean()),2),
-  'pita0_20': round(float(d[dark].mean()),2), 'pita200': round(float(d[tl>=200].mean()),2)}))
+  'pita0_20': round(float(d[dark].mean()),2), 'pita200': round(float(d[tl>=200].mean()),2),
+  'atas': round(float(np.abs(top-topl).mean()),3), 'bias_atas': round(float((top-topl).mean()),2),
+  'pita120_200': round(float(np.abs(d[band]).mean()),3)}))
 `
 
 const rows = []
@@ -48,6 +52,6 @@ for (const v of VAR.split(';').filter(Boolean)) {
   }
   const r = JSON.parse(execFileSync('python3', ['-c', py, DIR, T, tag]).toString())
   rows.push(r)
-  console.log(`${r.tag.padEnd(16)} MAE ${r.mae.toFixed(3)}  torso ${r.torso.toFixed(3)}  bias ${r.bias >= 0 ? '+' : ''}${r.bias}  pita0-20 ${r.pita0_20 >= 0 ? '+' : ''}${r.pita0_20}  pita200 ${r.pita200 >= 0 ? '+' : ''}${r.pita200}`)
+  console.log(`${r.tag.padEnd(16)} MAE ${r.mae.toFixed(3)}  torso ${r.torso.toFixed(3)}  atas ${r.atas.toFixed(2)}(${r.bias_atas >= 0 ? '+' : ''}${r.bias_atas})  p120-200 ${r.pita120_200.toFixed(2)}  p0-20 ${r.pita0_20 >= 0 ? '+' : ''}${r.pita0_20}  p200 ${r.pita200 >= 0 ? '+' : ''}${r.pita200}`)
 }
 fs.writeFileSync(`${DIR}/p12-sapu-${String(T).replace('.', '')}.json`, JSON.stringify({ t: T, rows }, null, 1))

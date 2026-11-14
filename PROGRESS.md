@@ -1096,3 +1096,25 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **Jebakan yang ditemukan & diperbaiki:** pass siluet yang disisipkan di tengah blok komposit membuat
   `useProgram(P.fill)` menimpa program sehingga uniform komposit hilang (bingkai jadi gelap, MAE 24,5).
   Pass harus diletakkan SEBELUM blok komposit.
+
+### Sesi 57 lanjutan 10 — verifikasi 5n + P12 langkah 4 (plato komposisi, sisa galat = struktur)
+
+- **Verifikasi 5n:** 9/9 berkas **byte-identik** (`MiraStage.tsx` 72c0ed67 · `comp.frag.glsl` 8d3ca240 ·
+  `picFill.frag.glsl` c69aee84 · `P12-LANGKAH3.md` 17f01e30 · `p12-langkah3.json` 23bed86d · PNG e6bb8027 ·
+  catatan c0b4672b/3e4d2fee/5bfbd0f3) ⇒ **5n LULUS**. Deployment `mira-humanoid-niu.vercel.app` menyajikan
+  `index-mdGGxCxr.js` = build kita ⇒ sinkron.
+- **F-176 (koreksi penting):** `mira-humanoid.vercel.app` (acuan) menyajikan `index-xg1U0Foi.js` 1 201 961 B
+  yang **tidak** memuat satu pun knob kita (`uSrf`/`uCutOn`/`pgg` = 0) ⇒ acuan memang app asli, bukan deploy kita.
+- **P12 langkah 4 — 7 keluarga knob (22 varian) ditutup:** lengkung tonal rambut · lengkung-S rambut ·
+  penipisan rambut di bahu · skala rambut · cahaya badan bergerbang mid-tone · matte menurut ketinggian · mipmap.
+  Semua menurunkan **bias** tetapi menaikkan **MAE**. Enam knob uji dicabut; build kembali `af245fab…`.
+- **F-172:** porsi galat frekuensi tinggi (<16 px) **90 %** (atas) · 86 % (tengah) · 76 % (bawah) ⇒ tak ada knob
+  terang/warna/geser/skala yang bisa menurunkannya.
+- **F-173:** menurunkan bias pita atas +9,42 → +0,67 justru menaikkan MAE-nya 15,47 → 19,00 ⇒ filamen kita dan
+  live berada di tempat berbeda.
+- **F-174:** filamen kita lebih lebar **hanya di pita atas** (run p90 25 vs 17 px · piksel terang 46,2 % vs 42,0 %);
+  tengah/bawah sudah setara (33,6 vs 33,9 · 27,5 vs 28,0) ⇒ masalah terpusat di rambut yang jatuh ke bahu.
+- **F-175:** uji skala 0,996–1,004 × geser ±2 px → optimum tetap skala 1,000 geser (0,0) ⇒ bukan salah daftar.
+- **Anggaran galat:** blok terburuk y300–450 x540–720 (MAE 13,9 · 5,9 % dari total galat); seluruh galat di dalam figur.
+- Alat baru: `tools/p12-budget.py`. Dokumen: `docs/langkah6/P12-LANGKAH4.md`.
+- **Langkah 5 P12 = geometri filamen** (satu-satunya jalan ke torso ≤ 7,0), rencana 4 butir ditulis di dokumen.

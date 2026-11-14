@@ -1013,3 +1013,14 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 6. Verifikasi 6 fase: rata 2,783 → 2,747; t=9,5 5,534 → 5,343; empat fase awal tak tersentuh.
 7. Gugur: `mgw` gate, `mtl`=1, `ocr` 5/9, `oct` 0,2.
 8. Berikutnya: B2 untaian rambut (torso atas y 400–496) → B1b cahaya permukaan sendiri (pita 120–200).
+
+## Sesi 57 lanjutan 10 — verifikasi 5n + P12 langkah 4 (plato)
+
+1. Verifikasi 5n: 9/9 byte-identik; deployment niu = build kita (`index-mdGGxCxr.js`).
+2. Acuan dipastikan app asli: bundle 1 201 961 B tanpa knob kita ⇒ F-176.
+3. Tiga knob rambut (tonal, S-curve, penipisan bahu) + skala: semua menurunkan bias, menaikkan MAE.
+4. bodymesh bergerbang mid-tone + matte menurut ketinggian: perubahan 0,002–0,02 = derau ⇒ gugur.
+5. `nm=1` (mipmap gambar) diuji ulang: 5,197 vs 4,940 ⇒ tetap gugur (F-132 tegak).
+6. Anggaran galat: HF 90/86/76 %; filamen lebih lebar hanya di pita atas (p90 25 vs 17).
+7. Enam knob dicabut → build kembali `af245fab…` byte-identik.
+8. Keputusan: jalur komposisi DITUTUP; langkah 5 = geometri filamen torso + untaian rambut bahu.
