@@ -1,0 +1,385 @@
+{
+ "judul": "P12 langkah 1 — peta galat torso MIRA: di mana, sebesar apa, dan mekanisme mana yang gugur",
+ "sesi": 57,
+ "tanggal": "2026-10-29",
+ "build_kita": {
+  "aset": "index-DCR382kJ.js",
+  "sha256": "e215b5a76220a3ddf6ab398f57d6eacf86e742eef142c24cc8129f97e3d4a203",
+  "catatan": "rebuild bersih dari sumber hari ini = byte-identik dengan produksi MIRA ⇒ tidak ada ubahan runtime"
+ },
+ "acuan": {
+  "url": "https://mira-humanoid.vercel.app/",
+  "protokol": "?auto=1&t=<fase>, UI disembunyikan (UIHIDE=1), tunggu 5 000 ms, viewport 1440x900",
+  "catatan_penting": "tunggu live dan kita HARUS sama. Selisih jam dinding menaikkan 'derau' acuan (lihat bagian derau)."
+ },
+ "paritas_6_fase_5l": {
+  "0.3": 1.136,
+  "1.89": 2.087,
+  "3.5": 1.951,
+  "5.5": 2.901,
+  "6.8": 3.094,
+  "9.5": 5.379,
+  "rata2": 2.758,
+  "pembanding_sesi54": 2.72,
+  "putusan": "sama dalam batas derau ⇒ baseline P12 sahih"
+ },
+ "torso_t95": {
+  "wilayah": [
+   520,
+   400,
+   900,
+   780
+  ],
+  "mae_rgb": 12.305,
+  "mae_luma": 10.57,
+  "rerata_live": 94.12,
+  "rerata_kita": 97.62,
+  "bias": 3.5,
+  "target_p12": {
+   "mae_torso": 7.0,
+   "bias_pita": 2.0
+  }
+ },
+ "pita_luma_torso_t95": [
+  {
+   "pita": "0-20",
+   "piksel_persen": 10.1,
+   "bias_kita": 12.08
+  },
+  {
+   "pita": "20-60",
+   "piksel_persen": 27.8,
+   "bias_kita": 6.38
+  },
+  {
+   "pita": "60-120",
+   "piksel_persen": 32.3,
+   "bias_kita": 2.1
+  },
+  {
+   "pita": "120-200",
+   "piksel_persen": 19.5,
+   "bias_kita": 1.4
+  },
+  {
+   "pita": "200-256",
+   "piksel_persen": 10.4,
+   "bias_kita": -4.25
+  }
+ ],
+ "mekanisme_yang_gugur": {
+  "terang_menyeluruh_afin": {
+   "uji": "cocok-afin terbaik (gain x offset) pada torso t=9,5",
+   "hasil": "gain 1,00 · offset -1,0 · MAE 12,272 vs 12,305",
+   "putusan": "GUGUR — hanya 0,3 % galat torso dapat dijelaskan terang menyeluruh (menutup arah F-149/F-150 secara definitif)"
+  },
+  "bidang_terang_spasial": {
+   "uji": "koreksi afinitas per blok (seluruh layar, luma; tanpa koreksi 4,94)",
+   "hasil": {
+    "4x4_blok": 4.59,
+    "8x8_blok": 4.84,
+    "16x16_blok": 5.1
+   },
+   "putusan": "GUGUR — bidang terang halus tidak menjelaskan galat; bahkan 4x4 hanya -7 %"
+  },
+  "salah_daftar_geser": {
+   "uji": "block matching 16x16, radius cari +-6 px pada torso t=9,5",
+   "hasil": "median |dx| = 0 · median |dy| = 0 · RMS sisa 8,25 · geser global terbaik (0,0) → MAE 10,38 vs 10,57",
+   "putusan": "GUGUR — bukan offset/registrasi global; sisa galat adalah isi, bukan posisi"
+  },
+  "pola_garis_dasar": {
+   "uji": "ridge (puncak lokal) per baris pada torso, dibandingkan titik-per-titik",
+   "hasil": {
+    "ridge_total": {
+     "live": 12750,
+     "kita": 12408
+    },
+    "ridge_per_baris": {
+     "live": "33,55 +-5,02",
+     "kita": "32,65 +-4,77"
+    },
+    "jarak_antar_ridge_median_px": {
+     "live": 7.0,
+     "kita": 8.0
+    },
+    "impitan_toleransi_1px": "81,1 %",
+    "impitan_2px": "87,3 %",
+    "impitan_3px": "92,3 %",
+    "impitan_5px": "96,0 %",
+    "offset_seam_tengah": "1,07 px rata"
+   },
+   "putusan": "POLA DASAR SUDAH DEKAT — jadi yang mahal bukan letak garis besar, melainkan ampitudo/sebaran cahaya di sekitar garis"
+  }
+ },
+ "ablasi_lapisan_t95": {
+  "catatan": "MAE diukur luma-vs-luma RGB rata 3 kanal? tidak — kolom MAE = RGB, torso = kanal sama, pita = bias luma",
+  "baris": [
+   {
+    "varian": "penuh(bawaan)",
+    "mae": 5.379,
+    "torso": 12.305,
+    "bias": 3.5,
+    "pita0_20": 12.08,
+    "pita200": -4.25
+   },
+   {
+    "varian": "off=field",
+    "mae": 18.51,
+    "torso": 18.547,
+    "bias": -13.87,
+    "pita0_20": -4.92,
+    "pita200": -13.25
+   },
+   {
+    "varian": "off=waves",
+    "mae": 4.788,
+    "torso": 12.192,
+    "bias": 3.32,
+    "pita0_20": 12.08,
+    "pita200": -4.26
+   },
+   {
+    "varian": "off=arcs",
+    "mae": 5.379,
+    "torso": 12.305,
+    "bias": 3.5,
+    "pita0_20": 12.08,
+    "pita200": -4.25
+   },
+   {
+    "varian": "off=matter",
+    "mae": 5.425,
+    "torso": 12.557,
+    "bias": 2.96,
+    "pita0_20": 12.08,
+    "pita200": -4.48
+   },
+   {
+    "varian": "off=lines",
+    "mae": 6.014,
+    "torso": 14.046,
+    "bias": -1.59,
+    "pita0_20": 9.56,
+    "pita200": -10.88
+   },
+   {
+    "varian": "off=bloom",
+    "mae": 6.172,
+    "torso": 13.992,
+    "bias": -3.03,
+    "pita0_20": 7.16,
+    "pita200": -8.26
+   },
+   {
+    "varian": "off=hair",
+    "mae": 10.616,
+    "torso": 25.997,
+    "bias": -17.89,
+    "pita0_20": 10.47,
+    "pita200": -54.81
+   },
+   {
+    "varian": "off=twinkles",
+    "mae": 5.362,
+    "torso": 12.218,
+    "bias": 3.34,
+    "pita0_20": 12.04,
+    "pita200": -4.4
+   },
+   {
+    "varian": "off=fill",
+    "mae": 5.401,
+    "torso": 12.452,
+    "bias": 3.7,
+    "pita0_20": 12.24,
+    "pita200": -4.21
+   },
+   {
+    "varian": "off=picture",
+    "mae": 12.054,
+    "torso": 41.454,
+    "bias": -32.52,
+    "pita0_20": 7.82,
+    "pita200": -88.48
+   }
+  ],
+  "tafsir": [
+   "kelebihan cahaya di pita gelap (+12,08) turun ke +7,16 bila bloom dimatikan dan ke +9,56 bila garis dimatikan ⇒ penyumbang terbesar adalah sebaran glow (bloom + garis), bukan satu lapisan tunggal",
+   "off=arcs IDENTIK dengan bawaan ⇒ busur (gl.LINES) tidak menyumbang apa pun di t=9,5: lapisan itu mati/kosong, perlu diperiksa tersendiri",
+   "off=field menurunkan energi latar 17 luma di pita gelap ⇒ medan nebula kita masih menerangi daerah yang di live gelap (badan seharusnya menutupinya)"
+  ]
+ },
+ "galat_menurut_skala": {
+  "torso_t95_luma": {
+   "tanpa_blur": 10.57,
+   "blur1": 9.24,
+   "blur2": 8.44,
+   "blur4": 7.62,
+   "blur8": 6.82,
+   "blur16": 5.77
+  },
+  "tafsir": "galat turun mulus terhadap skala ⇒ bukan derau titik semata; ada selisih bentuk/sebaran cahaya berskala 4-16 px"
+ },
+ "peta_blok_mae_torso_32px": {
+  "baris_y": [
+   400,
+   432,
+   464,
+   496,
+   528,
+   560,
+   592,
+   624,
+   656,
+   688,
+   720
+  ],
+  "rata_per_baris": [
+   14.3,
+   14.8,
+   14.9,
+   12.0,
+   7.7,
+   7.1,
+   9.7,
+   8.6,
+   8.0,
+   8.5,
+   9.2
+  ],
+  "kolom_terburuk": "x=712 (tengah) pada y=432-464: 24,0 / 24,6",
+  "tafsir": "galat terkonsentrasi di torso ATAS (y 400-496, dekat tulang selangka & tempat rambut jatuh) — bukan di perut"
+ },
+ "derau_acuan_live": {
+  "metode": "tangkapan live berulang pada ?t=9,5 dengan jarak jam dinding berbeda",
+  "5s_vs_12s": {
+   "mae": 1.038,
+   "torso": 1.418
+  },
+  "5s_vs_14s": {
+   "mae": 2.162,
+   "torso": 3.657
+  },
+  "derau_temporal_3_tangkapan_torso": {
+   "rata": 1.6,
+   "p90": 3.82,
+   "p99": 17.09,
+   "piksel_derau_gt6": "5,5 %",
+   "piksel_derau_gt12": "1,9 %"
+  },
+  "putusan": [
+   "live TIDAK beku walau ?t dipin: derau naik seiring jarak jam dinding ⇒ semua gerbang MIRA harus menangkap acuan dengan tunggu yang SAMA (5 000 ms)",
+   "pada tunggu yang sama derau hanya 1,04 (torso 1,42), jadi galat torso kita 12,3 BUKAN derau acuan"
+  ]
+ },
+ "artefak_terlihat": [
+  "pita putih lurus (streak) di kuad gambar kita pada sekitar x 690-760 / y 500-560 yang tidak ada di live",
+  "bilah horizontal terang ~x 640-740 / y 512 (tepi polygon) — bentuk kotak, bukan lengkung: ciri geometri kuad, bukan lengkungan badan",
+  "glow ungu kita lebih lebar di celah antar-busur (pita 0-20 px +12,08)"
+ ],
+ "kesimpulan_mekanisme": {
+  "gugur": [
+   "terang menyeluruh (afin)",
+   "bidang terang spasial per blok",
+   "salah daftar/geser",
+   "pola garis besar",
+   "busur gl.LINES (tidak menyumbang)"
+  ],
+  "hidup": [
+   "A. kontras: garis kita LEBIH LEBAR/LEMBUT, inti garis lebih redup (pita 200+ -4,25) sementara celah gelap lebih terang (+12,08) — ciri sebaran glow, bukan gain",
+   "B. kuad gambar: badan kita datar (tekstur + kuad), sedangkan live memakai permukaan 3D; terlihat dari bilah lurus/kotak pada kuad kita",
+   "C. rambut: penyumbang luma terbesar di potongan torso (menghapusnya menggeser bias +3,50 → -17,89) dan galat terpusat di y 400-496 tempat rambut jatuh"
+  ],
+  "langkah_berikut": [
+   "1) uji A dulu (murah): sapu lebar/inti glow garis & ambang bloom TANPA mengubah 82 nilai bawaan panel — kalau kontras yang salah, torso MAE akan turun ke <=9",
+   "2) uji C: ukur daftar rambut (geser/lebar strand) di torso atas; kalau galat y 400-496 turun, sebagian besar torso ikut turun",
+   "3) baru B: ganti kuad `pic` torso dengan geometri (permukaan), sesuai rencana P12"
+  ]
+ },
+ "berkas": {
+  "alat": [
+   "tools/probe-mira-torso.js",
+   "tools/p12-peta.py"
+  ],
+  "gambar": [
+   "verification/mira/p12-pasangan-torso-95.png",
+   "verification/mira/p12-peta-selisih-torso-95.png",
+   "verification/mira/p12-ridge-live-95.png",
+   "verification/mira/p12-ridge-ours-95.png"
+  ]
+ },
+ "sapu_knob_murah_t95": {
+  "catatan": "luma; bandingkan dengan baris 'bawaan'",
+  "baris": [
+   {
+    "varian": "bawaan",
+    "mae": 4.936,
+    "torso": 10.574,
+    "bias": 3.5,
+    "pita0_20": 12.08,
+    "pita200": -4.25
+   },
+   {
+    "varian": "bt=0.5",
+    "mae": 5.217,
+    "torso": 11.304,
+    "bias": 5.91,
+    "pita0_20": 14.04,
+    "pita200": -2.54
+   },
+   {
+    "varian": "bt=0.8",
+    "mae": 5.134,
+    "torso": 10.483,
+    "bias": 0.13,
+    "pita0_20": 9.48,
+    "pita200": -6.47
+   },
+   {
+    "varian": "bg=1.6",
+    "mae": 4.962,
+    "torso": 10.67,
+    "bias": 3.82,
+    "pita0_20": 12.36,
+    "pita200": -4.06
+   },
+   {
+    "varian": "bg=2.5",
+    "mae": 5.473,
+    "torso": 11.987,
+    "bias": 6.88,
+    "pita0_20": 15.08,
+    "pita200": -2.35
+   },
+   {
+    "varian": "lg=0.7",
+    "mae": 4.975,
+    "torso": 10.678,
+    "bias": 2.25,
+    "pita0_20": 11.36,
+    "pita200": -5.74
+   },
+   {
+    "varian": "lg=1.4",
+    "mae": 5.034,
+    "torso": 10.924,
+    "bias": 5.14,
+    "pita0_20": 13.18,
+    "pita200": -2.46
+   },
+   {
+    "varian": "hy=-0.004 / +0.004",
+    "mae": 4.936,
+    "torso": 10.574,
+    "bias": 3.5,
+    "catatan": "TIDAK berpengaruh — cabang geser rambut tidak aktif di t=9,5 (F-169)"
+   }
+  ],
+  "putusan": "tidak ada satu knob pun yang menurunkan torso di bawah 10,4 tanpa menaikkan MAE keseluruhan ⇒ jalur knob habis, perlu perubahan bentuk cahaya/geometri"
+ },
+ "temuan_baru": {
+  "F-168": "off=arcs identik dengan bawaan di t=9,5 ⇒ lapisan busur gl.LINES tidak menyumbang apa pun (kosong/mati)",
+  "F-169": "knob hy (geser rambut) tidak berpengaruh di t=9,5 ⇒ cabang geser rambut tidak aktif pada fase itu",
+  "F-170": "acuan live tidak beku: derau bergantung jarak jam dinding (5s vs 12s = 1,04 · 5s vs 14s = 2,16) ⇒ semua gerbang MIRA wajib tunggu sama 5 000 ms"
+ }
+}

@@ -1,0 +1,1058 @@
+# PROGRESS — eksekusi berurutan (tanpa melompati fase)
+
+Terakhir diperbarui: **2026-10-29**. Rujukan rencana: `RENCANA-EKSEKUSI.md`.
+
+| fase | isi | status | artefak utama |
+|---|---|---|---|
+| **P0** | Normalisasi recon: HTML bersih, patch `verify-spec.py`, audit checksum, catat temuan | ✅ | `recon/*-index.clean.html`, `verify-spec.py`, `REBUILD-LOG.md` |
+| **P1** | Fase 0 versi audit: daftar aset + konfirmasi negatif + dimensi | ✅ | `recon/asset-list.*`, `asset-dims.json` |
+| **P2** | Fase 1.1–1.2: stack + ekstraksi copy UI berurutan | ✅ | `recon/ui-copy.{apex,mira}.txt`, `ui-copy.json` |
+| **P3** | Fase 1.3: ekstraksi + rekonstruksi + klasifikasi shader | ✅ | `recon/shaders/` (150 file), `INDEX.md`, `resolve_shaders.py` |
+| **P4** | Fase 1.4–1.5: 82 parameter + semua hook/query param | ✅ | `recon/params-verified.md`, `hooks.json`, `hooks.md` |
+| **P5** | Fase 1.6–1.7: audio graph + timing | ✅ | `recon/audio/`, `timings.json` |
+| **P6** | Fase 1.8–1.9: DOM runtime, computed style, ground truth (browser + WebGL2) | ✅ | `recon/ground-truth/` (73 artefak, 22 MB) |
+| **P7** | Fase 2: arsitektur + peta UNVERIFIED | ✅ | `recon/ARCHITECTURE.md` |
+| **P8** | Fase 3: implementasi APEX (8 langkah berurutan) | 🟡 langkah 1–7 lulus · langkah 8 backdrop port ✅, sisa = pipeline partikel GPU (butuh keputusan) | `apex-humanoid-rebuild/`, `verification/` |
+| **P9** | Fase 4: Gerbang A/B/C/D | ⬜ | — |
+| **P10** | Deliverable + deploy | ⬜ | — |
+
+## Yang sudah bisa dipegang sekarang
+
+1. **`recon/verify-spec.py` → 193/193, exit 0** (`python3 verify-spec.py`).
+2. **26 shader aplikasi** tersalin verbatim (APEX 4, MIRA 26 termasuk 11 belum bernama) + 124 blok vendor dipisahkan.
+3. **20 query param MIRA + 19 hook APEX** terdokumentasi; dua temuan baru: `?dial.<key>=` dan `?t=<detik>`.
+4. **73 artefak ground truth** dari live: entry, birth 4 timestamp, selesai-build, 5 state APEX × 2 viewport, 6 state MIRA × 2 viewport, DOM mode humanoid, uji reproduksibilitas.
+5. **Arsitektur + pemilik setiap string** (71 string) + 10 item UNVERIFIED yang eksplisit.
+
+## Keputusan interview (2026-10-29) — FINAL
+
+1. **Target**: APEX dulu, MIRA menyusul.
+2. **Panel MIRA**: dibangun **lengkap** (20 seksi, 82 slider, 7 alias, `?dial.<key>=`, localStorage).
+3. **Gerbang C**: ambang = **baseline terukur live-vs-live per run**, bukan angka mati.
+4. **UNVERIFIED**: tutup dulu yang murah → U-1, U-3, U-4, U-7 **TERTUTUP** (`recon/UNVERIFIED-CLOSED.md`).
+5. **Deploy**: saya siapkan repo + `vercel.json` + skrip diff; **kamu** yang `vercel deploy`, lalu saya bandingkan dengan URL-mu.
+
+## Empat keputusan lama (sudah terjawab di atas)
+
+1. **Target P8**: APEX dulu (rekomendasi), atau MIRA, atau keduanya berurutan.
+2. **Panel MIRA (U-10)**: live **tidak** merender 82 slider. Bangun **dengan** panel (setia pada SPEC + `mira-params.json`)
+   atau **tanpa** panel (setia pada perilaku live)?
+3. **Ambang Gerbang C APEX**: pakai baseline terukur live-vs-live (3,06% piksel > 32/255) sebagai ambang lulus,
+   atau tetap tuntut 0% dan terima bahwa target itu terbukti mustahil bahkan bagi situs aslinya?
+4. **Deploy**: siapa menjalankan `vercel deploy` untuk uji Gerbang C melawan URL produksi.
+
+## 2026-10-30 — langkah 8 selesai (port penuh)
+
+Opsi user: **scope8 = full** + **deploy disiapkan sekarang**. Pipeline figur GPU diport penuh:
+`fig.ts` (274.799 titik), `plate.ts`, `bloomGL.ts` (HDR half-float, gain 1/level, tap 2 texel),
+`Figure.tsx` (uniform hU + 240 mote fU + bloom dU), shader `aU/lU/uU/cU` verbatim.
+Uniform & atribut terbukti identik dengan live; gerbang C 26,16 %/23,92 % → **10,55 %/7,57 %**.
+`npm run build` sukses (226 kB / 75,6 kB gzip). Deploy siap: `vercel.json`, `.gitignore`,
+`README-DEPLOY.md`, `tools/diff-vs-production.js` — menunggu user menjalankan `vercel deploy`.
+
+**Berikutnya:** (a) kalibrasi kernel bloom (opsional, sisa 10,55 % vs acuan 0,87 %);
+(b) mulai fase MIRA (P9): panel 82 slider, 20 seksi, 7 alias, `?dial.<key>=`, localStorage.
+
+## 2026-10-30 (2) — deploy APEX terverifikasi, MIRA dimulai
+
+1. **Deploy APEX** https://niu-humanoid.vercel.app: 17/17 gerbang identik; piksel 10,73 %/11,93 (1440)
+   dan 7,71 %/9,01 (390) — sama dengan dev di dalam derau.
+2. **MIRA P1.3–P1.5**: `recon/verify-mira.py` → 82/82 param, 20 seksi, 7 alias, 13 query param.
+3. **MIRA langkah 1** (entry + baris tombol): Gerbang A **8/8**.
+4. **MIRA langkah 7** (panel 82 slider + `?dial.<key>=` + localStorage + alias): Gerbang B **10/10**.
+5. Repo `mira-humanoid-rebuild/`, dev server port 5190, `npm run build` sukses (162 kB / 51 kB gzip).
+
+**Berikutnya (MIRA):** langkah 2 aset/mask + ring + mesin garis (wire shader verbatim), 3 ignition,
+4 audio, 5 state, 6 hand tracking, 8 bloom + alias hum.glow.*.
+
+## 2026-10-30 (3) — MIRA langkah 2: mesin garis = **IDENTIK LIVE (12/12 buffer)**
+
+1. `src/lib/miraLines.ts` (port `SN`) → `src/lib/miraWire.ts` (port `lF`) → `src/components/LineWeave.tsx`
+   (WebGL2 langsung, shader `09-vert`/`10-frag` verbatim di `src/lib/shaders/wire.*.glsl`).
+2. `src/lib/miraTimeline.ts`: port `Ud` (mulberry32), `LN`/`DN`/`FN` (jam ignition), palet `Nd` — semua verbatim.
+3. **Gerbang angka**: `tools/probe-mira-buffers2.js` menangkap buffer yang diunggah live
+   (`recon/ground-truth/mira/wire-buffers/*.bin`), lalu `recon/verify-mira-wire.mjs` membandingkan:
+   **position, aDir, uv, aT, aCol, aS, aLen, aId, aSketch, aEnd, aF, index — 12/12 maxdiff 0**.
+4. `drawElements` build **22248** = live **22248**; pesan trace (3 outline + 81 garis, 25/34/25) sama.
+5. Tiga fakta baru yang dikunci dari bundle (bukan tebakan):
+   `aCol = outline ? [.95,.9,1] : palet[kind]·0,6 + col·0,4`;
+   `aT = ignite + LN(r)/… − 0,02`, `aF = aT + 0,32` (ignite 6,55; speed = wave·tinggi 1374);
+   `aId = Ud(3)()` per garis (deterministik, terbukti sama antar dua tangkapan live).
+
+**Berikutnya (MIRA langkah 2 lanjutan):** `uHeadRows` (rowTexture: centre x, half width, turn weight, depth share),
+lapisan gambar `06/07`, rambut `30/31`, ring/orb `26`, latar `01`; lalu langkah 3 (gerak/intensitas).
+
+**Tambahan langkah 2 (masih sesi yang sama):** `src/lib/miraHead.ts` (port `YN`/`ZN`/`QN`) + `uHeadRows`
+terpasang nyata di `LineWeave`. `recon/verify-mira-head.mjs`: **rowTexture 1×1374 IDENTIK (maxdiff 0 semua kanal)**,
+pivot [571, 557, 23.28] sama. Kunci temuannya: mask kepala dihitung pada 1146×1374 (ukuran `SN.width`), bukan 1145.
+
+## 2026-10-30 (4) — MIRA langkah 2 selesai: gambar jadi tiga lapisan + inventaris draw lengkap
+
+1. **Inventaris draw live** (`tools/probe-mira-draws.js` → `recon/mira-draw-inventory.json`): 19 draw unik,
+   tiap draw lengkap (attrib, uniform, blend/depth). Ini peta jalan sisa langkah 2.
+2. **Awan titik gambar** (`src/lib/miraPicture.ts`, port `ie`): 103.367 titik, **aRest/aKind/aZ maxdiff 0**.
+3. **`MiraStage.tsx`**: satu kanvas WebGL2, urutan lapisan = urutan live; shader `02/03` (sprite),
+   `04/05` (isi), `04/06` (warna), `07/08` (titik), `09/10` (garis) — semua verbatim.
+4. Dua koreksi render terukur: `UNPACK_FLIP_Y_WEBGL=true` (three default) dan kanvas panggung **rasio 0,7**
+   (1007×630) dengan `uRes` = ukuran jendela.
+
+**Selisih frame sekarang 39,7 % > 32/255 (MAE 36,8)** — besar karena latar (`01`), rambut (`30/31`),
+materi 54.492 titik, busur, orb, bloom belum ada. **Berikutnya:** materi (`11/12`), rambut (`30/31` + gambar rambut),
+latar (`01`), orb (`26`), busur (`15/16`), lalu langkah 3 (jam build) dan 8 (bloom).
+
+**Tambahan:** latar medan nebula (`00/01`) terpasang lewat FBO 0,7 + blit. Tiga cacat render ditemukan lewat
+perbandingan potongan 8× dan diperbaiki: tekstur gambar harus `SRGB8_ALPHA8`, harus di-premultiply
+(`UNPACK_PREMULTIPLY_ALPHA_WEBGL`), dan kanvas figur `alpha:false`. Selisih piksel turun 39,7 % → **16,4 %**
+(MAE 36,8 → 17,3). Berikutnya: rambut `30/31` + gambar rambut, materi `11/12`, busur `15/16`, orb `26`, lalu langkah 3 & 8.
+
+## 2026-10-30 (5) — MIRA: bloom penuh dengan shader live (langkah 8 versi MIRA)
+
+1. `tools/probe-mira-allsrc.js` menangkap **37 sumber shader** live (36 lama + pass komposit `24-frag`).
+   Bloom MIRA = `postprocessing` `BloomEffect`: luminansi (0,6/0,9) → 8 mip turun (12 tap) → 8 mip naik
+   (radius 0,62) → komposit (`ENCODE_OUTPUT`, `e0Intensity` 0,9 — nilai `hum.glow.strength`, bukan `bloom.strength`).
+2. Empat pasang shader itu disalin verbatim ke `src/lib/shaders/{hp,down,up,comp}.*.glsl` dan dirangkai di `MiraStage`:
+   latar → kanvas, figur → RT RGBA16F, bloom atas RT, komposit ke kanvas dengan `(ONE, ONE_MINUS_SRC_ALPHA)`.
+3. Kecerahan rata-rata 29,2 → **36,6** (live 41,7); glow menyebar di garis seperti live.
+
+**Berikutnya:** rambut (`30-frag`/`31-vert` + gambar rambut 1385×1422 + 2 lapis helai), materi 54.492 titik
+(`11-vert`/`12-frag`, `uLifted`), busur inti & mahkota (`13/16`, `15/16`), orb (`25/26`), percikan (`27/28`),
+lalu langkah 3 (jam build: `iField/iMatter` ramp, ignition) dan gerbang C.
+
+## 2026-10-30 (6) — MIRA: rambut + koreksi blend → MAE 14,2 (terbaik sejauh ini)
+
+1. **Rambut** (`29-vert` + `30-frag`, citra `mira-hair-v1.webp` 1385×1422) terpasang dengan seluruh uniform terukur
+   (`uUp 48`, `uSide 120`, `uMass 0,7`, `uEarY 343,41`, `uTop 0,6`, `uHead [694,79, 322,80]`, `uHairOff [120,48]`).
+2. **Koreksi blend penting:** live memakai `srcRGB ONE · dstRGB ONE · srcAlpha ZERO · dstAlpha ONE`
+   (`blendFuncSeparate`), bukan `(ONE, ONE)`. Dengan cara lama, alpha ikut menumpuk → kotak hitam besar menutupi latar.
+3. Hasil: kecerahan 42,9 (live 36,8) · > 32/255 **20,1 %** · > 8/255 **29,9 %** · **MAE 14,2** (sebelumnya 19,4).
+
+**Catatan terbuka (diukur, bukan ditebak):** kecerahan kini sedikit DI ATAS live. Kandidat: bloom mengenai lapisan
+yang di live ada di kanvas terpisah, atau intensitas komposit harus dikalikan `bloom.strength`.
+**Berikutnya:** materi 54.492 titik (`11/12` + `uLifted`), 2 lapis helai rambut (`31/32`), busur (`13/16`, `15/16`),
+orb (`25/26`), percikan (`33/34`); lalu langkah 3 (jam build) dan gerbang C.
+
+## 2026-10-30 (7) — MIRA langkah 2 lanjut: materi, helai, pita; verifikasi fase-terkunci
+
+1. **Cara ukur baru (penting):** live menerima `?t=` (jam dibekukan) dan `?off=`. Dua tangkapan live pada `t=9,5`
+   identik (MAE 0,10–0,12) → semua penilaian sekarang piksel-per-piksel pada fase yang sama, bukan "mirip".
+2. **Materi** (`11/12`): 54.500 butir vs live 54.492; `aCol` maxdiff 1/255, `aTurns`/`aSeed` 3·10⁻⁸ (`src/lib/miraMatter.ts`).
+3. **Helai rambut** (`31/32`) + **bintik** (`33/34`): 47 helai · 260 bintik · 10.888 verteks · 10.794 segitiga —
+   **sama persis** dengan log & buffer live (`src/lib/miraHair.ts`).
+4. **Pita `waves`** (25/26 + 27/28): 3 pita × 65 ruas + 168 percikan — inilah garis panjang di latar live
+   (`src/lib/miraWaves.ts`). Ditemukan lewat `?off=waves`, bukan tebakan.
+5. **Terbuka, dengan angka:** gambar dasar rebuild 2,4× terlalu terang (92,7 vs 38,8) dan bloom rebuild menambah
+   8,5 sementara live +41,4. Intensitas bloom live di `t=9,5` ≈ 1,21 (bukan 0,9) — akan dikalibrasi bersama
+   penyebab gambar dasar yang terlalu terang.
+6. Skor fase-terkunci terakhir: **MAE 12,53** · > 8/255 57,28 % · kecerahan 44,8 vs live 39,6 (`build-stage21.png`).
+
+**Berikutnya:** (a) kalibrasi bloom vs gambar dasar + selidiki garis yang 2,8× terlalu terang; (b) lapisan yang
+belum ada: garis glide kepala `13/14` (12 draw, `uTail 150`, `uCol` emas), cincin kejut `35/36` (`uShock`), kuad
+"still" rambut `uOn 0`; (c) jam build untuk lapisan figur (sekarang garis/rambut penuh sejak frame pertama,
+padahal live baru menggambar setelah `ignite 6,55 s`); (d) gerbang C.
+
+## 2026-10-30 (8) — Backup Drive + rekonsiliasi repo upstream + workspace dirampingkan
+
+1. **Backup penuh** ke Google Drive, folder **niu-humanoid** (dibuat 13:47 UTC): 4 zip = 173 MB
+   (`01-Kerja-Arena-recon` 32 MB · `02-…verification-a` 65 MB · `03-…verification-b` 72 MB ·
+   `04-apps-tools-docs` 3,9 MB) + `BACKUP-README.txt`. `node_modules/dist/.vite` sengaja tidak disertakan.
+2. **Repo upstream ditemukan & diperiksa:** `Niumination/Niu-Humanoid` (commit terakhir `a66f5ad`, 30 Okt 2026,
+   "docs: update catatan temuan item 3 (Kerja-Arena → docs/)"). Isi penting: `src/` = aplikasi APEX kita
+   (identik dengan `apex-humanoid-rebuild/`), `docs/` = `recon` + `verification` kita, `public/humanoid/` termasuk
+   aset MIRA. Repo `mira-humanoid` **belum ada**.
+3. **Rekonsiliasi sha256:** 599 berkas (106 MB) **identik** → dihapus dari workspace; 3 berkas **beda**
+   (`PROGRESS.md`, `REBUILD-LOG.md`, `verification/VERIFICATION.md` versi lebih baru); 460 berkas **baru**.
+   Seluruh `apex-humanoid-rebuild/` (48 berkas) ikut terhapus karena sudah jadi `src/` repo.
+4. **Dihapus sesuai pilihan:** `recon/ground-truth/**` (23 MB, buffer mentah live) — ada di zip Drive 01.
+   Screenshot lama juga dipangkas: `verification` 61 MB → 11 MB (10 tangkapan kunci dipertahankan).
+5. **Ukuran workspace: 267 MB → 78 MB** (Kerja-Arena 184 → 12 MB).
+6. **Paket update** `niu-humanoid-belum-terpasang.zip` (64 MB, 370 berkas): `docs/` (md versi baru + recon +
+   verification terbaru), `mira-humanoid-rebuild/`, `tools/`, `sync-upstream.sh`, `README-UPDATE.md`,
+   `PENGHAPUSAN-2026-10-30.md`. Skrip `sync-upstream.sh` membandingkan sha256 dan bisa menghapus otomatis
+   berkas yang sudah masuk repo setelah push.
+
+## 2026-10-30 (9) — Pemeriksaan penerapan Hermes: repo beres, deploy MIRA tidak terbukti
+
+Hasil lengkap: `verification/HASIL-PEMERIKSAAN-PENERAPAN.md`. Ringkas:
+
+1. **Repo:** `Niumination/Niu-Humanoid` (commit `1f2f997`, +283 berkas) dan `Niumination/mira-humanoid`
+   (`25fdce58` 65 berkas + `1c4a0af` catatan). **279/279 berkas paket masuk, 277 identik sha256, 0 hilang.**
+   `docs/PROGRESS.md` memuat sesi (6)(7)(8), `REBUILD-LOG.md` sampai F-76. Secret-scan bersih.
+2. **Build:** klon bersih lulus di keduanya — Niu `index-DyoQ8hKN.js` 226,20 kB (sha256 **sama** dengan yang
+   tersaji di `niu-humanoid.vercel.app`), MIRA `index-CgepBFsa.js` 395,39 kB.
+3. **Deploy APEX sah:** entry deploy vs produksi **MAE 0,00**; idle MAE **10,92** · kecerahan 19,3 vs 26,0 —
+   konsisten dengan `gate-deploy.json` lama (11,93 · 19,2 vs 27,5), bukan regresi.
+4. **Deploy MIRA TIDAK terbukti:** `mira-humanoid.vercel.app` menyajikan app **asli** (`index-1PiDnpcG.js`
+   1.185.588 B; tanpa `__MIRA_MATTER/WAVES/STRANDS`; ada `mediapipe`; log `hair picture: 47 strands`).
+   Piksel: URL itu vs ground truth `live-t95.png` = **MAE 0,61** (app sama), sedangkan build repo kita vs
+   ground truth = **MAE 12,52**. 10 kandidat hostname `mira-humanoid-*.vercel.app` → 404.
+   **App asli utuh** (tidak tertimpa), tapi **rebuild MIRA belum publik**.
+5. **Kode repo = kode workspace:** build repo MIRA vs `build-stage21.png` = **MAE 0,16** (kecerahan 44,8 = 44,8).
+6. **Temuan kecil:** `tsconfig.tsbuildinfo` ter-commit di Niu (sudah tercatat di CATATAN-TEMUAN);
+   cache `public/humanoid/*` 7 hari tanpa nama ber-hash.
+
+**Perlu dari pengguna:** URL deployment Vercel MIRA yang sebenarnya (atau deploy ulang dengan nama proyek
+lain, karena `mira-humanoid.vercel.app` milik app asli) + matikan Deployment Protection untuk production.
+
+## 2026-10-30 (10) — Deploy MIRA sah (mira-humanoid-niu) + langkah 3 bagian 1
+
+1. **URL produksi sah:** `https://mira-humanoid-niu.vercel.app` — 200, publik, judul MIRA Humanoid.
+   Bundle `/assets/index-CgepBFsa.js` 395.461 B, sha256 `cbecb4da…` **sama** dengan build ulang repo HEAD
+   (`36b6263`); penanda `__MIRA_MATTER/STRANDS/WAVES` ada, `mediapipe` tidak ada.
+2. **Gerbang piksel produksi:** vs `build-stage21.png` **MAE 0,14**; vs preview lokal 0,09; vs app asli
+   (GT) 12,53 (kecerahan 44,8 vs 39,6). Deploy = repo, bukan regresi.
+3. **Langkah 3 bagian 1 — jam build:** `uBT` rambut/helai/bintik diubah dari konstanta 100 → jam build.
+   `t=1,89`: MAE 31,61 → **25,14**; `t=9,5` tetap 12,53 (tidak merusak kondisi mapan).
+4. **Dua sisa terukur:** (a) `t<6,55` live hampir hitam (mean 3,0 di t=0,3) sementara rebuild 37,5 → latar
+   `field` belum punya ramp `iField`; (b) `t=6,8` live 61,2 vs rebuild 45,4 → kilatan ignition + cincin
+   kejut `35/36` (`uShock`) belum ada.
+
+**Berikutnya:** ramp `iField`/`iMatter` (latar muncul bersama build), cincin kejut `35/36` + percikan orb
+`33/34`, lalu garis glide `13/14`; sesudah itu gerbang C.
+
+## 2026-10-30 (11) — Langkah 3 bagian 2: ramp build, mask reveal, cincin kejut → fase build mendekati live
+
+1. `uBT` = jam build (F-77): `t=1,89` MAE 31,61 → 25,14.
+2. Ramp `iField/iMatter` + opacity kanvas latar (F-78) — rumus `Tw` disalin dari live, dan **terbukti** dari
+   DOM live (`opacity` kanvas latar 0,064 / 0,604 / 1,0 pada t = 0,3 / 1,89 / 9,5).
+3. Akar "figur tampil sejak frame pertama" (F-79): warna lapisan gambar tidak di-mask `filled` karena live
+   mengandalkan alpha kanvas. Di kanvas tunggal → kalikan rgb dengan `filled`. `t=0,3`: 18,05 → **3,19**.
+4. Cincin kejut ignition `35/36` + `qN` (F-80): `t=6,8` kecerahan 32,4 → 43,2 (live 61,2).
+5. Tabel fase terukur (MAE vs app asli): 0,3 → **3,19** · 1,89 → **20,06** · 3,5 → **15,27** · 5,5 → **18,46** ·
+   6,8 → **37,25** · 9,5 → **12,53** (tidak berubah = kondisi mapan aman).
+
+**Berikutnya:** lapisan **orb `25/26`** (15 kuad, `uOrbPx/uOrbR/uEnergy/uOpacity`) — inilah terang yang hilang
+pada 1,89–5,5; lalu kilatan ignition (`hum.strike.flash` di `13/14`), lalu gerbang C.
+
+## 2026-11-01 (12) — Sinkronisasi workspace ↔ upstream setelah langkah 3
+
+1. **Repo Niu-Humanoid** `784c43e`: hanya `docs/PROGRESS.md` + `docs/REBUILD-LOG.md` (sesi 11, F-77…F-80).
+2. **Repo mira-humanoid** `6829d6a`: `src/` langkah 3 (shock.vert/frag.glsl baru + MiraStage/comp/picColor/blit),
+   `docs/langkah3/` 12 PNG, `docs/mira/gate-deploy-niu.json`, `VERIFIKASI-DEPLOY.md`, `CATATAN-TEMUAN.md`.
+3. **Cocok 100 %:** seluruh `src/` app identik sha256 dengan workspace (66/66), `tools/` 79/79 identik,
+   `docs` 135/135 identik, **0 berkas beda**.
+4. **Produksi sudah ikut:** `mira-humanoid-niu` menyajikan `index-DZGcjv2t.js` (sha256 = build repo HEAD);
+   gerbang piksel produksi vs live: 0,3 → **3,19** · 5,5 → 18,46 · 6,8 → 37,24 · 9,5 → **12,53**;
+   produksi vs build lokal ≤ 0,18.
+5. **Workspace dirampingkan:** 13 berkas identik dihapus (7,6 MB) → Kerja-Arena 33 → 25 MB; dari repo ditarik
+   `VERIFIKASI-DEPLOY.md`, `CATATAN-TEMUAN.md`, `.gitignore` (+`.vercel`, `.env*`).
+6. **Sisa yang belum ada di repo (15 berkas, 13,2 MB):** `HASIL-PEMERIKSAAN-PENERAPAN.md`, `LANGKAH3.md`,
+   `langkah3/prod-t*.png` (4), `terapan-2026-10-30/*.png` (9) → dibundel jadi `niu-update-sinkron.zip`.
+
+## 2026-11-01 (13) — Langkah 3 bagian 3: salinan materi + uSettle (fase build 1,89–5,5)
+
+1. Alat baru `tools/probe-mira-field.js` membaca uniform NYATA app asli per fase (dua konteks WebGL:
+   medan `webgl` 1007×630 dan figur `webgl2` 1440×900). Data tersimpan di `/tmp/g-<t>.json` saat dijalankan.
+2. Temuan (F-81): rebuild hanya menggambar **satu salinan jejak** (lag 0,025 · trail 0,55) — salinan utama
+   (lag 0 · trail 1) dan dua salinan `eF` lain tidak ada; `uSettle` juga konstanta padahal live
+   `0,75 − 0,4·smoothstep(t; 0,9; 6)`; setelah `last + 0,5 s` live menggambar hanya `nStay` titik.
+3. Hasil (MAE vs app asli): 1,89 **20,06 → 13,92** · 3,5 **15,27 → 9,14** · 5,5 **18,46 → 14,30** ·
+   6,8 37,25 → 35,45 · 9,5 12,53 → 12,89 · 0,3 3,19 → 4,30 (kecerahan 6,3 vs 3,0 — perlu ditelusuri).
+4. Sisa: **6,8** (live 61,2 vs kita 36,8) = kilatan ignition `13/14` + percikan `33/34`; lalu gerbang C.
+
+## 2026-11-01 (14) — Langkah 3 bagian 4: empat jam + parameter orb/gain
+
+1. **Sinkron upstream dicek:** Niu `b4617b6`, mira `4b7bde3`; `src/` identik (68/68), `tools/probe-mira-field.js`
+   sudah di repo, 0 berkas kode beda. Produksi `index-p8VjQZkw.js` sha256 = build repo HEAD.
+   Workspace: `CATATAN-TEMUAN.md` ditarik dari repo, 6 PNG `build7` dihapus (identik, 4,2 MB).
+2. **Temuan besar (F-82):** jam medan nebula di live saat `?t=` dipin adalah **0,150**, bukan jam build.
+   Diperbaiki → 9,5 MAE 12,89 → **9,89**; 6,8 35,45 → 34,87.
+3. Jam rambut/helai/bintik dan jam wajah dipisah (jam sendiri, tak ikut dipin) — sesuai ukur 0,045–0,2.
+4. Orb: `uOpacity = matter·0,3`, `uOrbPx/uOrbR` dari `iCenter/iRing` (721,35/622,08/111,47 @1440×900) →
+   mask "di belakang cincin" hidup lagi. Garis: `uGain = 0,95·(1+1,1·e^(−(t−6,55)/1,9))`.
+5. MAE terkini vs app asli: 0,3 **3,46** · 1,89 **13,45** · 3,5 **8,55** · 5,5 **13,72** · 6,8 **34,87** · 9,5 **9,89**.
+6. Sisa: (a) 6,8 = kilatan ignition `13/14`/`33/34` (live 61,2 vs kita 36,7); (b) kelebihan terang 9,5
+   +7,1 dari lapisan gambar/garis/rambut (cakupan piksel, bukan uniform).
+
+## 2026-11-02 (15) — Pemeriksaan upstream setelah langkah 3c
+
+1. **Repo:** Niu `57d548e` (docs PROGRESS + REBUILD-LOG sesi 14, F-82), mira `4ecc57c` (src langkah 3c +
+   `docs/langkah3/build9-*.png` 7 + `LANGKAH3.md` bagian 3–4 + `tools/probe-mira-field.js`).
+2. **Kode identik 100 %:** `src/` 69/69 berkas sama sha256, **0 beda**; `tools/` 79/79; docs 149/149
+   (kecuali satu, lihat butir 4).
+3. **Produksi sudah ikut:** `index-DjYtq9fQ.js` 402.410 B, sha256 `55940d22f65d8c4d635d…` = build repo HEAD.
+   Gerbang piksel produksi: 1,89 → **13,45** · 6,8 → **34,87** · 9,5 → **9,89**; produksi vs build lokal ≤ 0,17.
+4. **Satu ketidakcocokan docs:** `Niu-Humanoid/docs/verification/langkah3/LANGKAH3.md` masih versi lama
+   (3.052 B, hanya bagian 1–2); versi lengkap (5.035 B, bagian 1–4) ada di `mira-humanoid/docs/langkah3/`
+   dan di workspace. Perlu ditimpa → paket `niu-update-koreksi-docs.zip`.
+5. **Workspace dirampingkan:** 7 PNG `build9` identik dihapus (4,6 MB) + 4 PNG `prod-t` lama diganti
+   `prod3-t` → Kerja-Arena ±24 MB.
+
+## Sesi 15 (2026-11-02) — langkah 3 MIRA, sasaran: sprite & sebaran cahaya
+
+- **F-83 (bug):** `drawSprite` mengirim skala hanya lewat `modelViewMatrix`; `SpriteMaterial` mengambil
+  ukuran dari `modelMatrix` → kuad selalu 1 unit, sprite haze tak pernah terlihat. Diperbaiki +
+  blending disamakan dengan three.js `AdditiveBlending` `(SRC_ALPHA, ONE)`.
+- **F-84:** haze ungu lebar `(0,55; 0,3; 1)` berskala selebar gambar dengan opasitas **berdenyut**
+  `1,73·exp(−((t−1,95)/0,75)²) + 3,56·exp(−((t−6,9)/0,75)²)` (live lebih gelap pada 5,5 & 9,5).
+- **F-85:** kilatan ignition live diport penuh tetapi net-negatif (MAE 6,8: 30,46 tanpa vs 31,94 penuh);
+  tetap ada di balik `?fl=1`.
+- Gerbang piksel build11: **3,43 · 7,18 · 8,35 · 12,44 · 30,45 · 9,89** (rata-rata **11,96**, build9 13,99).
+- Produksi: `dist/assets/index-B_BjFQWS.js` 403 051 B sha256 `66d5ed1a251e6787…`, build ulang identik
+  piksel; konsol bersih (`__MIRA_ERR` null). Paket: `niu-update-langkah3d.zip` (5,2 MB, 76 berkas).
+
+### Pemeriksaan penerapan paket 3d + bersih-bersih (2026-11-02)
+
+- Produksi `index-B_BjFQWS.js` 403 051 B sha256 `66d5ed1a…` = build lokal = **klon segar repo `839a560`**.
+- `src/components/MiraStage.tsx` & `LANGKAH3.md` sha256 identik dengan repo; `src/**` 57/57 berkas.
+- Render produksi vs tangkapan build11: MAE **0,00** (6,8) · 0,17 (9,5), konsol bersih.
+- Workspace 740 MB → 97 MB (rincian di `verification/PERIKSA-langkah3d.md` §5).
+
+### Sesi 16 (2026-11-02) — penyelidikan sisa galat; build tetap build11
+
+- **F-87:** metrik gerbang = RGB; sempat memakai luma dan angka tampak membaik padahal identik. Aturan dicatat.
+- **F-88:** hipotesis kamera dolly/zoom **ditolak** — skala terbaik 0,98–1,00 di semua fase.
+- **Inventaris sprite live** (alat baru `tools/probe-mira-sprites.js`): 5 sprite/frame; wash kanan-bawah
+  live = sprite `p` (skala 6,05 · posisi +1,49/−1,67 · warna ungu ×0,4625 · f = 1,217).
+- **F-86:** sprite `p` (6,8: 30,45 → **42,70**) dan `y` (netral) diport tetapi dimatikan; `src/` dikembalikan
+  persis ke produksi (`index-B_BjFQWS.js` sha `66d5ed1a…`). Gerbang tetap 3,43 · 7,18 · 8,35 · 12,44 · 30,45 · 9,89.
+- Petunjuk berikutnya: aliran `rnd()` sebelum blok busur mahkota (posisi semua busur bergeser).
+
+### Sesi 17 (2026-11-02) — busur dari data live + kilatan `p` → **build13**
+
+- **F-89:** aliran `rnd()` bergeser sebelum blok busur (bukti: vertex pertama beda 5–7 px lalu menyimpang,
+  RMS 42 pada 128 verteks pertama — bukan geser/skala). Solusi: geometri busur diambil apa adanya dari live
+  (`src/lib/miraArcsLive.ts`, blob 79 KB base64; alat `probe-arc-buffers.js` + `build-arcs-asset.py`).
+- **F-90:** sprite `p` (kilatan titik sentuh busur) sekarang bekerja: **6,8: 27,22 → 13,41**.
+  Gradien `PREFIX_GLOW` dibuat lebih landai (tepi cakram hilang).
+- Gerbang build13: **3,43 · 8,98 · 7,24 · 12,17 · 13,41 · 9,89** (rata-rata **9,19**; build11 11,96).
+- Produksi: `index-Du1MXuMO.js` 484 600 B sha `f54625e9…`; klon segar repo + 2 berkas → sha identik.
+- Sisa terbesar sekarang: 5,5 (+8,1) · 9,5 (+7,1) · 1,89 (+7,3) — semuanya kelebihan terang, bukan geometri.
+
+### Sesi 18 (2026-11-02) — audit 9,5, alat dipulihkan, dua temuan diparkir
+
+- **F-91:** `e0Intensity` live = 0,9·(1+1,6·q) (terukur 2,1625 @6,8 · 1,2048 @9,5). Dipasang di balik `?bq=1`;
+  default tetap 0,9 karena net-negatif selama dasar masih terang (rata-rata 9,19 → 9,23).
+- **F-92:** dengan bloom dimatikan, dasar kita +16,1 lebih terang: figur +16,53 vs live +9,45,
+  latar kita +3,05 vs live ≈ +16,6 → masalah ada di **bentuk tekstur medan**, bukan alpha.
+- **F-93:** urutan perbaikan berikutnya (tekstur medan → turunkan figur → aktifkan F-91).
+- Alat: `tools/siapkan-alat.sh` (Playwright + chromium + pustaka + 6 acuan live ke `recon/live-ref/`),
+  `tools/probe-bloom.js`.
+- Kode **tidak berubah** dari build13 (tangkapan 1,89 & 6,8 identik per piksel dengan build13);
+  gerbang tetap 3,43 · 8,98 · 7,24 · 12,17 · 13,41 · 9,89 (rata-rata 9,19).
+
+### Sesi 19 (2026-11-02) — akar masalah blending (F-94) → **build15**
+
+- **F-94:** semua material figur live memakai preset `vr` = CustomBlending (SRC_ALPHA, ONE, ZERO, ONE);
+  kode kita memakai (ONE, ONE, ZERO, ONE) → tiap fragmen alpha<1 terlalu terang dan alpha FBO figur
+  menumpuk sehingga latar medan tertutup. 13 pemanggilan blending diperbaiki.
+- **F-95:** dua tombol yang dulu diparkir kini menguntungkan: `bq` (F-91) diaktifkan, `hz` 1,0 → 0,2.
+- Gerbang build15: **1,93 · 3,99 · 5,75 · 9,30 · 10,32 · 6,22** (rata-rata **6,25**; build13 9,19).
+- Produksi: `index-BnGAAagM.js` sha `082cd9b3…`; klon segar repo + berkas baru → sha identik.
+- Sisa: 5,5 & 3,5 kini **kurang** terang (jadwal kemunculan lapisan gambar/garis/rambut di 3–6 s).
+
+### Sesi 20 (2026-11-02) — bloom tipis (F-96) + uLiveT (F-98) → **build17**
+
+- **F-96:** kontribusi bloom kita hanya ~1/3–1/5 live (3,5: +1,15 vs +6,04 · 5,5: +2,16 vs +9,59 ·
+  9,5: +4,50 vs +13,53) dan hampir tanpa warna. Struktur belum terpecahkan (F-97); dipakai pengali
+  terkalibrasi `bgK = 2,0 − 0,5·smoothstep(t; 5,8; 7,2)`.
+- **F-98:** `uLiveT` materi & gambar disamakan dengan live (0 saat dibekukan); netral metrik.
+- Gerbang build17: **1,84 · 3,87 · 5,20 · 8,46 · 10,17 · 6,20** (rata-rata **5,96**; build15 6,25).
+- Produksi: `index-YaZi9R6Q.js` sha `61e8f38d…`; klon segar repo `1e08214` + berkas baru → sha identik.
+
+### Sesi 21 (2026-11-02) — SCREEN ditolak, sprite inti y/v diport → **build18**
+
+- **F-97a:** komposit SCREEN (sesuai blendFunction live) diuji dan **ditolak** (semua fase memburuk tipis);
+  shader komposit dikembalikan ke ADD.
+- **F-97b:** angka "kontribusi bloom live" pada sesi 20 **tidak sah** (off=bloom di live tidak mematikan
+  nebula) → kesimpulan "bloom kita terlalu tipis" dicabut; `bgK` tetap dipakai karena terkalibrasi.
+- **F-99:** sprite inti `y` + `v` diport penuh (rumus bundle), pengali `cf=0,5` `vf=0,25`.
+- Gerbang build18: **2,02 · 3,57 · 4,40 · 8,04 · 10,17 · 6,19** (rata-rata **5,73**; build17 5,96).
+- Produksi: `index-DfWtWS5P.js` sha `4e5cd4ce…`; klon segar repo `3272130` + berkas baru → sha identik.
+- Berikutnya: ekstraksi peta sprite live (`ae`/`be`) — pengali 0,5/0,25 hanya menambal perbedaan tekstur.
+
+### Sesi 22 (2026-11-02) — F-100 tekstur sprite live prosedural + sRGB → **build19/20**
+
+- **F-100:** peta sprite live dibuat runtime (`createRadialGradient` 128×128), bukan aset. Stop glow kita
+  salah (ada stop 0,7 tambahan) dan `colorSpace = SRGB` tidak ditiru → tekstur kini `SRGB8_ALPHA8` + stop
+  persis live; pengali `cf`/`vf` kembali 1 / 0,5.
+- **F-101:** redaman inti `0,2 + 0,8·smoothstep((t−0,1)/1,3)` untuk t sangat awal.
+- Gerbang build20: **2,45 · 2,15 · 3,36 · 7,64 · 8,08 · 6,19** (rata-rata **4,98**; build18 5,73).
+- Uji geser waktu di 6,8 membuktikan galat bukan fase; `?fl=1` tetap merugikan.
+- Produksi: `index-B0dBMECv.js` sha `e7168bb8…`; klon segar repo `3c29f10` + berkas baru → sha identik.
+
+### Sesi 23 (2026-11-02) — peta selisih 2D + kilatan ignition `m` → **build21**
+
+- Alat baru `tools/diffmap.py` (selisih bertanda per blok 12×8) — metrik global saja tidak cukup.
+- **F-102:** di t=6,8 inti kita terlalu gelap (−28) dan sisi kiri terlalu terang (+22). Penyebab: sprite
+  kilatan ignition `m` (renderOrder 12) dimatikan. Dipasang dengan `fl=0,5`, `fs=1,0` (skala live 420).
+- Gerbang build21: **2,45 · 2,15 · 3,36 · 7,64 · 7,60 · 6,19** (rata-rata **4,90**; build20 4,98).
+- Produksi: `index-BA8NBRA8.js` sha `6d20bf9d…`; klon segar repo `9e12bf4` + berkas baru → sha identik.
+- Sisa: 5,5 (kita lebih gelap di seluruh tubuh figur — struktur busur/garis), 9,5 (`uIdle` garis), 0,3.
+
+### Sesi 24 (2026-11-03) — app live diperbarui, metrik v2 (UI disembunyikan), acuan baru → **build22**
+
+- **Target bergerak:** live kini `index-Bv2XtaLJ.js` (sha `ae79a3d1…`), acuan kita `recon/mira.js`
+  (`8fe5c2f2…`). Konstanta inti tidak berubah; bundel baru disimpan sebagai `recon/mira-2026-11-03.js`.
+- **Metrik v1 tidak sah:** selisih acuan lama vs live baru hanya di sudut layar (+11,5 kiri-atas, −8
+  kiri-bawah), sama di semua fase, rerata kanal 0 → itu chrome DOM, bukan panggung. Live sendiri
+  deterministik (dua muat: MAE 0,12 / 0,00).
+- **Metrik v2:** `shot.js` dapat `UIHIDE=1` (sembunyikan DOM selain kanvas) + acuan baru
+  `recon/live-ref-v2/` (6 fase dari live terbaru). Baseline build22: **2,42 · 2,13 · 3,32 · 7,61 · 7,38 ·
+  5,53 = 4,73** (v1 4,90; selisihnya koreksi pengukuran).
+- **F-103 ditolak:** awan titik tubuh (`uOn` setelah ignition+1,6) diuji penuh/50 %/30 % → selalu lebih
+  buruk (5,53 → 10,48 / 7,86 / 6,66). Sebaran titik kita salah; lapisan tetap mati, kode gerbangnya ada.
+- Produksi: `index-CDFKFb7u.js` sha `88a56596…`; klon segar repo `d7e0efb` + berkas baru → sha identik.
+- Arah berikutnya (dari peta v2): t=5,5 defisit −12,1/−10,4 di tubuh atas-kiri; t=9,5 −11,7/−12,8 di
+  bawah-tengah; t=3,5 defisit merata 1–7. Semua di **dalam** tubuh → sebaran materi/titik, bukan bloom.
+
+### Sesi 25 (2026-11-03) — F-104 saringan debu terbalik + F-105 inti terlalu besar → **build23–25**
+
+- **Geometri materi kini 100,00 % identik dengan live** (54.492/54.492 titik, sebelumnya 0 %). Penyebab:
+  saringan butir debu di `extractLines` dibalik (memilih piksel yang justru gagal uji kontras).
+  Efek: t=5,5 7,61 → **2,84**; t=3,5 3,32 → **1,93**.
+- **F-105:** inti (`y`/`v`) terlalu besar & redup di detik awal (kontribusi off=core live 1,96 vs kita
+  0,46). Koreksi bergantung waktu `cs/cb` (0,5/2,0 → 1,0/1,0 antara 0,9–1,6 s): t=0,3 2,42 → **1,29**.
+- **Metrik v3** (`tools/metric.py`): MAE mentah + blur4 + blur10 untuk memisahkan struktur dari tekstur titik.
+- Gerbang build25: **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,37 = 3,42** (blur4 2,89 · blur10 2,58).
+  Sebelum sesi ini 4,73.
+- Produksi: `index-CeJUy6tv.js` sha `8b729496…`; klon segar repo `eae396b` + 2 berkas baru → sha identik.
+- Sisa: 6,8 (bentuk sebaran kilatan, blur10 5,09) dan 9,5 (−1,8 terpusat di bawah-tengah).
+
+### Sesi 26 (2026-11-04) — peta kontribusi per lapisan tuntas; F-106 diterima, F-107 ditolak → **build26**
+
+- **F-106:** `uIdle` garis (cahaya berjalan setelah `idle` = ignite+1,4) dipasang: t=9,5 5,37 → **5,20**.
+- **F-107 ditolak (dua cara):** latar ikut bloom. Fakta: bloom live +13,48 @9,5 dan +23,79 @6,8, kita
+  +2,11 / +8,86; latar live memberi +2,72 pada bloom, kita +0,00. Tetapi (a) latar ke render target figur
+  → 8,69 @9,5, (b) latar disuntik ke luminansi bloom → 11,03 @9,5. Mesin bloom kita menyebar di tempat salah.
+- **Diagnosis 6,8:** tanpa bloom kita 54,45 vs live 37,70 (+16,8 terlalu terang LANGSUNG), bloom live +23,79
+  vs kita +8,86 → terang harus dipindahkan dari lapisan langsung ke bloom, bukan ditambah.
+- Gerbang build26: **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,20 = 3,39** (blur4 2,86 · blur10 2,54; build25 3,42).
+- Produksi: `index-C2v91iDz.js` sha `622d6240…`; klon segar repo `398e9f1` + 2 berkas → sha identik.
+
+### Sesi 27 (2026-11-04) — bedah t=6,8: 5 percobaan ditolak, peta selisih memberi arah → **build27**
+
+- **Peta selisih blur-8** (`selisih-6.8-blur.jpg`): cincin MERAH di bola ignition (kita terlalu terang),
+  interior BIRU (kita terlalu gelap), kepala BIRU. Masalah = bentuk, bukan level.
+- Kontribusi lapisan 6,8 (live/kita): pic −1,82/+0,19 · matter +0,59/+2,40 · lines +2,72/+4,53 ·
+  hair −1,65/+0,16 · strands −1,72/+0,10 · bloom +23,79/+8,86.
+- Ditolak dengan angka: F-107 (latar ikut bloom, dua cara), F-109 (`bt` 0,3/0,15/0,05), F-110 (`fk`
+  0,7/1,25), F-111 (pindah terang ke bloom), F-112 (aura kepala: membantu 6,8 tapi merugikan 9,5).
+- F-108 ternyata **sia-sia**: shader luminansi kita sudah punya `#define COLOR 1`; build26 dan build27
+  menghasilkan PNG identik (md5 sama) → mesin render deterministik.
+- Gerbang tetap **1,29 · 2,13 · 1,93 · 2,84 · 6,97 · 5,20 = 3,39**; produksi `index-48aN0FDY.js`
+  sha `c70c361a…`; klon segar repo `cad9eab` + berkas baru → sha identik.
+
+### Sesi 28 (2026-11-04) — akar cincin ignition: `reveal.speed`, bukan 1500 → **build28**
+
+- Baca ulang bundle: live memanggil `Zk(Y, M.ignite, e.reveal.speed)`; konstanta 1500 hanyalah **default
+  parameter**. Port kita memakai 1500 → cincin meleset +14 % radius, dan itu yang selama ini tampak
+  sebagai "cincin terlalu jauh + halo terlalu terang" (bagian 18).
+- **F-113 DITERIMA:** `bR = n · reveal[3] · (1 − 0,18·min(1,n/2))`, kekuatan `sh = 0,85` (bus gain
+  `hum.build.shock`; kalibrasi 1,00→3,59 · 0,85→**3,42** · 0,75→3,54 · 0,70→3,64).
+- **Ditolak:** varian gelombang sentuh (`tsk`, +50…+68 terlalu terang), `sbs=0,94`, `sh=1,00`.
+- Profil radial 6,8: cincin 140–190 dari +8…+10 → **+0,8…+3,0**; halo 250–270 dari **+3,8/+3,2** → **−2,5/−1,4**.
+- Koreksi pengukuran: kunci `off=` build kita = `picture` (live: `pic`) — semua pengukuran lama `off=pic`
+  pada build kita adalah no-op. `off=core`/`off=lights` di live = 0,00 pada 6,8 & 9,5.
+- Gerbang build28: **1,29 · 2,13 · 1,93 · 2,84 · 3,42 · 5,20 = 2,80** (blur4 2,30 · blur10 2,12; build27 3,39).
+- Berikutnya: (a) interior bola 6,8 masih −10…−17 — bloom kita justru 1,5× live, jadi tambah terang di
+  **isi bola**, bukan bloom; (b) 9,5 −5…−10 terpusat di tubuh: kuad gambar kita 1,7× lebih lebar dari live.
+- Paket: `niu-update-langkah4a.zip` (4,4 MB, 16 berkas) — `src/components/MiraStage.tsx` +
+  `docs/…` + `build28-*.png` + `banding-build28.jpg` + `BACA-DULU.md`. Lokal: `dist/assets/index-BUSc4wVj.js`
+  sha `4b7e0a37…`, `MiraStage.tsx` sha `e3f5c9fe…`.
+
+### Sesi 29 (2026-11-04) — penerapan 4a terverifikasi; anatomi 9,5; F-114 diterima → **build29**
+
+- Terverifikasi: produksi `index-BUSc4wVj.js`, repo `e52df4c`, blob `MiraStage.tsx` `144215495f0ca980` =
+  lokal; build ulang lokal = `index-BUSc4wVj.js` yang sama.
+- Anatomi 9,5 (kunci `off` benar): gambar kita 45,7 vs live 27,3 (r<120); **bloom kita 4,4 vs live 46,5**;
+  rambut 11,8 vs 12,3; garis 4,3 vs 4,0. Live menaruh ~50 % cahaya figur di bloom, kita 7 %.
+- **F-114 DITERIMA:** gain figur `fg=1,10` (gambar+rambut+helai+twinkle) → 9,5 5,20 → **4,81**.
+  Kalibrasi 1,00→5,20 · 1,10→4,81 · 1,15→4,85 · 1,20→5,08 · 1,30→6,06.
+- **Ditolak:** F-115 (`pg`=2/4: 9,90/22,41), F-116 (`bq`=3: 42,6 total; `pg`0,6+`bq`6/12: 8,02/7,55;
+  `pg`0,8+`bq`6: 6,34). Bloom kita terlalu sempit — menaikkan intensitasnya membakar inti.
+- Fakta terkunci: geometri rambut tepat (pusat massa 709,6 vs 710,0), nebula sejajar (20,5 vs 20,5),
+  `lines`/`matter`/`waves` dalam ±1 dari live. Sisa selisih 9,5 sebagian dari **posisi pita nebula panjang**.
+- Gerbang build29: **1,29 · 2,13 · 1,93 · 2,84 · 3,43 · 4,81 = 2,74** (blur4 2,24 · blur10 2,06).
+
+### Sesi 30 (2026-11-04) — pustaka bloom dibaca ulang; 6 hipotesis ditolak; 2 kalibrasi → **build30**
+
+- Terverifikasi: produksi `index-Dkk8FSYS.js`, repo `073732f`, blob `1d7cdbce82f026e1` = lokal.
+- **Temuan metodologis:** di app asli bloom dibungkus `!off.has("bloom") && <EffectComposer>` → `off=bloom`
+  mematikan SELURUH composer (kontribusinya bahkan negatif di inti). Semua perbandingan bloom lama tidak sah;
+  aturan baru: acuan hanya `off` lapisan non-pembungkus.
+- Pustaka bloom live = port kita (down 12-tap, up 9-tap+support, radius 0,62, 8 level, skala 0,5, ADD,
+  intensitas 0,9·(1+1,6·P_), P_ = exp(−Δ/1,9)); **satu-satunya beda: luminancePass live di resolusi penuh**.
+- Ditolak dengan angka: F-117 (`bl=1` → 5,00), F-118 (`ur` 0,85/1,0 → 8,45/14,87; + figur redup → 6,2–8,9),
+  F-119 (`bo`/`bog` → 5,6–10,7), F-120 (`gm` 0,9/1,1 → 6,37/5,70; 6,8 → 8,14/5,71), F-121 (`mg` 0,75 → rata² 2,78).
+- **Diterima:** `bq` 1,00 → **0,70** (6,8: 3,43 → 3,18) dan `fg` 1,10 → **1,15** (9,5: 4,78 → 4,76).
+- Gerbang build30: **1,29 · 2,13 · 1,93 · 2,84 · 3,18 · 4,76 = 2,69** (blur4 2,19 · blur10 2,02).
+
+### Sesi 31 (2026-11-04) — delapan jalan buntu, satu kalibrasi tipis → **build31**; batas tekstur tercapai
+
+- Terverifikasi: produksi `index-CJC1GFCh.js`, repo `a3e77b9`, blob `MiraStage` `a1c3e404…` + `comp.frag` `1f7cfc72…` = lokal.
+- **Defisit kepala t=6,8 (−6,1) bukan milik lapisan mana pun**: matter 12,94 (live) vs 12,95 (kita), hair/pic/strands ±0,1,
+  lines 0,67 vs 1,32. Sisa yang tak bisa diablasi di live = bloom → ini soal sebaran bloom.
+- Ditolak (angka): `bt` 0,45/0,35 (9,5 → 5,51/6,46) · `hz` 0,7/0,5 (9,5 nol, 6,8 → 4,80/4,15) · `pg` 0,85/0,92 · `lb=1` (9,5 → 5,13)
+  · `hg` 2/3 (6,8 → 10,00/13,44; 9,5 → 16,09/27,65) · awan titik tubuh semua ukuran/gain (9,5 → 5,03…10,73; 6,8 tidak berubah karena
+  live baru menyalakannya di 8,15) · **geser kuad gambar ±10 px (9,5 → 8,44/8,48; dasar 4,76)**.
+- **Diterima:** `bb` 1,00 → 0,90 dan `bq` 0,70 → 0,85 (semua fase membaik/tertahan; 2,688 → 2,666).
+- Gerbang build31: **1,28 · 2,07 · 1,91 · 2,84 · 3,18 · 4,71 = 2,67** (blur4 2,17 · blur10 1,99).
+- Kesimpulan: sisa galat = detail frekuensi tinggi (butir/kilau/tekstur). `blur10` 1,99 = struktur besar sudah dekat.
+
+### Sesi 32 (2026-11-04) — sapuan 21 fase: galat terkonsentrasi di ignition (6,0–8,0); gerbang 6 fase terlalu sempit
+
+- Terverifikasi penuh paket 4d: produksi `index-B3kfpwXh.js`, repo `b703d26`, **225 berkas repo = 0 berbeda**.
+- Acuan baru **`recon/live-ref-v3/` (21 fase)** + render kita; alat: `tools/shot.js` seperti biasa.
+- Hasil: rata² 21 fase **5,43**; fase terbaik 3,0 (1,35); **terburuk 7,5 (29,70)**; 6,5 = 7,49; 8,0 = 10,28.
+  Enam fase gerbang lama semuanya 1,3–4,7 → gerbang lama tidak pernah melihat zona terburuk.
+- t=7,5: semua lapisan yang bisa diablasi hampir sama dengan live (pic 13,48/11,10 · hair 8,04/7,51 ·
+  lines 6,38/7,82 · arcs 0,00/0,00) tetapi rata bingkai 84,45 vs 57,50 → **kilatan ignition = peristiwa bloom**.
+  `bq=2,0` → 29,70 → 28,05 (belum cukup).
+- t=6,5: kita 13,45 vs live 7,00 (nebula 6,60 + materi 3,44); mematikan keduanya memburuk (7,78/8,82) →
+  masalahnya **kurva waktu**, bukan kelebihan salah satu lapisan.
+- Langkah berikut: gerbang diperluas ke 21 fase; sasaran utama 7,5 & 6,5 (bloom + kurva waktu).
+
+### Sesi 33 (2026-11-04) — gerbang 21 fase membuahkan dua perbaikan besar → **build32**
+
+- **F-129 DITERIMA (akar t=7,5):** live membuat cincin kejut dari `new PlaneGeometry(E*9,E*9)` yang digeser ke
+  titik bintang → bidang 9× gambar menutupi seluruh layar. Port kita memakai kuad seukuran gambar, jadi
+  gelombangnya TERPOTONG di tepi gambar (yang tampak: kotak terang). Setelah diperbaiki + kekuatan `rg=1,15`:
+  7,0 6,12→3,79 · **7,5 29,70→5,28** · 8,0 10,28→5,38 · 8,5 6,00→4,65 · 9,0 5,11→4,78.
+- **F-130 DITERIMA (akar t=6,5):** denyut haze 6,9 masih 64 % pada 6,4 (live 7,0 vs kita 12,9). Haze memang ada
+  di 5,5/6,0 (mematikannya memburuk), jadi bentuknya TAKIKAN sempit 5,75–6,15 sampai ignition:
+  6,0 3,74→2,34 · 6,5 7,49→**1,50** · 5,5 tetap 2,84.
+- Gerbang 21 fase: rata² **5,43 → 3,49**. Gerbang 6 fase: **1,28 · 2,07 · 1,91 · 2,84 · 3,05 · 4,71 = 2,64**
+  (blur4 2,15 · blur10 1,97), tanpa fase yang memburuk.
+
+### Sesi 34 (2026-11-04) — ledakan awal t≈0,8–1,2 diperbaiki → **build33**
+
+- Terverifikasi paket 4f: produksi `index-K2P1iKLh.js`, repo `99a091e`, blob `082271ad…` = lokal.
+- Profil radial t=1,0: kita KURANG terang menyeluruh (−32 di r 40-60 · −43 di 60-80 · −45 di 80-100 · −8 di 300-360).
+- **F-131 DITERIMA:** denyut haze khusus di 0,95 (`hp=0,7`, lebar 0,35). Penyapu `hz=2` memperbaiki 1,0 tapi
+  merusak 1,2–2,5 (1,5: 1,44 → 8,98) → bentuk yang benar = denyut tambahan, bukan skala global.
+- **F-131b DITERIMA:** sprite haze 1,3× selama ledakan awal lalu menyusut ke 1,0× sesudah t≈1,35
+  (`hs=1,3`: 0,8 → 1,93 · 1,0 → 2,82 · 1,2 → 1,63, tetapi 1,5 → 2,16 bila dipakai terus).
+- Ditolak: `bq=1,6`, `fl=1,3` (inert), `hz=0`, `lg=0,9` (bantu 11,0/12,0 tipis tetapi merusak 7,5: 5,28 → 5,77).
+- Gerbang 6 fase **1,14 · 2,07 · 1,91 · 2,84 · 3,05 · 4,71 = 2,62** (blur4 2,12 · blur10 1,95); 24 fase **3,56 → 3,22**.
+- Acuan fase awal 0,7–1,3 ditambahkan ke `recon/live-ref-v3/` (total 27 fase).
+- Sisa terburuk sekarang: 8,0 (5,38) · 7,5 (5,28) · 11,0 (4,96) · 12,0 (4,94) · 11,5 (4,88) — semuanya wilayah
+  dada/tepi (peta selisih 11,0: +15,5 di blok dada kiri-tengah).
+
+
+### Sesi 35 (2026-11-06) — verifikasi 4g + diagnosis dada/torso → **build34**
+
+- **Verifikasi paket 4g LULUS:** produksi `assets/index-Er3c1CLa.js`; repo head `d534b49`; blob
+  `MiraStage.tsx` = `e33acf06556a164d` (82 843 B) = lokal; `npm ci` + `npm run build` → berkas **identik byte**
+  (sha256 `8ace0810…` di kedua sisi).
+- Tiga pemeriksaan dasar untuk t=11,0: **tidak ada** pergeseran waktu (10,9/11,05/11,1 → 4,72/4,79/5,01),
+  acuan live **deterministik** (live-vs-live MAE 0,08), dan geometri **tepat** (optimum skala 1,00 geser 0,0).
+- Ablasi lapisan kita & live pada 11,0. Temuan penting: **`?off=bloom` di live membuang seluruh composer** →
+  kontribusi bloom live harus diukur dengan dial resmi `?dial.hum.glow.strength=0` (+4,94 dada, bukan +43,33).
+- Diagnosis: **pembagian beban lapisan berbeda** — gambar kita +30 terlalu terang di dada, rambut kita −8
+  terlalu lemah, bloom kita 1,6× terlalu kuat; totalnya hanya +9,96 karena dua kesalahan pertama saling menutupi.
+- **F-133 (ditambah, default MATI):** koreksi tonal gambar (`?pgg=` pow, `?pge=1` EOTF sRGB eksak). Di harness
+  gambar-saja EOTF eksak menurunkan MAE dada **8,19 → 2,08** (dada 77,5 → 46,3 vs live 47,2), tetapi di
+  tumpukan penuh menjadi 9,35 → **ditolak sebagai default**, disimpan sebagai knob riset.
+- Ditolak juga: `nm=1` (5,29), `bo=1` (10,13), `bb=2,5/4,0` (7,78/10,28), `bb=4,0&bt=1,2` (7,5 → 7,12),
+  `ur=0,5&bb=0,75` (11,0 4,68 ✓ tetapi 7,5 8,25 ✗), `hgg=1,4`+`pge=1` (10,74).
+- **F-134 DITERIMA:** plato akhir `bgK` 1,50 → 1,35 mulai t≈10,2 (bergerbang waktu, bukan skala global):
+  10,5 4,64→**4,53** · 11,0 4,96→**4,82** · 11,5 4,88→**4,74** · 12,0 4,94→**4,79**; fase 7,5/8,0/9,0/9,5
+  **tidak berubah sama sekali**.
+- **Gerbang build34:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · 3,05 · 4,71 = **2,62** (identik, tanpa regresi);
+  24 fase **3,22 → 3,20**. Alat baru `tools/metric3.py` (acuan v3 + jatuh ke v2 + `--grid`).
+- Paket **`niu-update-langkah4h.zip`** (kode + shader + docs + PNG + acuan).
+- Berikutnya: menyeimbangkan **tiga lapisan sekaligus** (gambar −, rambut +, bloom −) dengan sasaran terukur
+  per lapisan; fase terburuk 8,0 (5,38) dan 7,5 (5,28) justru berada di wilayah yang sebaliknya (kita terlalu gelap).
+
+
+### Sesi 36 (2026-11-06) — profil bloom terhadap waktu → **build35**
+
+- **Verifikasi paket 4h LULUS:** produksi `index-CWsd9OOS.js`, repo `4fcba39`, blob `MiraStage.tsx`
+  `66731b32d7dd79bd` (83 986 B) & `picColor.frag.glsl` `4f94c7632488c4b1` = lokal; build ulang **identik byte**
+  (sha256 `cf240796…`).
+- Catatan alat: `/tmp` (playwright) hilang antar-sesi → jalankan `bash tools/siapkan-alat.sh` dan
+  `vite preview` lagi; **dua proses chromium paralel saling mematikan** (swiftshader) → sapuan render harus
+  **berurutan**. Glitch snapshot juga menghapus `LANGKAH3.md` Bagian 25 + 12 PNG build34 dari workspace →
+  dipulihkan dari paket 4h.
+- Hipotesis amplop surge **gugur**: rumus live `P_(i,e,1.9)=exp(−(i−e)/1,9)` identik dengan kita.
+- Ablasi t=8,0 (figur 200–700 × 450–1000): live 106,30 vs kita 102,30. Semua lapisan setara **kecuali bloom**
+  (live +13,55 vs kita +10,54) — sedangkan pada 11,0 bloom kita justru lebih (+7,99 vs +4,94).
+- **F-135 DITERIMA:** bump bloom bergerbang waktu `kabut = 0,85·exp(−((t−8,1)/0,68)²)` ditambahkan ke `bgK`.
+  Kalibrasi: 0,4 → 7,5 4,80 · 0,7 → 4,65/8,0 4,90 · 1,0 → 4,68/4,85 · **1,4 → memburuk (4,88)**;
+  lebar 0,9 merusak 7,0 (3,96) → lebar **0,68** dengan pusat 8,1.
+- **Gerbang build35:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · 3,06 · 4,72 = **2,62** (blur4 2,12 · blur10 1,95);
+  24 fase **3,20 → 3,15**, dengan 7,5 **5,28 → 4,65** dan 8,0 **5,38 → 4,86**; kerugian maksimum +0,02.
+- Paket **`niu-update-langkah4i.zip`**.
+- Berikutnya: enam fase sisa (8,0 · 11,0 · 9,0 · 12,0 · 11,5 · 9,5 ≈ 4,6–4,9) selisih terang totalnya hanya
+  +1…+2 → sisa galat adalah soal **sebaran**, bukan jumlah cahaya.
+
+
+### Sesi 37 (2026-11-06) — strands + koreksi cara ukur → **build36**
+
+- **Verifikasi paket 4i LULUS:** produksi `index-laJDkWl3.js` (sha256 `352fd7e0…` = build lokal), repo `33b2817`,
+  blob `MiraStage.tsx` `342212a1fbcc90ce` (84 581 B) = lokal.
+- **KOREKSI METODOLOGI:** angka sesi 35 "gambar kita +20 lebih terang di dada" adalah **artefak** (`off=bloom`
+  di live membuang seluruh composer). Pembanding adil (`dial.hum.glow.strength=0` vs `off=bloom`):
+  dada **+7,87**, seluruh bingkai **+0,94**. Kesimpulan itu dibatalkan; F-133 tetap default MATI.
+  `pgg` (kurva tonal) juga ditolak di harness adil: dada +7,9 → +4,2 tetapi MAE total 3,10 → 3,87.
+- **F-136b:** knob `?stg=` khusus lapisan helai rambut (sebelumnya menempel pada `?fg=`).
+- **F-136 DITERIMA:** helai rambut terlalu terang setelah figur tenang. `stg=0,3` tetap: 11,0 4,82→4,50 ·
+  12,0 4,79→4,40 · 9,5 4,72→4,55 **tetapi** 8,0 4,86→4,95. Dipakai **gerbang waktu**
+  `stgK = 1 − 0,7·xs(t; 8,6; 9,6)` → fase < 8,6 tak tersentuh.
+- **Gerbang build36:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · 3,06 · **4,54** = **2,59** (blur4 **2,05** · blur10 **1,88**);
+  24 fase **3,15 → 3,08** (blur4 2,50 · blur10 2,28), tanpa regresi. Perbaikan besar: 10,0 4,57→**4,28** ·
+  10,5 4,53→**4,23** · 11,0 4,82→**4,50** · 11,5 4,74→**4,36** · 12,0 4,79→**4,40**.
+- Paket **`niu-update-langkah4j.zip`**.
+- Berikutnya: sisa terburuk ada di jendela ignition (8,0 4,86 · 9,0 4,71 · 7,5 4,65 · 8,5 4,62) dan **lonjakan
+  7,0 (3,81** vs tetangga 6,8 = 3,06) → perlu peta selisih 7,0 sendiri.
+
+
+### Sesi 38 (2026-11-06) — aura kepala + jendela ignition → **build37**
+
+- **Verifikasi paket 4j LULUS:** produksi `index-re72jnYx.js` (sha256 `76131240…` = build lokal), repo `51e9913`,
+  blob `MiraStage.tsx` `eb65e850c75f12f1` (85 082 B) = lokal. (Workspace sempat kehilangan PNG build36 lagi →
+  dipulihkan dari paket.)
+- Peta selisih t=7,0: **kepala −17,4/−16,6** (kita gelap) dan tepi bawah **+11,1/+10,6** (kita terang).
+- Ablasi t=7,0: total kepala live 75,08 vs kita 55,43; setelah semua lapisan dikurangi **dasar kepala live ≈52
+  vs kita ≈26** → yang hilang bukan milik lapisan terukur mana pun, melainkan **sprite aura violet** (F-110)
+  yang di build kita dimatikan sejak dulu.
+- **F-137 (INERT, dicatat):** `?uh=` (kekuatan penekan `underHair`) disapu 1,0/0,7/0,4 → hasil identik
+  (55,43 · MAE 3,81). `underHair` hanya bekerja pada piksel terang; yang hilang adalah pendar lembut → bukan itu.
+- **F-138 DITERIMA:** aura dinyalakan dengan **gerbang sempit** `auWin = 1 − xs(t; 7,1; 7,5)`.
+  Penuh `au=1`: 6,8 3,06→**2,80** · 7,0 3,81→**3,27** (kepala 55,4→74,5 vs live 75,1) tetapi 7,5 5,02 · 8,0 5,46 ·
+  9,5 5,27 → digerbangi. Hasil: 6,8 **2,80** · 7,0 **3,27** · 7,5/8,0/9,5 **tidak berubah**.
+- **Gerbang build37:** 6 fase 1,14 · 2,07 · 1,91 · 2,84 · **2,80** · 4,54 = **2,55** (blur4 **2,01** · blur10 **1,84**);
+  24 fase **3,08 → 3,06**. Seluruh 24 fase dirender ulang penuh (render lama hilang oleh glitch snapshot).
+- Paket **`niu-update-langkah4k.zip`**.
+- Berikutnya: `lines` **+12 terlalu kuat di bahu** pada t=7,0 (live +36,2 vs kita +48,2) → kandidat gain
+  `lines`/`wire` yang digerbangi waktu; sisa terburuk 8,0 (4,86) · 9,0 (4,71) · 7,5 (4,65) · 8,5 (4,62).
+
+
+### Sesi 39 (2026-11-06) — Gerbang A & B (P9) + gerbang dari produksi → **tanpa perubahan piksel**
+
+- **Verifikasi paket 4k LULUS:** produksi `index-B2KyDmhD.js` (sha256 `bca27438…` = build lokal), repo `aa05d21`,
+  blob `MiraStage.tsx` `4090892cb76dc049` (85 699 B) = lokal.
+- **Gerbang diukur dari URL PRODUKSI:** 1,14 · 2,07 · 1,91 · 2,84 · 2,80 · 4,55 = **2,55** — sama persis dengan
+  lokal (selisih 0,01 di 9,5 = derau render) → tidak ada penyimpangan build/deploy.
+- **Ditutup:** `lg` (gain garis) — 0,85 → 7,0 3,30 · 8,0 5,00; 0,7 → 3,54 · 5,15, keduanya lebih buruk dari
+  dasar (3,27/4,86) → kelebihan di bahu bukan dari `lines`.
+- **Ditutup:** aura kepala sesudah 7,5 — skala diperkecil 0,6 → 8,0 5,17 · 0,4 → 8,0 5,03 & 9,0 4,90,
+  semuanya lebih buruk dari dasar (4,86 / 4,71). Aura hanya benar di jendela ≤7,5.
+- **Aturan metrik baru:** `off=` di live tidak setara untuk lapisan berpartikel (`off=hair,matter` justru
+  menaikkan galat 4,86 → 5,29) → `off=` hanya untuk ablasi satu sisi, bukan pembanding dua implementasi.
+- **`recon/mira-params.json` hilang oleh glitch snapshot** → direkonstruksi dari bundle live: 82 dial unik + 7 `stands`.
+- **Gerbang A: 8/8 lolos** · **Gerbang B: 10/10 lolos** (`verification/mira/gate-{a,b}.json`). Alat gerbang B
+  diperbaiki (`ensurePanel()`) karena menggantung bila panel sudah terbuka.
+- **P9 🟡:** A & B lulus; C (ambang live-vs-live) dan D masih terbuka.
+- Paket **`niu-update-langkah4l.zip`** — isinya **dokumen + alat + spesifikasi dial**, BUKAN kode panggung
+  (tidak ada perubahan piksel sesi ini).
+
+### Sesi 40 (2026-10-29) — **langkah 4 MIRA: mesin audio penuh** (graph + 8 cue + skor adegan + bolt)
+
+- **Verifikasi paket 4l LULUS:** produksi masih `index-B2KyDmhD.js` (sha256 `bca27438…` = build37),
+  repo head `51edcaa` — sesuai karena 4l hanya dokumen/alat, tanpa kode panggung.
+  Glitch snapshot ke-5 (LANGKAH3.md kehilangan Bagian 29) dipulihkan dari zip 4l.
+- **Lantai derau Gerbang C MIRA diukur** (`shot.js` @8,0/9,5 + pembanding live): t=8,0 **MAE 0,00** ·
+  9,5 **0,55** · 11,0 **0,08** → ambang Gerbang C hampir nol; kita masih 4,50–4,86 di fase itu.
+  Ditulis `STATUS-ROADMAP.md` (P0–P10, 24/30 ≈ 80 %).
+- **Langkah 4 (audio) selesai dan diuji.** Region audio live (20 291 B di `recon/mira-2026-11-03.js`,
+  arsip `recon/audio-region.js`) diport verbatim ke `src/lib/miraAudio.ts` +
+  `src/lib/miraSoundCues.ts`:
+  graph `rh` (comp −8/12/3,5/0,006/0,25 · `hg=vN·0,62` · reverb 3,2 s/exp 2,4 & 6,0 s/exp 1,7 ·
+  send `gN`/`gN·1,15` · noise loop 2 s), primitif `oc/_o/U_/Vw`, drone `xN/_N/yN`,
+  8 cue `LN`, dua voice `EN`, ignition `DN`, **synth buffer prosedural `mo`** (6 strike · burst ·
+  thunder · boom · sizzle · hum), player `wi/Pl/xd`, **8 jenis cue skor `qw`**, track `FN/FT`,
+  bolt `kN`, unlock iOS `ON/Pg`.
+- **Temuan yang mengubah rencana:** (a) graph live **tidak** punya `createAnalyser` → butir rencana
+  “analyser→uEnergy” dibatalkan; (b) MIRA **tidak** memancarkan `MIRA_ENTER`/`ASSEMBLY` — bunyi masuk
+  berasal dari skor cue (`MIRA_BUILD`) + `MIRA_BOLT` per klik; (c) label tombol SOUND = **status**
+  (`SOUND ON` + `aria-pressed=true` sebagai default) — versi kita sebelumnya terbalik, dibetulkan;
+  (d) `Vk` memakai **lebar citra** sebagai skala pan.
+- **Penyambungan:** `MiraStage` membangun skor setelah `buildMatter` (36 cue, panjang **12,550 s**);
+  `HumanoidMode` menangani unlock (`Pg`), skor tunggu-gestur (`w.current`), SOUND ON/OFF
+  (`localStorage.apex_sound_off`), dan bolt pada `pointerdown` (pan `x·0,8`, ambang 150 ms).
+- **Gerbang D:** D1 paritas pemanggilan **31/31** (node/sambungan/start-stop/**multiset nilai
+  AudioParam** identik: 194 osc · 773 gain · 119 bufferSource · 96 panner · 54 biquad · 25 shaper ·
+  1 709 sambungan · 604 start/stop · 777 penjadwalan) · D2 spektrum `OfflineAudioContext`
+  **27/27 sampel-identik (MAE 0,0000 %, korelasi pita 1,000000)** · D3 audio hidup di aplikasi
+  **9/9** (RMS 2,55·10⁻² → SOUND OFF 0,00 → ON 1,01·10⁻¹; bolt 2,26·10⁻²) · D4 regresi piksel
+  t=8,0 **MAE 0,0000**.
+- Paket **`niu-update-langkah4m.zip`**.
+- Berikutnya (langkah 5): state machine penuh + 4 param *Her states* (`?state=`), SPEED/REPLAY
+  menggeser jam panggung, lalu langkah 6 (MediaPipe: `hum.touch.wave`, MIC) dan gerbang C/D + viewport 390.
+
+### Sesi 41 (2026-10-29) — verifikasi 4m + **langkah 5 MIRA: state machine, Her states, SPEED/REPLAY**
+
+- **Verifikasi paket 4m LULUS:** produksi `index-nbTSOwn5.js` sha256 `feaaf85a…` = build 4m lokal;
+  repo head `334f054`; 4 blob (`miraAudio`, `miraSoundCues`, `MiraStage`, `HumanoidMode`) identik dengan
+  workspace. **Audio di PRODUKSI 9/9** (36 cue · skor 12,550 s · RMS 1,85·10⁻¹ · SOUND OFF → 0,00 ·
+  ON → 1,26·10⁻¹ · bolt 1,51·10⁻¹).
+- **Langkah 5 selesai.** `src/lib/miraAura.ts` memport `Rn`/`QU`/`bw`/`Rw`/`Aw`/`$U`/`A_`/`Cw`,
+  `tx`/`VN`/`GN`, `Kk`, `PF`; `MiraStage` menerima `state`/`dial`/`speed`/`replayKey`/`pinTime` dan
+  memakai `Ee.bright` pada `uGain`/`uPulse` garis, gambar, helai; `HumanoidMode` menjalankan loop aura
+  (level mic atau `PF` prosedural), pin `?talk/&listen/&voice`, SPEED menggeser jam, REPLAY mengulang 0.
+- **Gerbang D langkah 5:** modul vs live **6/6** (respons aura 205 langkah selisih **0**, `VN()` **486
+  kombinasi** selisih **0**, `Rw` jepit `0,4/1/0` sama, aturan `qy`, `Kk`, `PF`) · di aplikasi **6/6**
+  (TALKING talk 0→1,000 · LISTENING listen 0→0,417 · pin URL 0,8/0,25/0,6 · **SPEED rasio 0,300** ·
+  REPLAY 0) · efek visual idle vs talking MAE **4,61** (+8,4 % terang, 539 266 piksel) dan
+  `talkBright` 1,0 vs 2,5 MAE **18,34** (53,19 → 71,52).
+- **Tanpa regresi:** build langkah 5 vs build 4m `?t=8,0` & `?t=11,5` **MAE 0,0000** · audio D1 **31/31** ·
+  Gerbang A **8/8** · Gerbang B **10/10**. Selisih vs produksi (0,039) terbukti derau lingkungan
+  (produksi lawan dirinya sendiri 0,037).
+- Paket **`niu-update-langkah4n.zip`**.
+- Berikutnya (langkah 6): MediaPipe tangan → `hum.touch.wave` + `touchRate`, MIC nyata & `mira-heard`,
+  lalu gerbang C/D sisa (reproduktibilitas, seam, fps) dan viewport 390.
+
+### Sesi 42 (2026-10-29) — **langkah 6 MIRA: tangan MediaPipe + MIC nyata** (langkah MIRA terakhir)
+
+- **Dua berkas baru.** `src/lib/miraHand.ts` memport `HAND`/`ZN`/`YN`/`jN`/`$k`/`G`/`V`/`XN`/`qN`/`CF`/`bF`/`RF`/`VT`;
+  `src/components/HandTracker.tsx` memport komponen `QN` (kamera 320×240 + audio, worker `Blob` modul,
+  fallback MediaPipe thread-utama GPU→CPU 125 ms, kanvas 256×192 tiap 40 ms, status berwarna).
+- **Sambungan di aplikasi:** tombol `mira-humanoid-camera` (`ENABLE CAMERA`/`CAMERA OFF`, `aria-pressed`,
+  titik merah 14 px), `onPinch→bolt`, `onPalm→idle`, `onSnap→listening`, MIC nyata (analiser 512) +
+  baris `mira-heard` + perintah suara (`look left/right/up/down`, `look at me`, `follow me`), dan
+  `attentionRef` menggerakkan `uHeadPose` semua lapisan (rambut, helai, bintik, poin, materi, wire)
+  serta `uBackK` poin.
+- **Dua koreksi semantik dari live:** (a) logika landmark dipisah jadi fungsi murni `handLandmarks`
+  supaya bisa diuji; (b) `?bolt=x,y` = posisi percikan (bukan arah perhatian) — arah perhatian memakai
+  `?attn=x,y`. Port sebelumnya men-seed perhatian dari `?bolt`; sekarang tidak.
+- **Gerbang D langkah 6 — modul 8/8:** worker `ZN` **884 char selisih 0** · `YN` **6 000 kombinasi
+  max|Δ| 0,00e+0** · `$k` **1 681 kombinasi 0,00e+0** · `G` **800 frame** (684 status, pinch 167/167,
+  palm 2/2, perhatian & state identik) · `V` 700 kombinasi · `RF` 30 kalimat · konstanta 10/10.
+- **Aplikasi 6/6** (kamera palsu Chromium + MediaPipe tiruan): label/aria, titik merah 14 px
+  `rgb(255,68,68)`, status `camera on` → `hand found`, perhatian Δx 0,246–0,256, yaw Δ 0,023–0,057,
+  pinch → bolt **3×**, telapak → `idle`, MIC level 0,03–0,87 + `mira-heard`, `?attn=±0,8` →
+  yaw **+0,2419 / −0,2701**, `?attn=1,1` |yaw|max **0,3059** ≤ 0,416.
+- **Tanpa regresi:** build 6 vs build 5 (knob kepala nol) **MAE 0,0000 · 0 piksel beda** (PNG identik)
+  di `?t=8,0` dan `?t=11,5` · langkah 5 modul **6/6** & aplikasi **6/6** · audio D1 **31/31** ·
+  Gerbang A **8/8** · Gerbang B **10/10**.
+- **Efek baru terukur:** `?attn=-1,0` vs `?attn=1,0` @`t=11,5` **MAE 3,7271** (128 608 piksel ≈10 %).
+- Paket **`niu-update-langkah4o.zip`**. P8b MIRA **8/8 langkah selesai**; sisa: Gerbang C (paritas
+  piksel), sisa Gerbang D (reproduktibilitas/seam/fps), viewport 390, deliverable akhir.
+
+### Sesi 43 (2026-10-29) — verifikasi paket 4o di produksi + koreksi (paket 4p)
+
+- **Verifikasi produksi 4o LULUS tiga lapis:** produksi `assets/index-DimN9-5N.js` sha256 `bc3c1ef0…` ·
+  repo head `d20d76f` · 5 blob identik · **build ulang dari tarball repo → sha identik**.
+  Gerbang di produksi: hand **6/6** · audio **9/9** · langkah 5 B **6/6** · A **8/8** · B **10/10**.
+- **Temuan besar (H-6):** worker MediaPipe **selalu gagal** — di live pun. `importScripts` tidak ada di
+  module worker. Yang berjalan adalah jalur cadangan thread-utama. Live dan produksi menunjukkan angka
+  yang sama (`created=1 ready=0 fail=1 lm=0` + 4 impor esm.sh di thread utama) → ini **paritas**.
+- **5 koreksi** (paket 4p): (1) `close()` landmarker saat kamera OFF — sebelumnya bocor; (2) klik panggung
+  tidak lagi bergantung SOUND (live selalu memancarkan `MIRA_BOLT`); (3) MIC OFF menghentikan
+  `SpeechRecognition`; (4) `Od()` sesi audio `play-and-record` dipanggil di MIC & kamera; (5) perintah
+  suara terakhir dipulihkan saat humanoid dibuka (`qN('look')`).
+- **Bukti uji membedakan:** dua uji baru (B7, B8) **gagal di produksi 4o** (`close=0`, `id 12→12`) dan
+  **lulus di 4p** (`close=1`, `id 10→11`). Gerbang langkah 6 kini **8/8** (modul tetap **8/8**).
+- **MediaPipe sungguhan** (CDN asli, tanpa tiruan) diuji: 12/12 di **live** dan 12/12 di **produksi**.
+- **Tanpa regresi:** build 4p vs 4o **MAE 0,0000 · 0 piksel** · langkah 5 B **6/6** · audio D1 **31/31** ·
+  audio aplikasi **9/9** · Gerbang A **8/8** · B **10/10**.
+- Paket **`niu-update-langkah4p.zip`**.
+
+### Sesi 44 (2026-10-29) — verifikasi 4p + **Gerbang D sisa** + viewport 390 (paket 4q)
+
+- **Verifikasi produksi 4p LULUS:** `assets/index-6z8R68bj.js` sha256 `84655131…` = repo head `5db599c` =
+  build ulang dari tarball. Gerbang di produksi: hand **8/8** · MediaPipe asli **12/12** · audio **9/9**.
+- **Gerbang D sisa selesai, 7/7** (`verification/mira/gate-d.json`): reproduktibilitas (kita 0,0000
+  vs live 0,31) · seam (rasio 1,46 vs 1,45) · fps (0,78 vs 0,73 di lingkungan sama) · stabilitas 120 s
+  (153 frame, konteks hidup, 0 error) · viewport 390 & 414 (reproduktif, **korelasi profil 0,9887 /
+  0,9886**).
+- **Dua bug tata letak ditemukan dan dibetulkan:** (W-1) panggung tidak pernah menyesuaikan ukuran gambar
+  terhadap bentuk layar — port rumus live (`fh = 2·D0·fit`, potong lebar `2·halfW·0,94`) → di 390 MAE
+  **70,6 → 10,8**; (W-2) baris tombol dipindah ke atas sesuai CSS live (`mira-own-row` 72 px,
+  `mira-page-row` 124 px, media ≤720 px).
+- **Tanpa regresi:** 4q vs 4p **MAE 0,0000 · 0 piksel** · paritas 1440 6 fase **2,54** (build37 2,55) ·
+  A **8/8** · B **10/10** · langkah 5 B **6/6** · audio **9/9** · hand **8/8**.
+- Sisa selisih ponsel = **kecerahan** (kita 47,6 vs live 40,7), bukan tata letak — kandidat berikutnya.
+- Paket **`niu-update-langkah4q.zip`**.
+
+### Sesi 45 (2026-10-29) — verifikasi 4q di produksi + **bug W-3** + Gerbang C dimulai (paket 4r)
+
+- **Produksi 4q terverifikasi 3 lapis**, tetapi **Gerbang D di produksi gagal di D9** (korelasi 0,714,
+  terang kita 69,0 vs live 40,7) padahal di lokal 0,9887 → pemeriksaan produksi memang perlu.
+- **Bug W-3 ditemukan:** matriks kuad gambar & awan titik dibuat **sekali saat init** (sebelum faktor
+  skala layar dihitung), jadi hanya sebagian lapisan ikut mengecil. Dibuat per frame → 390 **0,9887**,
+  414 **0,9886**, reproduktif **0,0000**, dan di 1440 **MAE 0,0000** (t=1).
+- **Bug W-4:** kosakata `?off=` disamakan dengan live (`pic`/`fog`/`figure` + alias) — `&off=figure` kini
+  memberi layar hitam di kedua sisi (MAE **0,0000**).
+- **Gerbang C dimulai** (`tools/gate-c-ablation.js`, 10 lapisan × 2 aplikasi, t=9,5): latar **identik**
+  (`off=figure` → 0,0000), sisa selisih **terpusat di tubuh** (+7…+14,8 per sel), dan **bloom kita jauh
+  lebih lemah** (live turun 13,5 saat bloom dimatikan, kita 2,2). Sweep `fg` 1,00–1,15 hanya menggeser
+  0,39 → bukan penyebab utama.
+- Paket **`niu-update-langkah4r.zip`**.
+
+### Sesi 46 (2026-10-29) — verifikasi 4r di produksi + W-5 + Gerbang C diulang bersih (paket 4s)
+
+- **Produksi 4r LULUS 3 lapis** dan **Gerbang D di produksi 7/7** — D9 ponsel 390 **0,9886**, 414 **0,9883**
+  (produksi 4q sebelumnya 0,714 ⇒ perbaikan W-3 memang perlu).
+- **W-5 ditemukan:** `?off=field` tidak pernah mematikan latar (blit memakai tekstur basi). Akibatnya
+  **tabel ablasi §7.4 tidak sah** (klaim "bloom kita 6× lebih lemah" gugur). Dibetulkan.
+- **Gerbang C diukur ulang:** `off=fog` kita **25,16** vs live **25,40** (Δ0,24) dan `off=figure` keduanya
+  **0,0000** ⇒ **latar setara**; kelebihan tinggal **+3,5** satuan pada lapisan figur (kita 17,46 vs live 13,93).
+- **Dua hipotesis gugur dengan angka:** bloom lebih kuat = lebih buruk (`?bb=` 0,9 → 2,80/4,47 sampai
+  2,2 → 8,08/5,63); `fg` optimum 1,2 hanya **0,01** lebih baik dari 1,15.
+- **Tanpa regresi:** 4s vs produksi **MAE 0,0000 · 0 piksel** · 6 fase **2,54** · D **7/7** · A **8/8** ·
+  B **10/10** · langkah 5 B **6/6** · hand **8/8** · audio **9/9** (alat audio diperbaiki: klik DOM).
+- Paket **`niu-update-langkah5a.zip`** (menggantikan 4y).
+
+## Bersih-bersih workspace (sesi 46, atas permintaan: over budget)
+
+| tindakan | jumlah | hemat |
+|---|---|---|
+| hapus tangkapan sapuan/scratch di `verification/` (deret `build14/31/32/33`, `b4q-*`, `b4s-*`, `shots6/`, `shots390/`, `build-stage*`, panel/audio/auto) | 58 berkas | **44 MB** |
+| hapus duplikat byte-identik di `verification/` (sha256 sama) | termasuk di atas | — |
+| bersihkan scratch `/tmp` (`repro4q`, `p4r.js`, `gatec/`, skrip sapuan) | — | — |
+| `recon/` **tidak disentuh** (sumber kebenaran); duplikat di dalamnya hanya 0,2 MB ⇒ tidak sepadan risikonya | 0 | 0 |
+
+Sisa: `verification/` **9,7 MB** (semua JSON gerbang + `.md` + skrip audio `.mjs` + tangkapan pembanding yang dirujuk dokumen), total workspace **81 MB** (dari 125 MB).
+
+Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebelumnya (`banding-build28..30`, `build-stage2..15`, `verification/step3/compare-birth.png`, `build-stage21.png`) kini **tidak ada di disk** — sudah sebagian hilang di sesi-sesi sebelumnya, sisanya ikut tersapu. Angka dan JSON gerbangnya tetap utuh; tangkapan bisa dibuat ulang lewat `tools/` kapan pun dibutuhkan.
+
+## Sesi 47 — produksi 4s diperiksa, Gerbang C dibongkar
+
+- **Produksi 4s lulus 3 lapis**: `index-B4pxZZJw.js` `1bb6e4c0…` = CSS `6ad9d68a…` = repo `c363154` =
+  build ulang byte-identik. **Gerbang D di produksi 7/7** (D9 0,9884 / 0,9881).
+- **Gerbang C dilanjutkan** dan satu klaim sesi 46 dikoreksi: "latar setara 0,24" hanya benar sebagai
+  rerata; sebarannya beda (std 10,7 vs 22,4) dan flag live tidak bisa mengisolasi latar (`off=figure` = 0,00).
+- **Penyumbang +3,3 ditemukan**: kuad `pic` di torso (+7,96; torso total +1,22), sementara lengan justru
+  −1,24 ⇒ tidak ada knob global yang bisa menutupnya.
+- **Empat hipotesis gugur dengan angka**: `?bb=`, `?fg=` (Δ0,01), 7 uniform medan (8,114 → 8,114), `?ft=`
+  (Δ0,03), kurva respons (Δ0,32 < derau 0,408).
+- **Akar struktural**: live menutupi latar dengan mesh badan/kepala gelap; kita memakai kuad alpha sehingga
+  nebula menembus. Perbaikan = pass mesh penutup (satu langkah penuh).
+- **Alat baru**: `tools/gate-c-layer.js`, `tools/fit-field.js`, knob F-140/F-141 (bawaan tak berubah).
+- **Tanpa regresi**: build 4t vs produksi 4s @8 & @11,5 → **MAE 0,0000 · 0 piksel**.
+- Dokumen: `docs/langkah6/ANALISIS-GERBANG-C.md`, STATE §9.
+
+## Sesi 48 — produksi 4t diperiksa, W-6, dan Gerbang C hampir tertutup
+
+- **Produksi 4t lulus 3 lapis** (`df3071b7…` = repo `5448da1` = build ulang) dan **Gerbang D 7/7 di produksi**.
+- **W-6:** acuan paritas kita (`live-ref-v2`) basi — pada t=9,5 beda **3,83** dari live hari ini, sehingga
+  perbaikan nyata tampak "tidak berubah". Set baru `recon/live-ref-v4` + urutan metric3 diperbaiki.
+- **Koreksi 4t:** "badan kita transparan" itu artefak `off=pic` (ikut mematikan penutup); penutup badan
+  sendiri sudah penuh dan **bukan** tuasnya (`?mk=`/`?mc=` diuji, tidak menolong).
+- **F-143:** gamma kuad gambar `pgg` 1,25 dijadikan bawaan — rata-rata MAE t≥8 **7,04 → 5,35**, t=9,5
+  **6,46 → 5,11**, torso **+14,4 → +5,8**. Fase sebelum ignition tidak tersentuh.
+- **Paritas acuan segar:** 4t 2,93 → 4u **2,76**.
+- **Gerbang build 4u:** A 8/8 · B 10/10 · langkah 5 B 6/6 · hand B 8/8 · audio 9/9.
+- **Bersih-bersih:** `.cache` 554 MB + `.npm` 197 MB + `live-ref-v2` 5,4 MB dihapus; workspace (tanpa
+  node_modules) **88 MB**.
+
+## Sesi 49 — produksi 4u diperiksa di semua gerbang, W-7, deliverable P10
+
+- **Produksi 4u lulus 3 lapis** (`68e0b85c…` = repo `2fb3ed9` = build ulang).
+- **Semua gerbang dijalankan terhadap URL produksi**: D **7/7** · A **8/8** · B **10/10** · langkah 5 B
+  **6/6** · hand B **8/8** · audio **9/9**. D9 ponsel naik ke **0,9912/0,9913** (MAE 8,91/8,70).
+- **F-144 diuji lalu dibuang**: peredupan badan `?tv=` justru memperburuk (4,71 → 5,35 pada t=9,5) karena
+  radiusnya ikut menggelapkan kepala; `dist` dikembalikan **byte-identik** dengan produksi.
+- **W-7 (baru):** sumber APEX hilang dari repo — hanya ada di commit `369c8f5`. Dipulihkan ke
+  `apex-humanoid-rebuild/` dan diverifikasi 3 lapis (build ulang = produksi `8dac8dad…` byte-identik).
+- **S-7:** `waitForFunction` salah posisi argumen timeout → gerbang langkah 5 palsu gagal di produksi.
+- **P10 deliverable:** `DELIVERABLE.md` ditulis (dua aplikasi, angka, cara membangun ulang, batas yang
+  diketahui, peta berkas).
+
+## Sesi 50 — laporan Hermes diverifikasi + dua tuas baru untuk Gerbang C
+
+- **Semua klaim Hermes lulus angka**: repo `apex-humanoid-rebuild` (`a5535a0`) isinya = workspace, build
+  ulang **byte-identik** dengan produksi APEX (`8dac8dad…` / `1b66a34b…`); MIRA `3d3abcb` & Niu `eb4144b`
+  cocok; kedua situs tidak berubah (memang tidak perlu deploy).
+- **C-18:** detail frekuensi tinggi torso kita **22,2** vs live **25,5** — jadi sisa selisih bukan sekadar terang.
+- **F-145:** tekstur rambut tanpa mipmap → menang **5/5 fase** (t=9,5 5,298 → 5,210), detail jadi 25,9 ≈ live 25,5.
+- **F-146:** potongan bloom fase lambat disapu (`?blt=`) → 0,8: t=11 **5,268 → 5,090**, t=13 **5,853 → 5,567**,
+  t≤10 tidak tersentuh.
+- **Paritas 6 fase 2,76 → 2,74**; gerbang build 4w: D **7/7** (ponsel 0,9906/0,9908), A 8/8, B 10/10,
+  langkah 5 6/6, audio 9/9.
+
+## Sesi 51 — W-8: determinisme saat `?t=` dipin
+
+- Produksi 4w lulus 3 lapis + Gerbang D 7/7, **tetapi** D5 t=11,5 keluar 0,1165 (20.432 px) — klaim
+  "reprodusitas 0,0000" ternyata rapuh.
+- **Tiga penyebab ditemukan dan dibetulkan:** jam sekunder dihitung dari jumlah frame (W-8a), percikan pita
+  maju tiap frame (W-8b), pose kepala transient dari 0 (W-8c).
+- Sesudahnya: reprod **0,0000 di semua fase termasuk cold start**; paritas 6 fase 2,74 → **2,72** (t=9,5 → 5,31).
+- Gerbang lokal: D 7/7 · A 8/8 · B 10/10 · langkah 5 6/6 · audio 9/9.
+- **M-3:** gerbang reproduktibilitas wajib 3 tangkapan termasuk cold start.
+
+## Sesi 52 — produksi 4x diverifikasi penuh; Gerbang C terjelaskan
+
+- Produksi 4x lulus 3 lapis; **semua gerbang di produksi**: D **7/7** (reprod 0,0000 di semua viewport ⇒ W-8
+  terbukti), A 8/8, B 10/10, langkah 5 6/6, langkah 6 8/8, audio 9/9.
+- **C-21:** di crop torso, kita +9,2 pada piksel yang di live gelap (<20) dan −1,9 pada piksel terang (>180)
+  ⇒ masalahnya kontras/penutup, bukan kecerahan menyeluruh (korelasi 0,969).
+- **Tiga tuas gugur dengan angka:** peredupan torso bergerbang (MAE 5,36 → 5,76), gamma komposit (4,89 → 7,91),
+  dan **penutup siluet** — yang terakhir justru membuktikan terang torso kita **80 % dari nebula bocor**
+  (17 dari 80), bukan dari gambar.
+- **Kesimpulan:** sisa Gerbang C = **mesh badan/kepala belum di-port**. Itu satu langkah penuh, bukan knob.
+- `dist` dikembalikan byte-identik dengan produksi (percobaan dibuang).
+
+## Sesi 53 — penutup badan dieksekusi penuh, batas Gerbang C dinyatakan
+
+- Produksi 4y terverifikasi (repo `f06115d`, aset tetap — paket 4y memang hanya dokumen).
+- **F-148 penutup badan** dibuat lengkap (siluet dari alfa citra, blur+ambang, digambar ke kanvas sebelum
+  figur dikomposit). Hasil: **bias diperbaiki** (Δtorso +3,3 → −0,3; celah gelap +9,2 → +5,7) tetapi
+  **MAE bingkai penuh tidak turun** (4,853 → 5,162) ⇒ bukan bias yang tersisa, melainkan struktur.
+- **W-9b** (jebakan alat): `bindVertexArray(occlVao)` tanpa `.v` membuat seluruh loop gambar galat dan
+  hasilnya *tampak* seperti eksperimen yang berhasil. Ketahuan dari `__MIRA_ERR`.
+- Tuas lain diuji dan gugur: `obk`, `stg`, `hgg`.
+- **Kesimpulan:** paritas **2,72** mentok untuk semua tuas level-knob; sisa = port mesh badan + pencahayaan
+  permukaan dari live (beberapa sesi).
+- Tanpa regresi: t=8/11,5/13 **MAE 0,0000 · 0 piksel**. Workspace dibersihkan **125 → 62 MB** (verification 18→9 MB, recon 73→37 MB, cache + /tmp kosong).
+
+## Sesi 54 — 2026-11-12
+
+- **F-149** penutup badan berpermukaan (normal dari medan tinggi siluet, diffuse + rim): dieksekusi penuh,
+  disapu 6 tuas → **GUGUR** (bias torso +3,69 → +1,31 tetapi MAE 5,012 → 5,217).
+- **F-150** gerbang kecerahan pada penutup F-148 → **GUGUR** (5,315).
+- **Diagnosis penutup Gerbang C:** skala 1,000 · geser 0 · skala-geometri 1,000 · HF 1,00 · matriks warna 9 %
+  · tanda galat berimbang ⇒ sisa = pola per-filamen. **Gerbang C ditutup dengan bukti batas** (2,72).
+- Tanpa regresi: build 5b vs produksi **MAE 0,0000 · 0 piksel**; paritas **2,72**; `__MIRA_ERR = null`.
+- Paket **`niu-update-langkah5b.zip`** (superset 5a).
+
+## Sesi 55 — 2026-11-12 · verifikasi penerapan 5a+5b
+
+- Produksi: `index-DCR382kJ.js` `e215b5a7…` = build 5b byte-identik · repo `367acf2` (MIRA) · `3e543ea` (docs).
+- Gerbang produksi: **D 7/7 · A 8/8 · B 10/10 · langkah 5 12/12 · step4c 9/9**.
+- Paritas piksel **produksi** 6 fase = **2,72** (sama dengan build lokal).
+- **W-7 ditutup:** APEX `a5535a0` → build ulang byte-identik dengan produksi (`8dac8dad…`, CSS `1b66a34b…`).
+- APEX Gerbang C tidak regresi: 10,66/9,68 (1440) · 8,58/7,30 (390) vs catatan 10,73/11,93 · 7,71/9,01.
+- **W-10** ditemukan & dibetulkan: redirect 15 byte pada URL bergaris-miring ganda.
+- Alat baru: `tools/verifikasi-produksi.sh`.
+
+## Sesi 56 — 2026-11-12 · verifikasi 5c, dokumentasi ditata ulang, rencana P11–P15, lisensi & mesin produksi
+
+- **Verifikasi 5c:** paket 5c ternyata tidak mengubah kode; aset produksi tetap `index-DCR382kJ.js` `e215b5a7…`
+  (benar). Repo `mira-humanoid@0ffb82a`, `Niu-Humanoid@8fc18db`; `tools/verifikasi-produksi.sh` dan
+  `verification/VERIFIKASI-5b-2026-11-12.md` benar-benar ada di repo; lapis 1–3 lulus (build byte-identik).
+- **Koreksi dokumentasi:** `STATUS-ROADMAP.md` **ditulis ulang** — versi lama masih menyebut langkah 4/5/6
+  belum ada dan Gerbang C belum diukur, padahal semua sudah selesai. §3/§4 lama dihapus.
+- **Dokumen baru:** `docs/PETA-DOKUMEN.md` (peta dokumen), `docs/RENCANA-LANJUTAN.md` (**P11–P15** + Gerbang E
+  + aturan anti-drift), `docs/LISENSI-BRANDING.md`, `docs/MESIN-PRODUKSI-AVATAR.md`, `templates/avatar.manifest.json`.
+- **Hukum:** `LICENSE` (All Rights Reserved) + `NOTICE` di kedua repo; `package.json` → `license` + `private`.
+  **Audit aset: 12/12 salinan verbatim** (`tools/audit-provenance.py` → `verification/provenance.json`).
+- **Alat baru:** `tools/audit-provenance.py` (gerbang hukum otomatis) · `tools/avatar-baru.py` (scaffold +
+  validator manifest avatar; sudah dicoba: `python3 tools/avatar-baru.py mirai` → 0 masalah).
+- Tanpa regresi: build MIRA tetap `e215b5a7…` (byte-identik produksi) sesudah LICENSE/NOTICE/package.json.
+
+## Sesi 57 — 2026-10-29 · P11 APEX: lapisan latar ditemukan & diperbaiki (gerbang 11,35 → 7,61)
+
+- **Arah diagnosis berubah total.** Kegelapan area samping **bukan** ukuran/jumlah titik point-cloud
+  (geometri benar: 5197 titik, aspek 1,7768, bright 31 300) melainkan **tiga kanvas** yang salah
+  ditumpuk: gambar diam yang kita matikan, komposit figur yang menulis alfa 1,0, dan plate 2D yang
+  mengisi latar hitam opak. Rincian + angka: `docs/P11-PARITAS-LATAR.md`.
+- **Koreksi klaim lama:** (a) "img backdrop opacity 0" — di live gambar diam **tampak** (sembunyikan:
+  27,65 → 16,19); (b) "kanvas latar `screen`" — perilakunya **aditif** (`plus-lighter`);
+  (c) "plate 2D berlatar hitam" — di live plate transparan di luar siluet (alfa 0 pada 48,9 %).
+- **Gerbang APEX** (`tools/gate-apex.js`, 2 viewport): 1440 **11,35 / 10,39 %** → **7,61 / 7,02 %**
+  (tiga run 7,78 · 7,70 · 7,35); 390 **8,58 / 7,29 %** → **7,03 / 6,63 %**. Isolasi per lapisan:
+  gambar diam 16,90|16,89 · kanvas latar 2,74|2,73 · kanvas figur 14,43|14,26 (live|kita).
+- **Sisa:** sorotan masih redup (pita 120–200 Δ−15,7 · 200–256 Δ−22,5), bayangan sedikit terang (Δ+2,9).
+- Build `index-Ct4QlgXS.js` `98a11ea3…`; CSS tetap `index-WDCbnnbD.css` `1b66a34b…`.
+
+- **Paket:** `niu-update-langkah5e.zip` (14 berkas, `38661957…`) — `BACA-DULU.md` di dalamnya.
+
+### Sesi 57 lanjutan — verifikasi 5e + protokol ukur baru (median)
+
+- **Verifikasi paket 5e:** tiga berkas sumber di `Niumination/apex-humanoid-rebuild` **byte-identik**
+  (sha256 16 hex: `Backdrop.tsx 760d44f8…` · `bloomGL.ts 1e427bfc…` · `render.ts d49c4b15…`), dokumen
+  `docs/P11-PARITAS-LATAR.md 1ee4bd39…`, alat `tools/gate-apex.js 4ea83ce0…`. `npm ci && tsc --noEmit
+  && vite build` → `index-Ct4QlgXS.js` `98a11ea3…` **reproduksi byte-identik**. Catatan: `Niu-Humanoid`
+  hanya menerima dokumen — `src/` di repo itu **snapshot lama** (bloomGL 10 797 B vs 19 424 B); bila
+  repo itu juga dipakai untuk deploy, ia perlu disamakan (belum dilakukan, menunggu keputusan).
+- **Koreksi protokol ukur:** dua tangkapan LIVE berjarak 1,2 s sudah berbeda **MAE 5,41** ⇒ angka satu
+  tangkapan bercampur derau fase animasi. `tools/gate-apex.js` kini punya `--frames N --gap ms`
+  (median piksel). Derau turun ke 0,96–2,08.
+- **Hasil protokol median:** produksi **sebelum 5e** vs APEX **8,12 / 5,89 %** → build 5e **3,85 / 1,84 %**
+  (1440) dan **4,59 / 2,96 %** (390). Pita 1440 hampir rata: +2,0 · +1,3 · +0,6 · −1,7 · −0,3.
+  Ambang P11 1440 (≤ 6,0) **tercapai**; 390 (≤ 2,3) **belum** (120–200 Δ−12,2).
+- **Jalan buntu dicatat:** bloom (`bpm/bpi`) tidak berpengaruh; `uSizeK ×0,725` (dugaan `min(vw,vh)`)
+  **salah arah** (2,95 → 2,36) — knob dicabut, build kembali `98a11ea3…`; geser ±20 px & flip UD/LR
+  tidak menaikkan impitan titik terang (10,8 % di 390, 18,9 % di 1440 — jumlah piksel terang sama).
+
+### Sesi 57 lanjutan 2 — verifikasi 5f + F-159/F-160 (build baru `index-euagY5AQ.js`)
+
+- **Verifikasi 5f:** `tools/gate-apex.js` (`af07d58c…`, 5 226 B, `--frames` ada) dan
+  `docs/P11-PARITAS-LATAR.md` (`c5348d3e…`) di repo = **byte-identik** dengan lokal.
+- **F-159 (DITOLAK jadi bawaan):** rantai bloom live `?bpm=1` lebih dekat pada lapisan figur (1440 4,29→4,14 ·
+  390 4,42→3,53) tetapi **lebih buruk pada gambar penuh di 1440** (4,51→5,75) dan lebih baik di 390 (5,51→4,93).
+  Bawaan tetap rantai lama karena kriteria P11 = paritas gambar penuh.
+- **F-160 (DITERIMA):** composer live memakai `frameBufferType` **UnsignedByteType (1009)** ⇒ RT 8-bit, bukan
+  HalfFloat (1016). Kita dulu memakai half-float. Diukur lapisan figur: 1440 **4,29 → 3,95** · 390 **4,42 → 3,30**.
+  Bawaan kini 8-bit; `?bf16=1` mengembalikan half-float. Build baru `index-euagY5AQ.js` `c2dc850e…`.
+- **Lantai derau gerbang ditetapkan:** 7 bingkai → 0,98–2,45; **11 bingkai/400 ms → 1,19 (1440) · 1,99 (390)**.
+  Aturan: selisih < 2,5 MAE (1440) / < 3,0 (390) **tidak** boleh disebut perbaikan. Empat run 1440 dengan build
+  berbeda (3,58 · 3,85 · 4,27 · 4,32) karena itu **setara**.
+- **Angka resmi terakhir:** 1440 **3,58 / 1,63 %** · 390 **4,70 / 2,84 %**. Target 1440 (≤6,0) tercapai;
+  390 (≤2,3) belum — sisa di pita 120–200 (Δ−13,5, sorotan kanvas figur).
+
+### Sesi 57 lanjutan 3 — verifikasi 5g + pengejaran sisa 390 (semua dugaan gugur, build tetap)
+
+- **Verifikasi 5g:** `src/lib/bloomGL.ts` di repo `12cfcedf…` (20 536 B) = **byte-identik** dengan lokal;
+  `npm ci && tsc --noEmit && vite build` → `index-euagY5AQ.js` `c2dc850e…` (reproduksi).
+- **Tujuh dugaan untuk sisa 390 diuji dan GUGUR semua** (rincian angka: `docs/P11-PARITAS-LATAR.md` §9):
+  bloom_k (1,0/1,25/1,3) · `__HUM_DOT` (0,18/0,45) · `?bun=0` (3,53→3,67) · `?bal=1` (3,48) ·
+  rantai bloom live · RT 8-bit (dipakai) · `uSizeK` = lebar/1020 (**1440 0,43→3,52 — jauh lebih buruk**).
+  Semua knob uji dicabut lagi; build kembali **`c2dc850e…`** (byte-identik) — tidak ada perubahan runtime.
+- **Bukti kunci baru:** instrumentasi uniform WebGL pada halaman **live** membuktikan uniform shader figur
+  **identik** di kedua situs/viewport (`uSize` 1,74 · `uPatchUV` 0,0044615 · `uDotSharp` 0,32 · `uRim` 0,9 ·
+  `uBloomR` 9 · `uPulseA/B` 1,4087 · `uBoilAmp` 2,2714 · `uVein` 1,4541). Sisa 390 **bukan** geometri
+  atau ukuran titik ⇒ kandidat tinggal komposit bloom (area halo) / lapisan plate di 390.
+- **Gerbang resmi (median 11 bingkai):** 1440 **3,65 / 1,70 %** (pita +1,9 · +0,7 · −0,3 · −2,5 · −0,7) ·
+  390 **4,54 / 2,85 %** (120–200 Δ−12,7). Target 1440 tercapai, 390 belum.
+
+### Sesi 57 lanjutan 4 — plate dibongkar (F-162…F-166), build `index-ClEvdEMa.js`
+
+- **Verifikasi 5h:** `tools/probe-uniform.js` di repo `3fa04e14…` = byte-identik; `bloomGL.ts` tetap `12cfcedf…`.
+- **F-162 (temuan besar):** plate live **hitam** di semua state — diukur sendirian 390: idle 1,78 · thinking 1,98 ·
+  speaking 1,97 (piksel >100 ≈ 950) vs plate kita 7,71 / 9,04 / 9,44 (piksel >100 7 021–11 300). ⇒ plate live
+  hanya **mask oklusi**; kita menggambar figur dua kali. Bawaan kini siluet saja (`?pl=0` membatalkan).
+- **F-163:** siluet plate kita terlalu tipis — alfa live 0/255/rerata = 71,9 % / **20,8 %** / 57,6; kita 79,5 % / 9,1 % / 33,8
+  sesudah ramp dipertajam (0,06/0,04) & mask 1/2 resolusi. Masih kurang pekat (sisa).
+- **F-164:** backing kanvas plate live = **CSS×dpr** (390 pada viewport 390), kita selalu 900 ⇒ alfa merata. Kini ikut ukuran tampil.
+- **F-165:** dugaan "live tidak meng-encode sRGB" **gugur** (tanpa encode rasio halo 0,55–0,71). Knob dicabut.
+- **F-166 (koreksi alat ukur):** `bpi` **mati di mode 0** — semua uji bpi sebelumnya (0,75/1,4/1,6) tidak mengubah
+  apa pun dan kesimpulannya **dibatalkan**. Kini `intensityMul` berlaku di kedua rantai.
+- **Profil halo (bukti terbaik):** puncak sama (216,9 vs 214,1) tetapi pendar kita seragam ±15 % lebih redup
+  (r=3: 0,91 · r=6: 0,87 · r=9 & 12: 0,85). Bukan radius, bukan encode.
+- **Gerbang resmi:** 1440 **3,80 / 1,97 %** · 390 **4,53 / 2,54 %** (derau 1,13 / 1,52) — dalam derau vs build sebelumnya.
+- **Alat baru:** `tools/probe-layers.js` (sembunyikan lapisan + median), `tools/probe-alpha.js` (sebaran alfa),
+  `tools/probe-shot.js` (tangkapan keadaan), `tools/band.py` (pita luma + rasio).
+
+### Sesi 57 lanjutan 5 — verifikasi 5i + penyapuan pendar (tanpa ubahan bawaan)
+
+- **Verifikasi 5i:** empat berkas di repo = **byte-identik** dengan lokal (`render.ts c62bea94…` ·
+  `HumanoidMode.tsx 77f17e94…` · `bloomGL.ts e3b527ef…` · `probe-layers.js d864d3b6…`);
+  `npm ci && tsc && vite build` → `index-ClEvdEMa.js` `b489da8c…` (reproduksi).
+- **Pendar disapu** (`bpi` kini benar-benar bekerja): r=3 rasio 0,88 (bpi 0) → 0,91 (1) → 0,94 (4) →
+  **0,96 (6)** → 0,98 (8). **Tetapi** gerbang memburuk: bpi=6 → 390 **5,62** · 1440 **5,27** (bias pita
+  tengah +6,0…+7,7). ⇒ selisihnya **sebaran**, bukan jumlah energi bloom. **Tidak diadopsi.**
+- `bpl` 3/4/6 tidak mengubah pendar (rantai mode 0 menormalkan diri sendiri) ⇒ arah itu buntu.
+- **Tidak ada perubahan runtime** sesi ini; build tetap `index-ClEvdEMa.js` `b489da8c…`.
+- Alat baru: `tools/halo.py` (profil pendar r=0…12).
+
+### Sesi 57 lanjutan 6 — verifikasi 5j + F-167 (kernel bloom diambil verbatim: identik)
+
+- **Verifikasi 5j:** `tools/halo.py` di repo `ea009030…` = byte-identik; `src/` tidak berubah (`render.ts c62bea94…`).
+- **F-167:** bobot upsample live diekstrak dari bundle: corner 0,0625 · edge 0,125 · center 0,25, lalu
+  `mix(base, tent, radius)` ⇒ **identik** dengan `FS_UP_MIX` kita. Jadi kekurangan pendar **bukan** kernel.
+- Uji ruang warna: encode saja (`bsrgb=1`, tidak berpasangan) → pendar 0,93/0,91/0,90 (artifisial);
+  encode+decode berpasangan (mode 1) → 0,88/0,83/0,80 (**lebih buruk**). Knob dicabut; **tanpa ubahan bawaan**.
+- **Daftar penyebab yang sudah dieliminasi untuk sisa 390:** geometri & jumlah titik · seluruh uniform figur ·
+  `uSizeK` · `uDotSharp` · `bpi` 0–8 · `bpr` · `bpm` · `bpl` · kernel mip · ruang warna rantai · encode sRGB ·
+  alpha/komposit figur. **Sisa kandidat: interaksi antar-lapisan di 390** (plate mask + figur + latar `plus-lighter`).
+- **Gerbang resmi ulang:** 1440 **3,96 / 2,22 %** · 390 **4,35 / 2,52 %** (derau 1,03 / 1,00) — dalam derau
+  dibanding run sebelumnya (3,80 · 390 4,53). Build tetap `index-ClEvdEMa.js` `b489da8c…`.
+- **Uji interaksi lapisan (390):** `bgb=plus-lighter/screen/normal` dan `pl=0` tidak mengubah pola; di semua
+  varian pita gelap 5–20 kita **~10 % lebih terang** (rasio 1,10). ⇒ bukan blend antar-lapisan. Lead baru:
+  kanvas figur lebih terang di pita gelap bahkan tanpa bloom (`bpi=0`), kandidat = pensampelan tekstur sprite
+  titik (`uPatchUV`/mip). Dicatat untuk sesi berikutnya.
+
+### Sesi 57 lanjutan 7 — P12 langkah 1: peta galat torso MIRA (diagnosis berangka)
+
+- **Baseline diukur ulang dari nol** (rebuild bersih `e215b5a7…` = produksi, acuan live diambil hari ini):
+  paritas 6 fase **2,758** (1,136 · 2,087 · 1,951 · 2,901 · 3,094 · 5,379) — sama dengan catatan sesi 54.
+- **Torso t=9,5**: MAE **12,31** RGB / 10,57 luma · bias **+3,50** · pita 0–20 **+12,08** · pita 200+ **−4,25**.
+- **Empat penyebab gugur** (semua berangka): terang menyeluruh/afin (menjelaskan **0,3 %**) · bidang terang
+  per blok (4×4 hanya −7 %) · salah daftar/geser (median dx=dy=**0**, RMS sisa 8,25) · pola garis dasar
+  (impitan **87,3 %** pada 2 px, seam 1,07 px).
+- **Tiga mekanisme hidup**: (A) kontras garis — inti redup, pinggir lebar (bloom menyumbang +4,9 ke pita
+  gelap, garis +2,5); (B) kuad gambar datar vs permukaan 3D — terlihat sebagai bilah lurus/kotak di kuad kita;
+  (C) rambut — `off=hair` menggeser bias torso +3,50 → **−17,89**, galat terpusat di y 400–496.
+- **Sapu 7 knob murah** (bt/bg/lg): tidak ada yang menurunkan torso di bawah 10,4 tanpa menaikkan MAE ⇒
+  jalur parameter habis.
+- **F-170 (aturan baru):** acuan live **tidak beku** walau `?t=` dipin — derau 1,04 (5 s vs 12 s) dan 2,16
+  (5 s vs 14 s) ⇒ semua gerbang MIRA wajib menangkap acuan dengan tunggu yang sama (5 000 ms).
+- **F-168:** `off=arcs` identik dengan bawaan di t=9,5 ⇒ busur `gl.LINES` tidak menyumbang. **F-169:** knob
+  `hy` (geser rambut) tidak berpengaruh di t=9,5.
+- Alat baru: `tools/probe-mira-torso.js`, `tools/p12-peta.py`, `tools/p12-sapu.js`. Rincian:
+  `docs/langkah6/P12-DIAGNOSIS.md` + `verification/mira/p12-diagnosis-5l.json`.
+- **Tidak ada ubahan `src/`** ⇒ build tetap `index-DCR382kJ.js` `e215b5a7…`.
