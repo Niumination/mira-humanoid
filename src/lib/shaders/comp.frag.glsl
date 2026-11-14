@@ -264,10 +264,20 @@ uniform mediump sampler2D e0Map;
 uniform lowp sampler2D e0Map;
 #endif
 uniform float e0Intensity;
-uniform float uGamma; uniform float uBaseK; void e0MainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){outputColor=texture2D(e0Map,uv)*e0Intensity;}
+uniform float uGamma; uniform float uBaseK;
+// P12/B1: PERMUKAAN BADAN. Diukur (langkah 2): piksel yang di live gelap dan kita >8 lebih terang
+// menyumbang 17,9 luma dari nebula ⇒ di live badan adalah permukaan OPAK yang menghapus latar, lalu
+// garis cahaya citra ditambahkan di atasnya. `uMatte` = siluet badan (alfa tekstur penutup), `uMtl`
+// = kekuatannya; `uSrf` menyalakan permukaan itu dari cahaya citra sendiri (mengembalikan pita terang
+// yang hilang saat latar dihapus). Bawaan 0/0 = perilaku lama, byte-identik.
+uniform sampler2D uMatte; uniform float uMtl; uniform float uSrf; void e0MainImage(const in vec4 inputColor,const in vec2 uv,out vec4 outputColor){outputColor=texture2D(e0Map,uv)*e0Intensity;}
 vec4 blend0(const in vec4 dst,const in vec4 src,const in float opacity){vec3 c=dst.rgb+src.rgb;return mix(dst,vec4(c,max(dst.a,src.a)),opacity);} void main(){ vec4 color0=texture2D(inputBuffer,UV);vec4 color1=vec4(0.0);e0MainImage(color0, UV, color1);
 	color0.rgb *= uBaseK;   // F-123: kembalikan tampilan ke skala semula saat figur diberi headroom HDR
 	color0 = blend0(color0, color1, e0BlendOpacity); color0.a=clamp(color0.a,0.0,1.0);
+	// alfa keluaran = seberapa banyak LATAR dihapus: siluet badan menutup penuh, seperti mesh opak live
+	color0.a = max(color0.a, clamp(texture2D(uMatte, UV).a * uMtl, 0.0, 1.0));
+	float mt = clamp(texture2D(uMatte, UV).a * uMtl, 0.0, 1.0);
+	color0.rgb *= 1.0 + uSrf * mt;          // permukaan menyala oleh cahaya citranya sendiri
 	color0.rgb = pow(max(color0.rgb, vec3(0.0)), vec3(uGamma));
 	gl_FragColor=color0;
 #ifdef ENCODE_OUTPUT

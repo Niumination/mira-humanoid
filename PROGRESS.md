@@ -1079,3 +1079,20 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **Tiga knob uji dicabut**: `hhx/hhy`, `pft` (`uPF`), `scx` (`uSC`) → `tsc` bersih, build kembali
   `index-DCR382kJ.js` `e215b5a7…` (**byte-identik**).
 - Peta galat torso: y 400–496 **14,97** (bias +8,84) · y 496–620 9,22 · y 620–780 9,26.
+
+### Sesi 57 lanjutan 9 — verifikasi 5m + P12 langkah 3 (B1 permukaan badan)
+
+- **Verifikasi 5m:** 8 berkas di repo `Niumination/mira-humanoid` **byte-identik** dengan lokal
+  (`P12-LANGKAH2.md` 4ce4a6d1 · `tools/p12-sapu.js` e5717cf6 = versi yang sudah DIPERBAIKI, memakai `indexOf('=')`
+  · `p12-langkah2.json` 8a8e90cf · 2 PNG a7593e70/299c2661 · catatan 22d3b25a/e1bb60fd/630cbe14) ⇒ **5m LULUS**.
+- **P12 langkah 3 (B1):** permukaan badan = siluet ruang layar + penghapus latar + penyala cahaya citra.
+  Bawaan baru `mtl` **0,5** · `srf` **0,6** · `ocr` **13**. Build `index-mdGGxCxr.js` `af245fab…`.
+- **Hasil:** paritas 6 fase **2,783 → 2,747** · t=9,5 **5,534 → 5,343** · t=6,8 3,099 → 3,075 ·
+  torso t=9,5 **10,692 → 10,070** · pita 0–20 **+12,08 → +7,40** (MAE 12,08 → 7,49) · pita 200+ −4,24 → −3,05.
+  Fase 0,3/1,89/3,5/5,5 **tidak berubah** (siluet masih 0 oleh gerbang reveal).
+- **Jujur:** pita 120–200 memburuk tipis (bias +1,40 → +3,05). Target torso ≤ 7,0 **belum** tercapai.
+- **Gugur:** `srf` tanpa `mtl` (nol) · gerbang kecerahan `mgw` (0,5 → 10,250 · 1,0 → 10,466 vs tanpa 10,138) ·
+  `mtl`=1 (15,517) · `oct`=0,2 (10,169). Sapu akhir memilih `mtl` 0,5 / `srf` 0,6 (torso 10,070 · MAE 4,936).
+- **Jebakan yang ditemukan & diperbaiki:** pass siluet yang disisipkan di tengah blok komposit membuat
+  `useProgram(P.fill)` menimpa program sehingga uniform komposit hilang (bingkai jadi gelap, MAE 24,5).
+  Pass harus diletakkan SEBELUM blok komposit.

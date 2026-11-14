@@ -76,6 +76,11 @@ float luminance( const in vec3 rgb ) {
   // seberapa gelap badan yang terlihat. Bawaan 1 dan 0 = perilaku lama, piksel identik.
   uniform float uMatteK;
   uniform float uMatteC;
+  // P12/B1: dipakai HANYA oleh pass siluet-badan (matte ruang layar):
+  //   uCutOn/uHeadCut → kepala digambar oleh titik 3D tersendiri, jadi siluet badan tidak menutupinya;
+  //   uGateL → siluet hanya menutup bagian GELAP citra (garis/rambut terang sudah menimpa sendiri,
+  //            dan latar di bawahnya jangan dihapus karena justru menambah cahaya di situ).
+  uniform float uCutOn; uniform float uHeadCut; uniform float uGateL;
   // when her ignition's wave reaches p: her picture, her lines and her hair appear there
   float revealAt(vec2 p) {
     float r = length(p - uReveal.xy), s = uReveal.w;
@@ -84,7 +89,13 @@ float luminance( const in vec3 rgb ) {
 
   void main() {
     vec2 p = vec2(vUv.x * uSize.x, (1.0 - vUv.y) * uSize.y);
+    if (uCutOn > 0.5 && p.y < uHeadCut) discard;
     float at = revealAt(p);
-    float a = clamp(texture2D(uMap, vUv).a * uMatteK, 0.0, 1.0);
+    vec4 tex = texture2D(uMap, vUv);
+    float a = clamp(tex.a * uMatteK, 0.0, 1.0);
+    if (uGateL > 0.0) {
+      float lum = dot(tex.rgb, vec3(0.2126, 0.7152, 0.0722));
+      a *= mix(1.0, 1.0 - smoothstep(0.06, 0.30, lum), uGateL);
+    }
     gl_FragColor = vec4(vec3(uMatteC), a * smoothstep(at - 0.04, at + 0.4, uTime) * uFill);
   }

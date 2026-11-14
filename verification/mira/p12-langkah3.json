@@ -1,0 +1,157 @@
+{
+ "judul": "P12 langkah 3 (B1) — permukaan badan: penutup latar dari siluet + penyalaan oleh cahaya citra",
+ "sesi": 57,
+ "tanggal": "2026-10-29",
+ "build": {
+  "aset": "index-mdGGxCxr.js",
+  "sha256": "af245fab40b03581daa3fa4838e43576feb3748737283b8de84e42612af3e4bc",
+  "sebelum": "index-DCR382kJ.js e215b5a76220a3dd…",
+  "knob_baru": "mtl (matte badan, bawaan 0,5) · srf (penyalaan permukaan, bawaan 0,6) · mgw (gerbang kecerahan, bawaan 0)",
+  "bawaan_lain_berubah": "ocr 9 → 13 (radius penutupan siluet)"
+ },
+ "hasil_6_fase": {
+  "0.3": {
+   "sebelum": 1.137,
+   "sesudah": 1.137
+  },
+  "1.89": {
+   "sebelum": 2.089,
+   "sesudah": 2.089
+  },
+  "3.5": {
+   "sebelum": 1.933,
+   "sesudah": 1.933
+  },
+  "5.5": {
+   "sebelum": 2.906,
+   "sesudah": 2.906
+  },
+  "6.8": {
+   "sebelum": 3.099,
+   "sesudah": 3.075
+  },
+  "9.5": {
+   "sebelum": 5.534,
+   "sesudah": 5.343
+  },
+  "rata2": {
+   "sebelum": 2.783,
+   "sesudah": 2.747
+  },
+  "tafsir": "fase sebelum ignition tidak tersentuh (siluet masih 0 oleh gerbang reveal) ⇒ perubahan hanya di tempat yang memang salah"
+ },
+ "torso_t95": {
+  "sebelum": 10.692,
+  "sesudah": 10.07,
+  "mae_seluruh": {
+   "sebelum": 5.094,
+   "sesudah": 4.936
+  }
+ },
+ "pita_luma_t95": [
+  {
+   "pita": "0-20",
+   "bias_sebelum": 12.08,
+   "bias_sesudah": 7.4,
+   "mae_sebelum": 12.08,
+   "mae_sesudah": 7.49
+  },
+  {
+   "pita": "20-60",
+   "bias_sebelum": 6.38,
+   "bias_sesudah": 4.38,
+   "mae_sebelum": 8.36,
+   "mae_sesudah": 7.67
+  },
+  {
+   "pita": "60-120",
+   "bias_sebelum": 2.11,
+   "bias_sesudah": 2.21,
+   "mae_sebelum": 9.68,
+   "mae_sesudah": 9.62
+  },
+  {
+   "pita": "120-200",
+   "bias_sebelum": 1.4,
+   "bias_sesudah": 3.05,
+   "mae_sebelum": 14.83,
+   "mae_sesudah": 15.0
+  },
+  {
+   "pita": "200-256",
+   "bias_sebelum": -4.24,
+   "bias_sesudah": -3.05,
+   "mae_sebelum": 11.0,
+   "mae_sesudah": 11.15
+  }
+ ],
+ "mekanisme": {
+  "ringkas": "live: badan = permukaan OPAK yang menghapus latar, lalu garis cahaya citra ditambahkan di atasnya. Kita: nebula tembus (17,9 luma dari 23,6 di piksel galat, langkah 2).",
+  "perubahan": [
+   "siluet badan dirender ke tekstur RUANG LAYAR (bukan memakai texOccl dengan UV layar) karena pemetaan itu ikut meredupkan margin kiri/kanan 20,3 → 16,7",
+   "comp: alfa keluaran = max(alfa figur, siluet × mtl) → latar dihapus di dalam badan (mesh opak live)",
+   "comp: rgb × (1 + srf × siluet) → permukaan menyala oleh cahaya citra sendiri (mengembalikan pita terang yang hilang saat latar dihapus)",
+   "siluet berhenti di batas kepala (uCutOn/uHeadCut) karena kepala di live digambar titik 3D tersendiri"
+  ]
+ },
+ "gugur": {
+  "srf_tanpa_mtl": "tidak berefek sama sekali (pengali = siluet × mtl = 0)",
+  "gerbang_kecerahan_mgw": {
+   "0.5": "MAE 4.976 torso 10.250",
+   "1.0": "MAE 5.017 torso 10.466",
+   "tanpa": "MAE 4.951 torso 10.138 (lebih baik)"
+  },
+  "matte_penuh_mtl1": "MAE 7.105 torso 15.517 (terlalu banyak latar dihapus)",
+  "kepekaan_ocr": "5/9/13 → torso 10.168 / 10.138 / 10.111 (kecil; 13 dipilih)",
+  "kepekaan_oct": "0,2 → torso 10.169 (tidak menolong)"
+ },
+ "sapu_akhir_t95": [
+  {
+   "mtl": 0.45,
+   "srf": 0.45,
+   "torso": 10.164,
+   "mae": 4.95
+  },
+  {
+   "mtl": 0.5,
+   "srf": 0.5,
+   "torso": 10.138,
+   "mae": 4.951
+  },
+  {
+   "mtl": 0.55,
+   "srf": 0.55,
+   "torso": 10.081,
+   "mae": 4.93
+  },
+  {
+   "mtl": 0.5,
+   "srf": 0.4,
+   "torso": 10.23,
+   "mae": 4.95
+  },
+  {
+   "mtl": 0.6,
+   "srf": 0.5,
+   "torso": 10.138,
+   "mae": 4.93
+  },
+  {
+   "mtl": 0.5,
+   "srf": 0.6,
+   "torso": 10.07,
+   "mae": 4.936
+  }
+ ],
+ "putusan": "DIPAKAI sebagai bawaan (mtl 0,5 · srf 0,6 · ocr 13). Perbaikan nyata tetapi belum mencapai target P12 (torso ≤ 7,0): sisa galat ada di pita 60-200 (MAE 9,6-15,0) ⇒ langkah berikut B2 (untaian rambut di torso atas) dan B1b (permukaan bercahaya sendiri, bukan hanya penyala citra).",
+ "berkas_ubahan": [
+  "src/components/MiraStage.tsx",
+  "src/lib/shaders/comp.frag.glsl",
+  "src/lib/shaders/picFill.frag.glsl"
+ ],
+ "hash_ubahan": {
+  "MiraStage.tsx": "72c0ed67886b905d",
+  "comp.frag.glsl": "8d3ca240f94a1ff9",
+  "picFill.frag.glsl": "c69aee84f7aa801f"
+ }
+}

@@ -663,7 +663,7 @@ export function MiraStage({
       const texOccl = gl.createTexture()!
       const texBodyH = gl.createTexture()!   // F-149: medan tinggi (R32F, ½ res)
       {
-        const cr = tune('ocr', 9)
+        const cr = tune('ocr', 13)
         const thr = tune('oct', 0.06)
         const ow = Math.max(1, Math.round(1145 / 2))
         const oh = Math.max(1, Math.round(1374 / 2))
@@ -750,6 +750,10 @@ export function MiraStage({
         return { tex, fbo, w, h }
       }
       let figure = mkTarget(1, 1)
+      // P12/B1: siluet badan dalam RUANG LAYAR. Tekstur penutup (`texOccl`) berukuran gambar,
+      // jadi sampelnya tidak boleh memakai UV layar langsung (terukur: `mtl`=0,5 ikut meredupkan
+      // margin kiri/kanan 20,3 → 16,7). Kita render siluet itu SEKALI dengan kuad gambar yang benar.
+      let matteT = mkTarget(1, 1)
       // F-117: pass luminansi live berjalan di RESOLUSI PENUH (luminancePass.setSize(i,e) dengan ukuran
       // dasar composer), baru sesudah itu 13-tap menurunkannya ke mip 0 (setengah). Port kita menghitung
       // luminansi LANGSUNG di mip 0 (setengah) → garis tipis terang rata-rata hilang sebelum diambang.
@@ -764,6 +768,7 @@ export function MiraStage({
         chainFor = key
         if (figure.w !== cw || figure.h !== ch) figure = mkTarget(cw, ch)
         if (lum.w !== cw || lum.h !== ch) lum = mkTarget(cw, ch)
+        if (matteT.w !== cw || matteT.h !== ch) matteT = mkTarget(cw, ch)
         mips = []
         ups = []
         let w = Math.max(1, Math.round(cw * 0.5))   // resolutionScale 0,5 (terukur: 720×450)
@@ -1729,6 +1734,36 @@ export function MiraStage({
           }
         }
 
+        // ---- P12/B1: siluet badan dalam RUANG LAYAR ----
+        // Tekstur penutup (`texOccl`) berukuran gambar; memakai UV layar langsung membuat margin ikut
+        // meredup (terukur: kiri 20,3 → 16,7 pada `mtl`=0,5). Jadi siluet dirender SEKALI dengan kuad
+        // gambar yang benar. Bawaan `mtl`=0 ⇒ pass ini tidak jalan (tanpa biaya, tanpa ubahan piksel).
+        if (tune('mtl', 0.5) > 0.001) {
+          gl.bindFramebuffer(gl.FRAMEBUFFER, matteT.fbo)
+          gl.viewport(0, 0, pw, ph)
+          gl.clearColor(0, 0, 0, 0)
+          gl.clear(gl.COLOR_BUFFER_BIT)
+          gl.disable(gl.BLEND)
+          gl.useProgram(P.fill)
+          gl.bindVertexArray(fillVao.v)
+          gl.activeTexture(gl.TEXTURE0)
+          gl.bindTexture(gl.TEXTURE_2D, texOccl)
+          gl.uniformMatrix4fv(U(P.fill, 'modelViewMatrix'), false, quadMv())
+          gl.uniformMatrix4fv(U(P.fill, 'projectionMatrix'), false, proj)
+          gl.uniform1f(U(P.fill, 'uFill'), 1)
+          gl.uniform2f(U(P.fill, 'uSize'), fw, fh)
+          gl.uniform1f(U(P.fill, 'uTime'), t)
+          gl.uniform4f(U(P.fill, 'uReveal'), reveal[0], reveal[1], reveal[2], reveal[3])
+          gl.uniform1f(U(P.fill, 'uMatteC'), 0)
+          gl.uniform1f(U(P.fill, 'uMatteK'), tune('mk', 1))
+          gl.uniform1i(U(P.fill, 'uMap'), 0)
+          // kepala punya titik 3D sendiri di live ⇒ siluet badan berhenti di batas kepala
+          gl.uniform1f(U(P.fill, 'uCutOn'), 1)
+          gl.uniform1f(U(P.fill, 'uHeadCut'), head.model.base)
+          gl.uniform1f(U(P.fill, 'uGateL'), tune('mgw', 0))
+          gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+        }
+
         // ---- bloom (langkah 8): luminansi → 8 mip turun → 8 mip naik → komposit ----
         // `?off=bloom` tetap menjalankan komposit dengan intensitas 0, supaya yang diukur benar-benar
         // "gambar dasar + encode sRGB" (di live pun begitu) — bukan layar tanpa figur.
@@ -1847,6 +1882,13 @@ export function MiraStage({
           gl.uniform1f(U(P.comp, 'e0Intensity'), bloomOn ? 0.9 * tune('bb', 0.9) * (1 + 1.6 * qSurge * tune('bq', 0.85)) * bgK : 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
           gl.uniform1f(U(P.comp, 'uGamma'), tune('gm', 1))
+          // P12/B1: permukaan badan — siluet (texOccl) dipakai sebagai penutup latar + penyala citra
+          gl.activeTexture(gl.TEXTURE2)
+          gl.bindTexture(gl.TEXTURE_2D, matteT.tex)
+          gl.uniform1i(U(P.comp, 'uMatte'), 2)
+          gl.uniform1f(U(P.comp, 'uMtl'), tune('mtl', 0.5))
+          gl.uniform1f(U(P.comp, 'uSrf'), tune('srf', 0.6))
+          gl.activeTexture(gl.TEXTURE0)
           gl.uniform1f(U(P.comp, 'uBaseK'), 1 / Math.max(0.05, tune('hg', 1)))
           gl.enable(gl.BLEND)
           gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)   // figur di atas latar, memakai alpha figur
@@ -1867,6 +1909,13 @@ export function MiraStage({
           gl.uniform1f(U(P.comp, 'e0Intensity'), 0)
           gl.uniform1f(U(P.comp, 'e0BlendOpacity'), 1)
           gl.uniform1f(U(P.comp, 'uGamma'), tune('gm', 1))
+          // P12/B1: permukaan badan — siluet (texOccl) dipakai sebagai penutup latar + penyala citra
+          gl.activeTexture(gl.TEXTURE2)
+          gl.bindTexture(gl.TEXTURE_2D, matteT.tex)
+          gl.uniform1i(U(P.comp, 'uMatte'), 2)
+          gl.uniform1f(U(P.comp, 'uMtl'), tune('mtl', 0.5))
+          gl.uniform1f(U(P.comp, 'uSrf'), tune('srf', 0.6))
+          gl.activeTexture(gl.TEXTURE0)
           gl.uniform1f(U(P.comp, 'uBaseK'), 1 / Math.max(0.05, tune('hg', 1)))
           gl.enable(gl.BLEND)
           gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)

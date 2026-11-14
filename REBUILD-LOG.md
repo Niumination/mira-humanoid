@@ -1001,3 +1001,15 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 6. `ock` memperbaiki pita gelap sampai −2,03 tetapi merusak baris lain ⇒ F-171: badan = permukaan bercahaya.
 7. Knob `hhx/hhy`, `pft`, `scx` dicabut; build kembali `e215b5a7…` byte-identik.
 8. Keputusan: P12 langkah 3 = geometri (B1 permukaan badan → B2 untaian rambut → B3 kuad→geometri).
+
+## Sesi 57 lanjutan 9 — verifikasi 5m + P12 langkah 3 (B1 permukaan badan)
+
+1. Verifikasi 5m: 8/8 berkas byte-identik, `p12-sapu.js` di repo = versi `indexOf('=')` (sudah benar).
+2. B1 percobaan 1 (pakai `texOccl` + UV layar): salah — margin kiri/kanan ikut meredup 20,3 → 16,7.
+3. B1 percobaan 2: siluet dirender ke FBO ruang layar; pass diletakkan sebelum blok komposit (kalau di tengah,
+   `useProgram(P.fill)` menimpa program komposit → bingkai gelap MAE 24,5).
+4. Ditambah batas kepala (`uCutOn`/`uHeadCut`) — tanpa itu kepala +1,37.
+5. Sapu: `mtl` 0,5 · `srf` 0,6 · `ocr` 13 dipilih (torso 10,070 · MAE 4,936 · pita 0–20 +7,40).
+6. Verifikasi 6 fase: rata 2,783 → 2,747; t=9,5 5,534 → 5,343; empat fase awal tak tersentuh.
+7. Gugur: `mgw` gate, `mtl`=1, `ocr` 5/9, `oct` 0,2.
+8. Berikutnya: B2 untaian rambut (torso atas y 400–496) → B1b cahaya permukaan sendiri (pita 120–200).
