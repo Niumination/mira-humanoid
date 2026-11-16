@@ -1118,3 +1118,25 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **Anggaran galat:** blok terburuk y300–450 x540–720 (MAE 13,9 · 5,9 % dari total galat); seluruh galat di dalam figur.
 - Alat baru: `tools/p12-budget.py`. Dokumen: `docs/langkah6/P12-LANGKAH4.md`.
 - **Langkah 5 P12 = geometri filamen** (satu-satunya jalan ke torso ≤ 7,0), rencana 4 butir ditulis di dokumen.
+
+### Sesi 57 lanjutan 11 — verifikasi 5o + P12 langkah 5 → **P12 DITUTUP dengan plato**
+
+- **Verifikasi 5o:** 8/8 berkas **byte-identik** (`tools/p12-budget.py` db795012 · `tools/p12-sapu.js` c5f619d7 ·
+  `p12-langkah4.json` d203b13c · `p12-budget-95.json` f93c10ec · `P12-LANGKAH4.md` 89d13983 ·
+  catatan d58eb5c8/384c6e3f/a5af80eb) ⇒ **5o LULUS**.
+- **Langkah 5 percobaan 1 (F-177):** medan skala/geser **per baris** — optimum setiap baris skala **1,0000**,
+  geser **0,00** ⇒ batas atas perbaikan **0,0 %**. Bukan salah posisi horizontal, bahkan per baris.
+- **Percobaan 2 (F-178):** aset kurva dibuat dari pola live (179 rantai · 14 928 → 3 468 titik setelah RDP ·
+  lebar median 6,5 px). Merender geometri itu **menggantikan** kuad citra: MAE wilayah 37,20 (tanpa gambar) →
+  **54,75** (dengan geometri) vs 11,36 (kita sekarang) ⇒ garis tipis tidak bisa menggantikan massa cahaya kuad.
+- **Percobaan 3 (F-179):** menambal garis live di celah (live >135 & kita ≥35 lebih gelap, 1 121 titik):
+  wilayah 11,36 → **18,25** · seluruh bingkai 5,586 → **6,901** ⇒ filamen kita sudah di dekat posisinya
+  (impitan 87 % @2 px); sisanya selisih posisi sub-2 px yang tak bisa ditambal dari 2D.
+- **P12 DITUTUP dengan plato** (target tidak tercapai, dilaporkan apa adanya):
+  paritas **2,758 → 2,747** (target 2,5) · torso **10,69 → 10,07** (target 7,0) · pita 0–20 **+12,08 → +7,40** (target 2,0).
+- **17 penyebab sudah ditutup berangka** (daftar lengkap di `docs/langkah6/P12-LANGKAH5-DAN-TUTUP.md` §4).
+  Sebab plato: sisa galat 76–90 % frekuensi tinggi <16 px berasal dari mesh 3D live.
+- **Yang dibawa ke depan:** permukaan badan `mtl`/`srf`/`ocr` (turunkan pita gelap 4,7 poin) · aset 179 rantai
+  filamen (bahan P13) · 3 alat baru · aturan F-170/F-176.
+- **Berikutnya: P13** — ukuran paritas berpindah dari MAE piksel ke paritas struktur (IoU siluet + sebaran
+  filamen + 6 gerbang fase), karena MAE piksel menuntut menyalin citra live.

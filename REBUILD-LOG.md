@@ -1024,3 +1024,12 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 6. Anggaran galat: HF 90/86/76 %; filamen lebih lebar hanya di pita atas (p90 25 vs 17).
 7. Enam knob dicabut → build kembali `af245fab…` byte-identik.
 8. Keputusan: jalur komposisi DITUTUP; langkah 5 = geometri filamen torso + untaian rambut bahu.
+
+## Sesi 57 lanjutan 11 — verifikasi 5o + P12 langkah 5 (geometri) + P12 ditutup
+
+1. Verifikasi 5o: 8/8 byte-identik.
+2. `tools/p12-warp-fit.py`: skala & geser per baris → semuanya 1,0000 / 0,00 (F-177).
+3. `tools/p12-filamen.py`: 179 rantai, 3 468 titik aset; render geometri menggantikan kuad → 54,75 (F-178).
+4. Tambalan filamen di celah → 18,25 wilayah, 6,901 seluruh bingkai (F-179).
+5. P12 ditutup dengan plato 2,747 / torso 10,07 / pita +7,40; 17 sebab ditutup berangka.
+6. Bahan P13: aset filamen + 3 alat + statistik struktur (ridge 33,55/baris · jarak 7,0 px · run p90 17 px).

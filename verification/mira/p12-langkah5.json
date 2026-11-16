@@ -1,0 +1,78 @@
+{
+ "judul": "P12 langkah 5 — uji kelayakan GEOMETRI filamen: tiga percobaan, semuanya bermakna",
+ "sesi": 57,
+ "tanggal": "2026-10-29",
+ "build": "index-mdGGxCxr.js af245fab40b03581… (tanpa ubahan src/; langkah ini murni uji kelayakan di luar aplikasi)",
+ "percobaan_1_medan_geser_per_baris": {
+  "alat": "tools/p12-warp-fit.py",
+  "hasil_json": "/tmp/p12/p12-warp-95.json",
+  "metode": "untuk tiap baris torso (y 400-780), cari skala (0,94-1,06) & geser (+-10 px) yang paling cocok dengan baris live",
+  "hasil": {
+   "skala_rata": 1.0,
+   "geser_rata": 0.0,
+   "galat_tanpa": 10.4,
+   "galat_batas_atas": 10.4,
+   "perbaikan_persen": 0.0
+  },
+  "tafsir": "setiap baris optimum di skala 1,000 dan geser 0 ⇒ tidak ada medan regang/geser horizontal per baris; F-175 diperluas ke per-baris",
+  "F": "F-177"
+ },
+ "percobaan_2_geometri_menggantikan_citra": {
+  "alat": "tools/p12-filamen.py",
+  "metode": "ridge live di wilayah 470-960 x 330-830 → 179 rantai → RDP 3468 titik (aset kurva, bukan bitmap) → dirender di atas bingkai kita tanpa gambar",
+  "aset": {
+   "rantai": 179,
+   "titik_ridge": 14928,
+   "titik_setelah_RDP": 3468,
+   "lebar_median_px": 6.5,
+   "terang_median": 0.91
+  },
+  "hasil": {
+   "kita_sekarang": 11.36,
+   "kita_tanpa_gambar": 37.2,
+   "tanpa_gambar_plus_geometri": 54.75
+  },
+  "tafsir": "geometri filamen saja LEBIH BURUK daripada tanpa gambar: massa cahaya lebar (badan + glow) yang dibawa kuad citra tidak bisa diganti garis tipis. Jadi \"ganti kuad dengan geometri\" tidak boleh berarti \"buang kuadnya\"",
+  "F": "F-178"
+ },
+ "percobaan_3_tambalan_filamen_di_celah": {
+  "metode": "tambahkan garis live HANYA di titik yang live terang (>135) dan kita lebih gelap >=35 — 1 121 titik",
+  "hasil": {
+   "kita_sekarang": 11.36,
+   "setelah_tambalan": 18.25,
+   "seluruh_bingkai": {
+    "sebelum": 5.586,
+    "sesudah": 6.901
+   }
+  },
+  "tafsir": "menambah garis di posisi live justru memperburuk: filamen kita sudah ada di dekat situ (impitan 87 % @2 px), jadi menambah puncak kedua membuat galat naik. Masalahnya POSISI sub-2px yang tidak bisa ditambal dari 2D",
+  "F": "F-179"
+ },
+ "kesimpulan_p12": {
+  "status": "DITUTUP dengan plato (target tidak tercapai)",
+  "capaian": {
+   "paritas_6_fase": {
+    "awal": 2.758,
+    "akhir": 2.747,
+    "target": 2.5
+   },
+   "torso_t95": {
+    "awal": 10.69,
+    "akhir": 10.07,
+    "target": 7.0
+   },
+   "pita_0_20_bias": {
+    "awal": 12.08,
+    "akhir": 7.4,
+    "target": 2.0
+   }
+  },
+  "sebab_plato": "sisa galat 76-90 % frekuensi tinggi <16 px dan TIDAK dapat diturunkan oleh: gain, gamma, lengkung-S, lantai gelap, matte, gerbang kecerahan, skala/geser global, skala/geser per baris, lebar filamen, maupun penambahan garis live di celah. Struktur filamen live berasal dari mesh 3D yang tidak dapat direproduksi dari kuad citra 2D tanpa menyalin citranya",
+  "yang_dibawa_ke_depan": [
+   "permukaan badan (mtl/srf) — mekanisme baru yang menurunkan pita gelap 4,7 poin",
+   "aset kurva filamen (179 rantai) sebagai bahan P13",
+   "alat anggaran galat + penjejak filamen"
+  ]
+ },
+ "langkah_berikut": "P13 — aset milik sendiri (gerbang hukum). P12 tidak dilanjutkan ke penyetelan; semua knob ditutup dengan angka."
+}
