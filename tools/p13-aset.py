@@ -29,15 +29,15 @@ if '--uji' in sys.argv:
     TARGET = float(sys.argv[sys.argv.index('--uji') + 1])
 
 PLATES = [
-    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-idle-v1.webp', 'luma', 40),
-    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-listening-v1.webp', 'luma', 40),
-    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-speaking-v1.webp', 'luma', 40),
-    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-speaking-strong-v1.webp', 'luma', 40),
-    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-thinking-v1.webp', 'luma', 40),
-    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-assembly-25-v1.webp', 'luma', 40),
-    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-assembly-60-v1.webp', 'luma', 40),
+    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-idle-v1.webp', 'luma', 8),
+    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-listening-v1.webp', 'luma', 8),
+    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-speaking-v1.webp', 'luma', 8),
+    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-speaking-strong-v1.webp', 'luma', 8),
+    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-thinking-v1.webp', 'luma', 8),
+    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-assembly-25-v1.webp', 'luma', 8),
+    ('apex', 'apex-humanoid-rebuild/public/humanoid', 'apex-assembly-60-v1.webp', 'luma', 8),
     ('mira', 'mira-humanoid-rebuild/public/humanoid', 'mira-idle-v1.webp', 'alpha', 32),
-    ('mira', 'mira-humanoid-rebuild/public/humanoid', 'mira-hair-v1.webp', 'luma', 48),
+    ('mira', 'mira-humanoid-rebuild/public/humanoid', 'mira-hair-v1.webp', 'luma', 3),
 ]
 
 
@@ -53,8 +53,9 @@ def siluet(a, mode, thr):
     else:
         # plate APEX opak: garis cahaya tipis di atas latar hitam. Siluet diturunkan dengan
         # BLUR + ambang rendah (bukan dilasi), supaya tepinya mengikuti cahaya, bukan kotak dilasi.
-        lum = ndi.gaussian_filter(a[..., :3].mean(2), 6.0)
-        m = lum > thr
+        # sigma 3 & ambang 8: blur besar + ambang tinggi memotong bahu (cakupan 20,1 % → 35,7 %)
+        lum = ndi.gaussian_filter(a[..., :3].mean(2), 3.0)
+        m = lum > 8
         m = ndi.binary_closing(m, iterations=3)
     m = ndi.binary_fill_holes(m)
     lab, n = ndi.label(m)

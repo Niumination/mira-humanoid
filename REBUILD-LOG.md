@@ -1042,3 +1042,14 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 4. Uji kompresi: sy2/sx2 ≥ 0,9895 untuk 7/9 (assembly-25 0,9729 → pakai model penuh).
 5. Batas jujur dicatat: mask APEX turunan luma; struktur garis dalam belum dimodelkan; audit masih 12/12 SALINAN.
 6. Langkah 2: model garis dalam (dari 179 rantai P12) → ganti berkas publik → audit 0/12 → gerbang fase wajib tetap lulus.
+
+## Sesi 58 lanjutan 13 — verifikasi 5q + P13 langkah 2 (plate milik kita)
+
+1. Verifikasi 5q: 15/15 byte-identik (9 teks + 6 PNG).
+2. Koreksi mask: σ6>40 → σ3>8 (cakupan apex-idle 22,9 % → 35,7 %); tiga alat disamakan.
+3. `tools/p13-garis.py` v7: isi + garis medan + 5 kontur offset + rim + untaian + partikel + glow + kalibrasi.
+4. 9/9 IoU render↔asli ≥ 0,9851; rasio luma 0,83–1,01; impitan ridge 47,1–73,8 %.
+5. 9 plate dipasang di kedua aplikasi; audit provenance 12/12 → 1/12 SALINAN (sisa backdrop-v1).
+6. Build ulang: APEX b489da8ce6354b3d · MIRA af245fab40b03581 — JS identik dengan sebelum tukar plate.
+7. Gerbang Chromium tak tersedia (libnspr4); bukti pengganti = bundle identik + gate-step5 BAGIAN=A 6/6.
+8. Sisa: backdrop (Gerbang E), struktur dalam assembly-25 & mira-idle, fitur anatomi.

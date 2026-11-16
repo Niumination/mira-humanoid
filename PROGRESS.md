@@ -1156,3 +1156,23 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
   **12/12 SALINAN** · logo/tipografi/ikon belum diperiksa.
 - Alat baru: `tools/p13-siluet.py`, `tools/p13-aset.py` (model + render + IoU + uji kompresi).
   Dokumen: `docs/p13/P13-LANGKAH1.md`. Angka: `verification/p13/*.json`.
+
+### Sesi 58 lanjutan 13 — verifikasi 5q + **P13 langkah 2** (plate milik kita)
+
+- **Verifikasi 5q:** 9 berkas teks + 6 PNG **byte-identik** lewat `raw.githubusercontent.com` ⇒ **5q LULUS 15/15**.
+- **Koreksi besar:** mask P13 lama (`gaussian σ6 > 40`) **memotong bahu** — `apex-idle-v1` bercakupan 22,9 %,
+  seharusnya **35,7 %** (`σ3 > 8`). Definisi baru dipakai `p13-siluet.py`, `p13-aset.py`, `p13-garis.py`;
+  **semua angka IoU/cakupan paket 5q diganti** (langkah 1 tetap 9/9 lulus: IoU 0,9990–1,0000).
+- **Langkah 2 — plate milik kita:** `tools/p13-garis.py` menggambar plate dari **aturan** (isi gradasi, garis
+  medan bergelombang, 5 kontur offset, rim, untaian vertikal, partikel cangkang, glow terpotong mask), warna
+  dari palet sendiri, kecerahan dikalibrasi 1 skalar/plate. **Tidak ada piksel plate asli di keluaran.**
+- **Hasil 9/9:** IoU model↔asli **0,9960–0,9992** · IoU render↔asli **0,9851–0,9989** (syarat ≥ 0,98) ·
+  impitan ridge 47,1–73,8 % · rasio luma **0,83–1,01** (target ≈ 1,0) · korelasi profil luma 0,077–0,918.
+- **Jujur:** 2 plate belum setara sebaran cahaya — `apex-assembly-25` korelasi **0,077**, `mira-idle` **0,261**;
+  plate kita belum punya fitur anatomi. Ini kerja langkah struktur berikutnya.
+- **Aset dipasang:** 9 plate baru di `public/humanoid/` kedua aplikasi; `audit-provenance` **12/12 → 1/12
+  SALINAN** (sisa `backdrop-v1.webp`). Backup asli di `verification/p13/asli/`.
+- **Build:** APEX `index-ClEvdEMa.js` `b489da8ce6354b3d…` · MIRA `index-mdGGxCxr.js` `af245fab40b03581…`;
+  JS **byte-identik** sebelum/sesudah tukar plate (diuji dua arah) ⇒ waktu & perilaku tidak berubah.
+- **Batas:** gerbang Chromium tidak bisa dijalankan sesi ini (tidak ada `libnspr4`, bukan root); bagian Node
+  `gate-step5.js` **6/6 LULUS**. Dokumen: `docs/p13/P13-LANGKAH2.md`.

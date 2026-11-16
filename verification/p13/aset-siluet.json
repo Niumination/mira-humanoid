@@ -5,112 +5,112 @@
  "ringkas": {
   "plate": 9,
   "lulus": 9,
-  "iou_min": 0.9998
+  "iou_min": 0.999
  },
  "baris": [
   {
    "aplikasi": "apex",
    "berkas": "apex-idle-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 20.12,
+   "cakupan_persen": 35.66,
    "rentang_y": [
-    106,
-    1157
+    23,
+    1284
    ],
-   "tinggi_siluet": 1052,
-   "rentang_total": 1470,
-   "lebar_maks": 463.0,
-   "iou_render_vs_siluet": 1.0,
+   "tinggi_siluet": 1262,
+   "rentang_total": 3412,
+   "lebar_maks": 1055.0,
+   "iou_render_vs_siluet": 0.9991,
    "lulus": true
   },
   {
    "aplikasi": "apex",
    "berkas": "apex-listening-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 19.85,
+   "cakupan_persen": 59.59,
    "rentang_y": [
-    149,
-    1144
+    3,
+    1287
    ],
-   "tinggi_siluet": 996,
-   "rentang_total": 1388,
-   "lebar_maks": 464.0,
-   "iou_render_vs_siluet": 1.0,
+   "tinggi_siluet": 1285,
+   "rentang_total": 5017,
+   "lebar_maks": 988.0,
+   "iou_render_vs_siluet": 0.9998,
    "lulus": true
   },
   {
    "aplikasi": "apex",
    "berkas": "apex-speaking-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 19.45,
+   "cakupan_persen": 34.49,
    "rentang_y": [
-    128,
-    1146
+    34,
+    1292
    ],
-   "tinggi_siluet": 1019,
-   "rentang_total": 1423,
-   "lebar_maks": 460.0,
-   "iou_render_vs_siluet": 1.0,
+   "tinggi_siluet": 1259,
+   "rentang_total": 3424,
+   "lebar_maks": 1001.0,
+   "iou_render_vs_siluet": 0.9992,
    "lulus": true
   },
   {
    "aplikasi": "apex",
    "berkas": "apex-speaking-strong-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 22.95,
+   "cakupan_persen": 38.5,
    "rentang_y": [
-    109,
-    1176
+    27,
+    1289
    ],
-   "tinggi_siluet": 1068,
-   "rentang_total": 2086,
-   "lebar_maks": 622.0,
-   "iou_render_vs_siluet": 0.9999,
+   "tinggi_siluet": 1263,
+   "rentang_total": 3683,
+   "lebar_maks": 1057.0,
+   "iou_render_vs_siluet": 0.9991,
    "lulus": true
   },
   {
    "aplikasi": "apex",
    "berkas": "apex-thinking-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 18.65,
+   "cakupan_persen": 32.76,
    "rentang_y": [
-    143,
-    1121
+    50,
+    1287
    ],
-   "tinggi_siluet": 979,
-   "rentang_total": 1373,
-   "lebar_maks": 458.0,
-   "iou_render_vs_siluet": 1.0,
+   "tinggi_siluet": 1238,
+   "rentang_total": 3446,
+   "lebar_maks": 994.0,
+   "iou_render_vs_siluet": 0.9993,
    "lulus": true
   },
   {
    "aplikasi": "apex",
    "berkas": "apex-assembly-25-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 8.92,
+   "cakupan_persen": 37.13,
    "rentang_y": [
-    40,
+    3,
     1250
    ],
-   "tinggi_siluet": 1211,
-   "rentang_total": 2352,
-   "lebar_maks": 237.0,
-   "iou_render_vs_siluet": 0.9998,
+   "tinggi_siluet": 1248,
+   "rentang_total": 3259,
+   "lebar_maks": 1032.0,
+   "iou_render_vs_siluet": 0.999,
    "lulus": true
   },
   {
    "aplikasi": "apex",
    "berkas": "apex-assembly-60-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 16.61,
+   "cakupan_persen": 37.64,
    "rentang_y": [
-    100,
-    1065
+    37,
+    1250
    ],
-   "tinggi_siluet": 966,
-   "rentang_total": 1774,
-   "lebar_maks": 400.0,
-   "iou_render_vs_siluet": 0.9999,
+   "tinggi_siluet": 1214,
+   "rentang_total": 3677,
+   "lebar_maks": 892.0,
+   "iou_render_vs_siluet": 0.9992,
    "lulus": true
   },
   {
@@ -132,206 +132,206 @@
    "aplikasi": "mira",
    "berkas": "mira-hair-v1.webp",
    "mode": "luma",
-   "cakupan_persen": 10.33,
+   "cakupan_persen": 16.78,
    "rentang_y": [
-    36,
-    834
+    27,
+    1369
    ],
-   "tinggi_siluet": 799,
-   "rentang_total": 1451,
-   "lebar_maks": 401.0,
-   "iou_render_vs_siluet": 1.0,
+   "tinggi_siluet": 1343,
+   "rentang_total": 3621,
+   "lebar_maks": 471.0,
+   "iou_render_vs_siluet": 0.9994,
    "lulus": true
   }
  ],
  "kompresi": {
   "apex-idle-v1": {
    "sy1_sx1": {
-    "iou": 1.0,
-    "rentang": 1470,
-    "perkiraan_byte": 11760
+    "iou": 0.9991,
+    "rentang": 3412,
+    "perkiraan_byte": 27296
    },
    "sy2_sx2": {
-    "iou": 0.9926,
-    "rentang": 1472,
-    "perkiraan_byte": 11776
+    "iou": 0.9901,
+    "rentang": 3406,
+    "perkiraan_byte": 27248
    },
    "sy4_sx4": {
-    "iou": 0.9825,
-    "rentang": 1468,
-    "perkiraan_byte": 11744
+    "iou": 0.9772,
+    "rentang": 3331,
+    "perkiraan_byte": 26648
    },
    "sy8_sx8": {
-    "iou": 0.9627,
-    "rentang": 1460,
-    "perkiraan_byte": 11680
+    "iou": 0.9524,
+    "rentang": 3134,
+    "perkiraan_byte": 25072
    },
    "sy4_sx8": {
-    "iou": 0.9668,
-    "rentang": 1468,
-    "perkiraan_byte": 11744
+    "iou": 0.9557,
+    "rentang": 3123,
+    "perkiraan_byte": 24984
    }
   },
   "apex-listening-v1": {
    "sy1_sx1": {
-    "iou": 1.0,
-    "rentang": 1388,
-    "perkiraan_byte": 11104
+    "iou": 0.9998,
+    "rentang": 5017,
+    "perkiraan_byte": 40136
    },
    "sy2_sx2": {
-    "iou": 0.9928,
-    "rentang": 1384,
-    "perkiraan_byte": 11072
+    "iou": 0.9919,
+    "rentang": 5019,
+    "perkiraan_byte": 40152
    },
    "sy4_sx4": {
-    "iou": 0.9822,
-    "rentang": 1380,
-    "perkiraan_byte": 11040
+    "iou": 0.9803,
+    "rentang": 4984,
+    "perkiraan_byte": 39872
    },
    "sy8_sx8": {
-    "iou": 0.9624,
-    "rentang": 1365,
-    "perkiraan_byte": 10920
+    "iou": 0.9578,
+    "rentang": 4778,
+    "perkiraan_byte": 38224
    },
    "sy4_sx8": {
-    "iou": 0.9665,
-    "rentang": 1371,
-    "perkiraan_byte": 10968
+    "iou": 0.9605,
+    "rentang": 4838,
+    "perkiraan_byte": 38704
    }
   },
   "apex-speaking-v1": {
    "sy1_sx1": {
-    "iou": 1.0,
-    "rentang": 1423,
-    "perkiraan_byte": 11384
+    "iou": 0.9992,
+    "rentang": 3424,
+    "perkiraan_byte": 27392
    },
    "sy2_sx2": {
-    "iou": 0.9921,
-    "rentang": 1421,
-    "perkiraan_byte": 11368
+    "iou": 0.9897,
+    "rentang": 3413,
+    "perkiraan_byte": 27304
    },
    "sy4_sx4": {
-    "iou": 0.9818,
-    "rentang": 1415,
-    "perkiraan_byte": 11320
+    "iou": 0.9759,
+    "rentang": 3355,
+    "perkiraan_byte": 26840
    },
    "sy8_sx8": {
-    "iou": 0.9622,
-    "rentang": 1413,
-    "perkiraan_byte": 11304
+    "iou": 0.9524,
+    "rentang": 3134,
+    "perkiraan_byte": 25072
    },
    "sy4_sx8": {
-    "iou": 0.9655,
-    "rentang": 1411,
-    "perkiraan_byte": 11288
+    "iou": 0.9564,
+    "rentang": 3132,
+    "perkiraan_byte": 25056
    }
   },
   "apex-speaking-strong-v1": {
    "sy1_sx1": {
-    "iou": 0.9999,
-    "rentang": 2086,
-    "perkiraan_byte": 16688
+    "iou": 0.9991,
+    "rentang": 3683,
+    "perkiraan_byte": 29464
    },
    "sy2_sx2": {
-    "iou": 0.9911,
-    "rentang": 2088,
-    "perkiraan_byte": 16704
+    "iou": 0.9899,
+    "rentang": 3687,
+    "perkiraan_byte": 29496
    },
    "sy4_sx4": {
-    "iou": 0.978,
-    "rentang": 2088,
-    "perkiraan_byte": 16704
+    "iou": 0.9766,
+    "rentang": 3651,
+    "perkiraan_byte": 29208
    },
    "sy8_sx8": {
-    "iou": 0.9532,
-    "rentang": 2077,
-    "perkiraan_byte": 16616
+    "iou": 0.9502,
+    "rentang": 3378,
+    "perkiraan_byte": 27024
    },
    "sy4_sx8": {
-    "iou": 0.958,
-    "rentang": 2079,
-    "perkiraan_byte": 16632
+    "iou": 0.9552,
+    "rentang": 3352,
+    "perkiraan_byte": 26816
    }
   },
   "apex-thinking-v1": {
    "sy1_sx1": {
-    "iou": 1.0,
-    "rentang": 1373,
-    "perkiraan_byte": 10984
+    "iou": 0.9993,
+    "rentang": 3446,
+    "perkiraan_byte": 27568
    },
    "sy2_sx2": {
-    "iou": 0.9922,
-    "rentang": 1371,
-    "perkiraan_byte": 10968
+    "iou": 0.9893,
+    "rentang": 3444,
+    "perkiraan_byte": 27552
    },
    "sy4_sx4": {
-    "iou": 0.981,
-    "rentang": 1371,
-    "perkiraan_byte": 10968
+    "iou": 0.9745,
+    "rentang": 3366,
+    "perkiraan_byte": 26928
    },
    "sy8_sx8": {
-    "iou": 0.9609,
-    "rentang": 1366,
-    "perkiraan_byte": 10928
+    "iou": 0.947,
+    "rentang": 3149,
+    "perkiraan_byte": 25192
    },
    "sy4_sx8": {
-    "iou": 0.9646,
-    "rentang": 1368,
-    "perkiraan_byte": 10944
+    "iou": 0.9507,
+    "rentang": 3151,
+    "perkiraan_byte": 25208
    }
   },
   "apex-assembly-25-v1": {
    "sy1_sx1": {
-    "iou": 0.9998,
-    "rentang": 2352,
-    "perkiraan_byte": 18816
+    "iou": 0.999,
+    "rentang": 3259,
+    "perkiraan_byte": 26072
    },
    "sy2_sx2": {
-    "iou": 0.9729,
-    "rentang": 2347,
-    "perkiraan_byte": 18776
+    "iou": 0.9897,
+    "rentang": 3272,
+    "perkiraan_byte": 26176
    },
    "sy4_sx4": {
-    "iou": 0.9375,
-    "rentang": 2347,
-    "perkiraan_byte": 18776
+    "iou": 0.9765,
+    "rentang": 3224,
+    "perkiraan_byte": 25792
    },
    "sy8_sx8": {
-    "iou": 0.8698,
-    "rentang": 2339,
-    "perkiraan_byte": 18712
+    "iou": 0.9533,
+    "rentang": 2975,
+    "perkiraan_byte": 23800
    },
    "sy4_sx8": {
-    "iou": 0.8826,
-    "rentang": 2327,
-    "perkiraan_byte": 18616
+    "iou": 0.9583,
+    "rentang": 2973,
+    "perkiraan_byte": 23784
    }
   },
   "apex-assembly-60-v1": {
    "sy1_sx1": {
-    "iou": 0.9999,
-    "rentang": 1774,
-    "perkiraan_byte": 14192
+    "iou": 0.9992,
+    "rentang": 3677,
+    "perkiraan_byte": 29416
    },
    "sy2_sx2": {
     "iou": 0.9895,
-    "rentang": 1776,
-    "perkiraan_byte": 14208
+    "rentang": 3680,
+    "perkiraan_byte": 29440
    },
    "sy4_sx4": {
-    "iou": 0.9754,
-    "rentang": 1758,
-    "perkiraan_byte": 14064
+    "iou": 0.9759,
+    "rentang": 3617,
+    "perkiraan_byte": 28936
    },
    "sy8_sx8": {
-    "iou": 0.9473,
-    "rentang": 1745,
-    "perkiraan_byte": 13960
+    "iou": 0.9518,
+    "rentang": 3313,
+    "perkiraan_byte": 26504
    },
    "sy4_sx8": {
-    "iou": 0.9518,
-    "rentang": 1744,
-    "perkiraan_byte": 13952
+    "iou": 0.956,
+    "rentang": 3354,
+    "perkiraan_byte": 26832
    }
   },
   "mira-idle-v1": {
@@ -363,29 +363,29 @@
   },
   "mira-hair-v1": {
    "sy1_sx1": {
-    "iou": 1.0,
-    "rentang": 1451,
-    "perkiraan_byte": 11608
+    "iou": 0.9994,
+    "rentang": 3621,
+    "perkiraan_byte": 28968
    },
    "sy2_sx2": {
-    "iou": 0.9897,
-    "rentang": 1451,
-    "perkiraan_byte": 11608
+    "iou": 0.9842,
+    "rentang": 3625,
+    "perkiraan_byte": 29000
    },
    "sy4_sx4": {
-    "iou": 0.9745,
-    "rentang": 1447,
-    "perkiraan_byte": 11576
+    "iou": 0.9615,
+    "rentang": 3623,
+    "perkiraan_byte": 28984
    },
    "sy8_sx8": {
-    "iou": 0.9426,
-    "rentang": 1439,
-    "perkiraan_byte": 11512
+    "iou": 0.9146,
+    "rentang": 3535,
+    "perkiraan_byte": 28280
    },
    "sy4_sx8": {
-    "iou": 0.9485,
-    "rentang": 1447,
-    "perkiraan_byte": 11576
+    "iou": 0.9208,
+    "rentang": 3579,
+    "perkiraan_byte": 28632
    }
   }
  }
