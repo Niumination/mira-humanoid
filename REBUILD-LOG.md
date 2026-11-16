@@ -1033,3 +1033,12 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 4. Tambalan filamen di celah → 18,25 wilayah, 6,901 seluruh bingkai (F-179).
 5. P12 ditutup dengan plato 2,747 / torso 10,07 / pita +7,40; 17 sebab ditutup berangka.
 6. Bahan P13: aset filamen + 3 alat + statistik struktur (ridge 33,55/baris · jarak 7,0 px · run p90 17 px).
+
+## Sesi 57 lanjutan 12 — verifikasi 5p + P13 langkah 1 (aset siluet)
+
+1. Verifikasi 5p: 10/10 byte-identik (9 berkas + render PNG).
+2. P13 langkah 1: mask 9 plate → model parametrik rentang-per-baris → render sendiri.
+3. IoU 9/9 ≥ 0,9998; aset 120 496 B vs 2 699 462 B asli (4,5 %).
+4. Uji kompresi: sy2/sx2 ≥ 0,9895 untuk 7/9 (assembly-25 0,9729 → pakai model penuh).
+5. Batas jujur dicatat: mask APEX turunan luma; struktur garis dalam belum dimodelkan; audit masih 12/12 SALINAN.
+6. Langkah 2: model garis dalam (dari 179 rantai P12) → ganti berkas publik → audit 0/12 → gerbang fase wajib tetap lulus.

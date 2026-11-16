@@ -1,0 +1,392 @@
+{
+ "judul": "P13 langkah 1 — model siluet parametrik (aset milik kita)",
+ "syarat_iou": 0.98,
+ "cara": "mask asli → isi lubang → komponen terbesar → cx(y), h(y) dihaluskan (40-1400 titik) → render ulang dengan gradasi warna; tidak ada piksel asli yang dipakai di keluaran",
+ "ringkas": {
+  "plate": 9,
+  "lulus": 9,
+  "iou_min": 0.9998
+ },
+ "baris": [
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-idle-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 20.12,
+   "rentang_y": [
+    106,
+    1157
+   ],
+   "tinggi_siluet": 1052,
+   "rentang_total": 1470,
+   "lebar_maks": 463.0,
+   "iou_render_vs_siluet": 1.0,
+   "lulus": true
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-listening-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 19.85,
+   "rentang_y": [
+    149,
+    1144
+   ],
+   "tinggi_siluet": 996,
+   "rentang_total": 1388,
+   "lebar_maks": 464.0,
+   "iou_render_vs_siluet": 1.0,
+   "lulus": true
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-speaking-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 19.45,
+   "rentang_y": [
+    128,
+    1146
+   ],
+   "tinggi_siluet": 1019,
+   "rentang_total": 1423,
+   "lebar_maks": 460.0,
+   "iou_render_vs_siluet": 1.0,
+   "lulus": true
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-speaking-strong-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 22.95,
+   "rentang_y": [
+    109,
+    1176
+   ],
+   "tinggi_siluet": 1068,
+   "rentang_total": 2086,
+   "lebar_maks": 622.0,
+   "iou_render_vs_siluet": 0.9999,
+   "lulus": true
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-thinking-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 18.65,
+   "rentang_y": [
+    143,
+    1121
+   ],
+   "tinggi_siluet": 979,
+   "rentang_total": 1373,
+   "lebar_maks": 458.0,
+   "iou_render_vs_siluet": 1.0,
+   "lulus": true
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-assembly-25-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 8.92,
+   "rentang_y": [
+    40,
+    1250
+   ],
+   "tinggi_siluet": 1211,
+   "rentang_total": 2352,
+   "lebar_maks": 237.0,
+   "iou_render_vs_siluet": 0.9998,
+   "lulus": true
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-assembly-60-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 16.61,
+   "rentang_y": [
+    100,
+    1065
+   ],
+   "tinggi_siluet": 966,
+   "rentang_total": 1774,
+   "lebar_maks": 400.0,
+   "iou_render_vs_siluet": 0.9999,
+   "lulus": true
+  },
+  {
+   "aplikasi": "mira",
+   "berkas": "mira-idle-v1.webp",
+   "mode": "alpha",
+   "cakupan_persen": 50.85,
+   "rentang_y": [
+    56,
+    1371
+   ],
+   "tinggi_siluet": 1316,
+   "rentang_total": 1745,
+   "lebar_maks": 1008.0,
+   "iou_render_vs_siluet": 1.0,
+   "lulus": true
+  },
+  {
+   "aplikasi": "mira",
+   "berkas": "mira-hair-v1.webp",
+   "mode": "luma",
+   "cakupan_persen": 10.33,
+   "rentang_y": [
+    36,
+    834
+   ],
+   "tinggi_siluet": 799,
+   "rentang_total": 1451,
+   "lebar_maks": 401.0,
+   "iou_render_vs_siluet": 1.0,
+   "lulus": true
+  }
+ ],
+ "kompresi": {
+  "apex-idle-v1": {
+   "sy1_sx1": {
+    "iou": 1.0,
+    "rentang": 1470,
+    "perkiraan_byte": 11760
+   },
+   "sy2_sx2": {
+    "iou": 0.9926,
+    "rentang": 1472,
+    "perkiraan_byte": 11776
+   },
+   "sy4_sx4": {
+    "iou": 0.9825,
+    "rentang": 1468,
+    "perkiraan_byte": 11744
+   },
+   "sy8_sx8": {
+    "iou": 0.9627,
+    "rentang": 1460,
+    "perkiraan_byte": 11680
+   },
+   "sy4_sx8": {
+    "iou": 0.9668,
+    "rentang": 1468,
+    "perkiraan_byte": 11744
+   }
+  },
+  "apex-listening-v1": {
+   "sy1_sx1": {
+    "iou": 1.0,
+    "rentang": 1388,
+    "perkiraan_byte": 11104
+   },
+   "sy2_sx2": {
+    "iou": 0.9928,
+    "rentang": 1384,
+    "perkiraan_byte": 11072
+   },
+   "sy4_sx4": {
+    "iou": 0.9822,
+    "rentang": 1380,
+    "perkiraan_byte": 11040
+   },
+   "sy8_sx8": {
+    "iou": 0.9624,
+    "rentang": 1365,
+    "perkiraan_byte": 10920
+   },
+   "sy4_sx8": {
+    "iou": 0.9665,
+    "rentang": 1371,
+    "perkiraan_byte": 10968
+   }
+  },
+  "apex-speaking-v1": {
+   "sy1_sx1": {
+    "iou": 1.0,
+    "rentang": 1423,
+    "perkiraan_byte": 11384
+   },
+   "sy2_sx2": {
+    "iou": 0.9921,
+    "rentang": 1421,
+    "perkiraan_byte": 11368
+   },
+   "sy4_sx4": {
+    "iou": 0.9818,
+    "rentang": 1415,
+    "perkiraan_byte": 11320
+   },
+   "sy8_sx8": {
+    "iou": 0.9622,
+    "rentang": 1413,
+    "perkiraan_byte": 11304
+   },
+   "sy4_sx8": {
+    "iou": 0.9655,
+    "rentang": 1411,
+    "perkiraan_byte": 11288
+   }
+  },
+  "apex-speaking-strong-v1": {
+   "sy1_sx1": {
+    "iou": 0.9999,
+    "rentang": 2086,
+    "perkiraan_byte": 16688
+   },
+   "sy2_sx2": {
+    "iou": 0.9911,
+    "rentang": 2088,
+    "perkiraan_byte": 16704
+   },
+   "sy4_sx4": {
+    "iou": 0.978,
+    "rentang": 2088,
+    "perkiraan_byte": 16704
+   },
+   "sy8_sx8": {
+    "iou": 0.9532,
+    "rentang": 2077,
+    "perkiraan_byte": 16616
+   },
+   "sy4_sx8": {
+    "iou": 0.958,
+    "rentang": 2079,
+    "perkiraan_byte": 16632
+   }
+  },
+  "apex-thinking-v1": {
+   "sy1_sx1": {
+    "iou": 1.0,
+    "rentang": 1373,
+    "perkiraan_byte": 10984
+   },
+   "sy2_sx2": {
+    "iou": 0.9922,
+    "rentang": 1371,
+    "perkiraan_byte": 10968
+   },
+   "sy4_sx4": {
+    "iou": 0.981,
+    "rentang": 1371,
+    "perkiraan_byte": 10968
+   },
+   "sy8_sx8": {
+    "iou": 0.9609,
+    "rentang": 1366,
+    "perkiraan_byte": 10928
+   },
+   "sy4_sx8": {
+    "iou": 0.9646,
+    "rentang": 1368,
+    "perkiraan_byte": 10944
+   }
+  },
+  "apex-assembly-25-v1": {
+   "sy1_sx1": {
+    "iou": 0.9998,
+    "rentang": 2352,
+    "perkiraan_byte": 18816
+   },
+   "sy2_sx2": {
+    "iou": 0.9729,
+    "rentang": 2347,
+    "perkiraan_byte": 18776
+   },
+   "sy4_sx4": {
+    "iou": 0.9375,
+    "rentang": 2347,
+    "perkiraan_byte": 18776
+   },
+   "sy8_sx8": {
+    "iou": 0.8698,
+    "rentang": 2339,
+    "perkiraan_byte": 18712
+   },
+   "sy4_sx8": {
+    "iou": 0.8826,
+    "rentang": 2327,
+    "perkiraan_byte": 18616
+   }
+  },
+  "apex-assembly-60-v1": {
+   "sy1_sx1": {
+    "iou": 0.9999,
+    "rentang": 1774,
+    "perkiraan_byte": 14192
+   },
+   "sy2_sx2": {
+    "iou": 0.9895,
+    "rentang": 1776,
+    "perkiraan_byte": 14208
+   },
+   "sy4_sx4": {
+    "iou": 0.9754,
+    "rentang": 1758,
+    "perkiraan_byte": 14064
+   },
+   "sy8_sx8": {
+    "iou": 0.9473,
+    "rentang": 1745,
+    "perkiraan_byte": 13960
+   },
+   "sy4_sx8": {
+    "iou": 0.9518,
+    "rentang": 1744,
+    "perkiraan_byte": 13952
+   }
+  },
+  "mira-idle-v1": {
+   "sy1_sx1": {
+    "iou": 1.0,
+    "rentang": 1745,
+    "perkiraan_byte": 13960
+   },
+   "sy2_sx2": {
+    "iou": 0.9971,
+    "rentang": 1744,
+    "perkiraan_byte": 13952
+   },
+   "sy4_sx4": {
+    "iou": 0.9925,
+    "rentang": 1746,
+    "perkiraan_byte": 13968
+   },
+   "sy8_sx8": {
+    "iou": 0.9827,
+    "rentang": 1746,
+    "perkiraan_byte": 13968
+   },
+   "sy4_sx8": {
+    "iou": 0.9839,
+    "rentang": 1746,
+    "perkiraan_byte": 13968
+   }
+  },
+  "mira-hair-v1": {
+   "sy1_sx1": {
+    "iou": 1.0,
+    "rentang": 1451,
+    "perkiraan_byte": 11608
+   },
+   "sy2_sx2": {
+    "iou": 0.9897,
+    "rentang": 1451,
+    "perkiraan_byte": 11608
+   },
+   "sy4_sx4": {
+    "iou": 0.9745,
+    "rentang": 1447,
+    "perkiraan_byte": 11576
+   },
+   "sy8_sx8": {
+    "iou": 0.9426,
+    "rentang": 1439,
+    "perkiraan_byte": 11512
+   },
+   "sy4_sx8": {
+    "iou": 0.9485,
+    "rentang": 1447,
+    "perkiraan_byte": 11576
+   }
+  }
+ }
+}

@@ -1140,3 +1140,19 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
   filamen (bahan P13) · 3 alat baru · aturan F-170/F-176.
 - **Berikutnya: P13** — ukuran paritas berpindah dari MAE piksel ke paritas struktur (IoU siluet + sebaran
   filamen + 6 gerbang fase), karena MAE piksel menuntut menyalin citra live.
+
+### Sesi 57 lanjutan 12 — verifikasi 5p + **P13 langkah 1** (aset siluet milik sendiri)
+
+- **Verifikasi 5p:** 9/9 berkas + 1 PNG **byte-identik** (`p12-warp-fit.py` 31bd5870 · `p12-filamen.py` f641f306 ·
+  `p12-langkah5.json` 29ebfed0 · `p12-filamen-aset-95.json` bca9d108 · `p12-warp-95.json` 1e1921db ·
+  `P12-LANGKAH5-DAN-TUTUP.md` d73a694c · catatan bc38d3df/e772fb63/5b6ceb27 · render PNG 9e4be27f) ⇒ **5p LULUS**.
+- **P13 dimulai.** Aturan baru berlaku: ukuran paritas MIRA/APEX berpindah dari MAE piksel ke **paritas struktur**.
+- **Langkah 1 — aset siluet:** mask tiap plate (APEX: luma blur6+ambang 40; MIRA: alfa > 32) → **model parametrik**
+  (daftar rentang x per baris) → plate baru digambar dari model dengan warna/gradasi sendiri.
+  **9/9 plate IoU ≥ 0,9998** (syarat ≥ 0,98). Ukuran aset **120 496 B vs 2 699 462 B** plate asli (**4,5 %**).
+- **Jujur:** IoU diukur terhadap mask ekstraksi kita sendiri (APEX = turunan luma, bukan alfa) ⇒ mengukur
+  kesetiaan model ke mask, bukan ke objek asli.
+- **Belum selesai:** struktur garis dalam plate · aplikasi belum memuat aset baru · `audit-provenance` masih
+  **12/12 SALINAN** · logo/tipografi/ikon belum diperiksa.
+- Alat baru: `tools/p13-siluet.py`, `tools/p13-aset.py` (model + render + IoU + uji kompresi).
+  Dokumen: `docs/p13/P13-LANGKAH1.md`. Angka: `verification/p13/*.json`.

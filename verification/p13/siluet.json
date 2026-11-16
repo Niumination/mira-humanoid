@@ -1,0 +1,123 @@
+{
+ "judul": "P13 langkah 1 — siluet asli tiap plate (dasar IoU >= 0,98)",
+ "catatan": "plate APEX opak (alfa 255) ⇒ mask diturunkan dari kecerahan > 40; plate MIRA memakai alfa > 32",
+ "baris": [
+  {
+   "berkas": "apex-idle-v1.webp",
+   "mode": "luma",
+   "ambang": 40,
+   "piksel": 210443,
+   "cakupan_persen": 13.37,
+   "kotak": [
+    24,
+    8,
+    1177,
+    1266
+   ]
+  },
+  {
+   "berkas": "apex-listening-v1.webp",
+   "mode": "luma",
+   "ambang": 40,
+   "piksel": 216490,
+   "cakupan_persen": 13.77,
+   "kotak": [
+    5,
+    0,
+    1194,
+    1270
+   ]
+  },
+  {
+   "berkas": "apex-speaking-v1.webp",
+   "mode": "luma",
+   "ambang": 40,
+   "piksel": 219999,
+   "cakupan_persen": 13.99,
+   "kotak": [
+    32,
+    8,
+    1171,
+    1275
+   ]
+  },
+  {
+   "berkas": "apex-speaking-strong-v1.webp",
+   "mode": "luma",
+   "ambang": 40,
+   "piksel": 289910,
+   "cakupan_persen": 18.44,
+   "kotak": [
+    27,
+    10,
+    1179,
+    1281
+   ]
+  },
+  {
+   "berkas": "apex-thinking-v1.webp",
+   "mode": "luma",
+   "ambang": 40,
+   "piksel": 161843,
+   "cakupan_persen": 10.29,
+   "kotak": [
+    43,
+    82,
+    1171,
+    1249
+   ]
+  },
+  {
+   "berkas": "apex-assembly-25-v1.webp",
+   "mode": "luma",
+   "ambang": 40,
+   "piksel": 170693,
+   "cakupan_persen": 10.85,
+   "kotak": [
+    23,
+    0,
+    1186,
+    1253
+   ]
+  },
+  {
+   "berkas": "apex-assembly-60-v1.webp",
+   "mode": "luma",
+   "ambang": 40,
+   "piksel": 214121,
+   "cakupan_persen": 13.62,
+   "kotak": [
+    73,
+    19,
+    1086,
+    1253
+   ]
+  },
+  {
+   "berkas": "mira-idle-v1.webp",
+   "mode": "alpha",
+   "ambang": 32,
+   "piksel": 801651,
+   "cakupan_persen": 50.96,
+   "kotak": [
+    21,
+    56,
+    1123,
+    1373
+   ]
+  },
+  {
+   "berkas": "mira-hair-v1.webp",
+   "mode": "luma",
+   "ambang": 48,
+   "piksel": 183560,
+   "cakupan_persen": 9.32,
+   "kotak": [
+    99,
+    39,
+    1255,
+    1358
+   ]
+  }
+ ]
+}

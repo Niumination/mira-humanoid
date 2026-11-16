@@ -1,0 +1,210 @@
+{
+ "judul": "P13 langkah 1 — aset SILUET milik sendiri: model parametrik + render, IoU ≥ 0,9998",
+ "sesi": 57,
+ "tanggal": "2026-10-29",
+ "konteks": {
+  "p12": "ditutup dengan plato (paritas piksel 2,747 · torso 10,07) — sebab: galat HF dari mesh 3D live",
+  "aturan_p13": "sejak P13, ukuran paritas berpindah dari MAE piksel ke paritas STRUKTUR (siluet IoU, timing, gerbang fase)",
+  "gerbang_hukum": "audit-provenance.py: 12/12 SALINAN ⇒ wajib diganti sebelum rebranding"
+ },
+ "langkah_1": {
+  "apa": "siluet tiap plate diukur, lalu dinyatakan ulang sebagai MODEL (daftar rentang x per baris), lalu plate baru DIGAMBAR dari model itu",
+  "yang_tidak_dilakukan": "tidak ada piksel asli yang disalin ke keluaran; warna & gradasi dibuat sendiri",
+  "cara_mask": {
+   "apex": "plate opak (alfa 255) ⇒ luma di-blur 6 px + ambang 40 → closing 3 → isi lubang → komponen terbesar",
+   "mira": "alfa > 32 → closing 2 → isi lubang → komponen terbesar"
+  },
+  "hasil_iou": {
+   "model penuh (setiap baris, x tepat)": "9/9 plate ≥ 0,9998",
+   "model terkuantisasi sy2/sx2": "7/9 plate ≥ 0,9895; assembly-25 turun 0,9729 · assembly-60 0,9895",
+   "catatan_jujur": "IoU diukur terhadap mask hasil ekstraksi kita sendiri (untuk plate APEX mask itu turunan luma, bukan alfa) ⇒ angka ini mengukur KESETIAAN MODEL terhadap mask, bukan kesetiaan ke objek asli"
+  },
+  "ukuran_aset": {
+   "total_model_sy1": 120496,
+   "total_plate_asli": 2699462,
+   "porsi_persen": 4.5,
+   "per_plate": [
+    {
+     "nama": "apex-idle-v1",
+     "asli_byte": 300084,
+     "model_byte": 11760
+    },
+    {
+     "nama": "apex-listening-v1",
+     "asli_byte": 350160,
+     "model_byte": 11104
+    },
+    {
+     "nama": "apex-speaking-v1",
+     "asli_byte": 286100,
+     "model_byte": 11384
+    },
+    {
+     "nama": "apex-speaking-strong-v1",
+     "asli_byte": 327680,
+     "model_byte": 16688
+    },
+    {
+     "nama": "apex-thinking-v1",
+     "asli_byte": 275616,
+     "model_byte": 10984
+    },
+    {
+     "nama": "apex-assembly-25-v1",
+     "asli_byte": 312814,
+     "model_byte": 18816
+    },
+    {
+     "nama": "apex-assembly-60-v1",
+     "asli_byte": 322748,
+     "model_byte": 14192
+    },
+    {
+     "nama": "mira-idle-v1",
+     "asli_byte": 364544,
+     "model_byte": 13960
+    },
+    {
+     "nama": "mira-hair-v1",
+     "asli_byte": 159716,
+     "model_byte": 11608
+    }
+   ]
+  },
+  "bentuk_aset": [
+   {
+    "berkas": "apex-idle-v1.webp",
+    "cakupan_persen": 20.12,
+    "rentang_y": [
+     106,
+     1157
+    ],
+    "tinggi_siluet": 1052,
+    "rentang_total": 1470,
+    "lebar_maks": 463.0,
+    "iou": 1.0
+   },
+   {
+    "berkas": "apex-listening-v1.webp",
+    "cakupan_persen": 19.85,
+    "rentang_y": [
+     149,
+     1144
+    ],
+    "tinggi_siluet": 996,
+    "rentang_total": 1388,
+    "lebar_maks": 464.0,
+    "iou": 1.0
+   },
+   {
+    "berkas": "apex-speaking-v1.webp",
+    "cakupan_persen": 19.45,
+    "rentang_y": [
+     128,
+     1146
+    ],
+    "tinggi_siluet": 1019,
+    "rentang_total": 1423,
+    "lebar_maks": 460.0,
+    "iou": 1.0
+   },
+   {
+    "berkas": "apex-speaking-strong-v1.webp",
+    "cakupan_persen": 22.95,
+    "rentang_y": [
+     109,
+     1176
+    ],
+    "tinggi_siluet": 1068,
+    "rentang_total": 2086,
+    "lebar_maks": 622.0,
+    "iou": 0.9999
+   },
+   {
+    "berkas": "apex-thinking-v1.webp",
+    "cakupan_persen": 18.65,
+    "rentang_y": [
+     143,
+     1121
+    ],
+    "tinggi_siluet": 979,
+    "rentang_total": 1373,
+    "lebar_maks": 458.0,
+    "iou": 1.0
+   },
+   {
+    "berkas": "apex-assembly-25-v1.webp",
+    "cakupan_persen": 8.92,
+    "rentang_y": [
+     40,
+     1250
+    ],
+    "tinggi_siluet": 1211,
+    "rentang_total": 2352,
+    "lebar_maks": 237.0,
+    "iou": 0.9998
+   },
+   {
+    "berkas": "apex-assembly-60-v1.webp",
+    "cakupan_persen": 16.61,
+    "rentang_y": [
+     100,
+     1065
+    ],
+    "tinggi_siluet": 966,
+    "rentang_total": 1774,
+    "lebar_maks": 400.0,
+    "iou": 0.9999
+   },
+   {
+    "berkas": "mira-idle-v1.webp",
+    "cakupan_persen": 50.85,
+    "rentang_y": [
+     56,
+     1371
+    ],
+    "tinggi_siluet": 1316,
+    "rentang_total": 1745,
+    "lebar_maks": 1008.0,
+    "iou": 1.0
+   },
+   {
+    "berkas": "mira-hair-v1.webp",
+    "cakupan_persen": 10.33,
+    "rentang_y": [
+     36,
+     834
+    ],
+    "tinggi_siluet": 799,
+    "rentang_total": 1451,
+    "lebar_maks": 401.0,
+    "iou": 1.0
+   }
+  ]
+ },
+ "belum_selesai": [
+  "struktur GARIS di dalam plate (pola filamen/urat) belum dimodelkan — yang baru siluet + gradasi",
+  "aplikasi belum memuat aset baru (MIRA masih memakai mira-idle-v1.webp & mira-hair-v1.webp; APEX plate webp)",
+  "audit-provenance masih 12/12 SALINAN karena berkas publik belum diganti",
+  "logo, tipografi, ikon belum diperiksa"
+ ],
+ "langkah_2_rencana": [
+  "model garis dalam: dari pola filamen (aset 179 rantai P12) + aturan lengkung, digambar prosedural",
+  "ganti berkas publik dengan render baru, lalu jalankan audit-provenance → target SALINAN 0/12",
+  "ukur paritas struktur: siluet IoU plate baru vs plate lama (≥0,98) + 6 gerbang fase tetap lulus",
+  "perbarui build MIRA/APEX dan gerbang fase supaya tidak ada regresi fungsi"
+ ],
+ "berkas": {
+  "alat": [
+   "tools/p13-siluet.py",
+   "tools/p13-aset.py"
+  ],
+  "keluaran": [
+   "verification/p13/siluet.json",
+   "verification/p13/aset-siluet.json",
+   "verification/p13/mask-*.png",
+   "verification/p13/render-*.png",
+   "verification/p13/banding-*.png"
+  ]
+ }
+}
