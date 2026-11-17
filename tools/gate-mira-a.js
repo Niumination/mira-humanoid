@@ -9,10 +9,26 @@ const BASE = (process.env.BASE || process.argv[2] || 'http://127.0.0.1:8804').re
 const OUT = '/home/user/Kerja-Arena/verification/mira'
 
 const probe = () => ({
+  // Hanya teks yang TERLIHAT. Sejak P14 build punya <h1 class="sr-only"> (landmark aksesibilitas)
+  // yang tidak dirender — live tidak punya itu, jadi tanpa penyaringan perbandingan copy jadi gagal palsu.
   texts: [...document.querySelectorAll('div,h1,h2,span,p,button')]
+    .filter((e) => {
+      if (e.classList.contains('sr-only') || e.closest('.sr-only')) return false
+      const r = e.getBoundingClientRect()
+      return r.width > 1 && r.height > 1
+    })
     .map((e) => e.childElementCount === 0 ? (e.textContent || '').trim() : '')
     .filter(Boolean),
-  body: (document.body.innerText || '').replace(/\s+/g, ' ').trim(),
+  // innerText membuang elemen tersembunyi; .sr-only tetap terhitung "terlihat" oleh innerText,
+  // jadi judul tersembunyi dibuang manual supaya yang dibandingkan hanya copy visual.
+  body: ((() => {
+    const sr = [...document.querySelectorAll('.sr-only')]
+    const simpan = sr.map((e) => e.style.display)
+    sr.forEach((e) => { e.style.display = 'none' })
+    const t = (document.body.innerText || '').replace(/\s+/g, ' ').trim()
+    sr.forEach((e, i) => { e.style.display = simpan[i] })
+    return t
+  })()),
   buttons: [...document.querySelectorAll('button')].map((b) => ({
     t: (b.textContent || '').trim(),
     aria: b.getAttribute('aria-label'),

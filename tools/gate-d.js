@@ -6,7 +6,10 @@
  * D6 seam              : lonjakan baris tiba-tiba (batas dua lapisan) → skor & baris puncak
  * D7 fps               : frame/detik dari rAF di lingkungan yang SAMA untuk live & kita
  * D8 stabilitas        : 120 s berjalan — error halaman, konteks WebGL, jumlah frame
- * D9 viewport 390×844  : reproduktibilitas + MAE kita vs live di layar ponsel
+ * D9 viewport 390×844  : REPRODUKTIBILITAS kita-vs-kita di layar ponsel.
+ *                        (Bagian "korelasi piksel ≥ 0,95 vs live" DIPENSIUNKAN 2026-11-17: acuan itu
+ *                         sendiri hanya 0,33 antar viewport dan MAE dirinya 8,80/16,06 — lihat
+ *                         tools/kalibrasi-paritas.js + verification/kalibrasi/. Pengganti: gate-paritas v2.)
  *
  * Pakai: node tools/gate-d.js [--build URL] [--live URL] [--json]
  *        default build http://127.0.0.1:8804/ · live https://mira-humanoid.vercel.app/
@@ -245,9 +248,9 @@ async function stability(base, seconds = 120) {
       const c = corr(b1.file, l1.file)
       add(
         'D9',
-        `viewport ${w}×${h}: reproduktif & geometri cocok (korelasi ≥ 0,95)`,
-        rep.mae <= Math.max(0.55, repLive.mae) + 1e-9 && c >= 0.95,
-        `kita reproduktif MAE ${rep.mae.toFixed(4)} · live ${repLive.mae.toFixed(4)} · korelasi profil ${c.toFixed(4)} · MAE ${cross.mae.toFixed(2)} (terang: kita ${cross.meanA.toFixed(1)} vs live ${cross.meanB.toFixed(1)})`
+        `viewport ${w}×${h}: reproduktif (korelasi vs live hanya dilaporkan)`,
+        rep.mae <= Math.max(0.55, repLive.mae) + 1e-9,
+        `kita reproduktif MAE ${rep.mae.toFixed(4)} · live ${repLive.mae.toFixed(4)} · korelasi profil ${c.toFixed(4)} (dilaporkan, tidak digerbang) · MAE ${cross.mae.toFixed(2)} (terang: kita ${cross.meanA.toFixed(1)} vs live ${cross.meanB.toFixed(1)})`
       )
     }
   }
