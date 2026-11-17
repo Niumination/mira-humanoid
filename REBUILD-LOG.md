@@ -1053,3 +1053,17 @@ live pakai dial resmi **`?dial.hum.glow.strength=0`**. Daftar 82 dial live kini 
 6. Build ulang: APEX b489da8ce6354b3d · MIRA af245fab40b03581 — JS identik dengan sebelum tukar plate.
 7. Gerbang Chromium tak tersedia (libnspr4); bukti pengganti = bundle identik + gate-step5 BAGIAN=A 6/6.
 8. Sisa: backdrop (Gerbang E), struktur dalam assembly-25 & mira-idle, fitur anatomi.
+
+## Sesi 58 lanjutan 14 — verifikasi 5r + P13 langkah 3 & 4
+
+1. Verifikasi 5r: 33/33 byte-identik (BACA-DULU-5r.md tidak terkirim).
+2. Audit: repo MIRA memuat 7 salinan apex-*.webp tak terpakai → dihapus (audit 19 → 12 berkas).
+3. `tools/p13-backdrop.py`: latar dari aturan (5 lapis puncak Gauss + gerigi fbm + 3 populasi partikel +
+   190 aliran + glow 2 skala + pencocokan tonal 7 kuantil), biji tetap 137.
+4. Paritas tonal backdrop: rata 16,29/16,29 · p50 6/6 · p90 42/39 · p99 151/148 · hangat 0,0373/0,0430.
+5. **Gerbang E aset LULUS: 0 salinan / 12 berkas.**
+6. `tools/p13-garis.py` v8: aturan bobot medial + 24 kombinasi per plate.
+   Korelasi luma min 0,077 → 0,998 · rata-rata 0,616 → 0,999 · impit ridge 59,3 % → 89,5 % · IoU min 0,9921.
+7. Build APEX/MIRA tetap identik (b489da8c / af245fab).
+8. `tools/gerbang-semua.sh` + `docs/p13/GERBANG-CARA-JALAN.md`: jalankan 6 gerbang dengan satu perintah,
+   simpan bukti; Chromium tetap tak tersedia di sandbox (BELUM DIUJI, bukan lulus).

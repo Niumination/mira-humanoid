@@ -1,0 +1,11 @@
+LULUS  mesin audio hidup — state running
+LULUS  skor cue terbangun — 36 cue
+LULUS  skor dijalankan — started true
+LULUS  panjang skor ≈ 12,55 s — 12.550 s
+LULUS  keluaran berbunyi (RMS bus master) — RMS maks 9.17e-3
+LULUS  SOUND OFF membungkam master — RMS 0.00e+0 vs 9.17e-3
+LULUS  SOUND ON menyalakan lagi — RMS 1.01e-1
+LULUS  klik panggung memicu bolt — RMS 1.27e-2
+LULUS  tanpa error halaman
+──────────────────────────────────────────────────────────────────────
+SKOR: 9/9

@@ -90,7 +90,7 @@ rebranding. Lihat `docs/LISENSI-BRANDING.md`.
 |---|---|---|---|
 | P11 | APEX paritas latar & tonal | 1440 **≤ 6,0** ✓ (**3,96**) · 390 **≤ 2,3** ✗ (**4,35**) · 12 penyebab dieliminasi; lead baru: pita gelap kita +10 % (sampel tekstur sprite titik) | sisa: sprite sampling + kepadatan siluet |
 | P12 | MIRA pola per-filamen (geometri, bukan citra) | galat torso **10,4 → ≤ 7,0** · `|Δbias|` tiap pita ≤ 2 · paritas ≤ 2,5 | **DITUTUP DENGAN PLATO (sesi 57)**: paritas **2,747** · torso **10,07** · pita 0–20 **+7,40** — target tak tercapai. 17 sebab ditutup berangka (afin · per-blok · geser global & per baris · ridge · 7 keluarga knob · geometri-sebagai-pengganti · tambalan filamen). Sebab plato: 76–90 % galat = struktur HF <16 px dari mesh 3D. Bahan ke P13: 179 rantai filamen + 3 alat | selesai |
-| P13 | plate milik kita (langkah 2 selesai) | langkah 1–2 ✅ IoU 0,9851–0,9992 · provenance 1/12 · sisa: `backdrop-v1.webp` + struktur dalam `assembly-25`/`mira-idle` (`docs/p13/P13-LANGKAH2.md`) | 1–2 sesi |
+| P13 | plate milik kita + latar milik kita | langkah 1–4 ✅ IoU render 0,9921–1,0000 · korelasi luma 0,998–1,000 · **Gerbang E aset LULUS (0 salinan)** · sisa: gerbang Chromium BELUM DIUJI di sandbox (`tools/gerbang-semua.sh`) | 1 sesi (uji gerbang) |
 | P14 | fitur "satu langkah di depan" | ≥ 3 dari 5 (E1 avatar kustom · E2 fps ≥1,5× · E3 aksesibilitas · E4 pemulihan konteks · E5 PWA) | 2–3 sesi |
 | P15 | cut-over merek **NIU & MIRAI** | Gerbang E lengkap (checklist di `LISENSI-BRANDING.md` §5) | 1 sesi |
 

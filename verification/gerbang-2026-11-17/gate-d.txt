@@ -1,0 +1,10 @@
+PASS  D5  reproduktibilitas @t=8 (kita vs live)  kita MAE 0.0000 (0 px) · live MAE 0.0845 (4428 px)
+PASS  D5  reproduktibilitas @t=11.5 (kita vs live)  kita MAE 0.0000 (0 px) · live MAE 0.0842 (5356 px)
+PASS  D6  tanpa seam buatan (lonjakan baris ≤ live)  kita rasio 2.33 (baris 636, 28.35 vs lokal 12.16) · live 1.48 (baris 529)
+FAIL  D7  fps di lingkungan yang sama (kita ≥ 0,8× live)  kita 0.53 fps (6 frame/11.2 s) · live 0.76 fps
+PASS  D8  stabil 120 s (tanpa error, konteks hidup, frame bertambah)  frame 9 → 111 · konteks hilang=false · err=0 · jam 2.58
+FAIL  D9  viewport 390×844: reproduktif & geometri cocok (korelasi ≥ 0,95)  kita reproduktif MAE 0.0000 · live 0.1396 · korelasi profil 0.8984 · MAE 25.97 (terang: kita 43.6 vs live 40.5)
+FAIL  D9  viewport 414×896: reproduktif & geometri cocok (korelasi ≥ 0,95)  kita reproduktif MAE 0.0000 · live 1.1570 · korelasi profil 0.8970 · MAE 25.84 (terang: kita 43.3 vs live 40.2)
+
+GERBANG D sisa: 4/7  →  /tmp/l5u-run/Kerja-Arena/verification/mira/gate-d.json
+d=1

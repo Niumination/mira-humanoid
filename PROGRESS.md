@@ -1176,3 +1176,26 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
   JS **byte-identik** sebelum/sesudah tukar plate (diuji dua arah) ⇒ waktu & perilaku tidak berubah.
 - **Batas:** gerbang Chromium tidak bisa dijalankan sesi ini (tidak ada `libnspr4`, bukan root); bagian Node
   `gate-step5.js` **6/6 LULUS**. Dokumen: `docs/p13/P13-LANGKAH2.md`.
+
+### Sesi 58 lanjutan 14 — verifikasi 5r + **P13 langkah 3 & 4** (backdrop + plate v2)
+
+- **Verifikasi 5r:** **33/33 berkas byte-identik** di `Niumination/mira-humanoid` (`raw.githubusercontent.com`);
+  `paket/BACA-DULU-5r.md` memang tidak terkirim (404) ⇒ 5r LULUS.
+- **Temuan audit:** `audit-provenance.py` memindai **semua** `.webp` di `public/humanoid/`. Repo MIRA memuat
+  7 salinan `apex-*.webp` yang tak dipakai aplikasi ⇒ total audit sebenarnya **19**, bukan 12.
+  7 berkas itu dihapus (tidak dirujuk `src/`) ⇒ audit kembali **12 berkas**.
+- **Langkah 3 — backdrop milik kita** (`tools/p13-backdrop.py`): langit · 5 lapis puncak Gauss (maksimum,
+  lereng kiri lebih tajam) · gerigi fbm · 3 populasi partikel · 190 aliran (72 % hangat) · glow 2 skala ·
+  pencocokan tonal pada 7 kuantil. Paritas tonal: rata luma **16,29 vs 16,29** · p50 **6/6** · p90 **42/39** ·
+  p99 **151/148** · fraksi hangat **0,0373 vs 0,0430**. Korelasi struktur (0,885 / 0,433 / −0,347) **tidak
+  dijadikan syarat** — latar adalah dunia kita sendiri, posisi puncak tidak boleh disalin.
+- **GERBANG E (aset) LULUS: SALINAN VERBATIM 0 · bukan salinan 12/12.**
+- **Langkah 4 — plate v2:** aturan baru **bobot medial** (`1 + medial·exp(-(Dc/0,22·Dc_max)²)`) + pemilihan
+  24 kombinasi parameter per plate. Korelasi profil luma **0,077 → 0,998** (min) dan rata-rata **0,616 → 0,999**;
+  impitan ridge rata-rata **59,3 % → 89,5 %**; IoU render min **0,9851 → 0,9921**; rasio luma **0,93–1,00**.
+  `apex-assembly-25` 0,077 → **0,9993** · `mira-idle` 0,261 → **1,0000**.
+- **Build:** APEX `b489da8ce6354b3d…` · MIRA `af245fab40b03581…` — tetap **byte-identik** (tukar aset).
+- **Lingkungan gerbang:** Chromium masih tidak bisa diluncurkan (libnspr4/libnss3 tidak ada, bukan root).
+  Dibuat `tools/gerbang-semua.sh` (+ `docs/p13/GERBANG-CARA-JALAN.md`): satu perintah menjalankan 6 gerbang,
+  menyimpan bukti ke `verification/gerbang-<tanggal>/`, plus angka acuan terakhir. Bagian Node `gate-step5`
+  (**6/6**) sudah diverifikasi lewat skrip itu.

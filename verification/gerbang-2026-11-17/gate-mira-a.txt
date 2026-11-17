@@ -1,0 +1,10 @@
+✅ title
+✅ entry: teks (semua node daun)
+✅ entry: body innerText
+✅ entry: tombol + gaya
+✅ mode: label tombol
+✅ mode: gaya tombol REPLAY
+✅ mode: aria-pressed status
+✅ mode: aria-label kamera
+
+8/8 lolos → verification/mira/gate-a.json
