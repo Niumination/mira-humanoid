@@ -1,0 +1,106 @@
+{
+ "judul": "Gerbang aksesibilitas (P14 · E3)",
+ "waktu": "2026-11-17T04:09:57.731Z",
+ "aplikasi": [
+  {
+   "aplikasi": "MIRA",
+   "base": "http://127.0.0.1:8804/",
+   "butir": [
+    {
+     "butir": "A1 bahasa dokumen",
+     "lulus": true,
+     "ket": "lang=\"en\""
+    },
+    {
+     "butir": "A2 judul dokumen",
+     "lulus": true,
+     "ket": "\"MIRA Humanoid\""
+    },
+    {
+     "butir": "A3 nama aksesibel semua kontrol",
+     "lulus": true,
+     "ket": "9 kontrol · tanpa nama 0"
+    },
+    {
+     "butir": "A4 landmark main",
+     "lulus": true,
+     "ket": "ada"
+    },
+    {
+     "butir": "A6 kontras teks ≥ 4,5:1",
+     "lulus": true,
+     "ket": "9 sampel · terburuk 9.74:1 \"ENABLE CAMERA\" (12 px)"
+    },
+    {
+     "butir": "A8 zoom tidak dikunci",
+     "lulus": true,
+     "ket": "viewport=\"width=device-width, initial-scale=1.0\""
+    },
+    {
+     "butir": "A5 fokus terlihat saat Tab",
+     "lulus": true,
+     "ket": "BUTTON \"Turn the camera (hand tr\" · outline auto 1px"
+    },
+    {
+     "butir": "A7 reduced-motion dihormati",
+     "lulus": true,
+     "ket": "data-reduced-motion=1 · elemen beranimasi/transisi 0"
+    }
+   ],
+   "lulus": 8,
+   "total": 8
+  },
+  {
+   "aplikasi": "APEX",
+   "base": "http://127.0.0.1:8805/",
+   "butir": [
+    {
+     "butir": "A1 bahasa dokumen",
+     "lulus": true,
+     "ket": "lang=\"en\""
+    },
+    {
+     "butir": "A2 judul dokumen",
+     "lulus": true,
+     "ket": "\"Apex Humanoid\""
+    },
+    {
+     "butir": "A3 nama aksesibel semua kontrol",
+     "lulus": true,
+     "ket": "9 kontrol · tanpa nama 0"
+    },
+    {
+     "butir": "A4 landmark main",
+     "lulus": true,
+     "ket": "ada"
+    },
+    {
+     "butir": "A6 kontras teks ≥ 4,5:1",
+     "lulus": true,
+     "ket": "10 sampel · terburuk 12.22:1 \"EXIT\" (12 px)"
+    },
+    {
+     "butir": "A8 zoom tidak dikunci",
+     "lulus": true,
+     "ket": "viewport=\"width=device-width, initial-scale=1.0\""
+    },
+    {
+     "butir": "A5 fokus terlihat saat Tab",
+     "lulus": true,
+     "ket": "BUTTON \"Exit humanoid view\" · outline auto 1px"
+    },
+    {
+     "butir": "A7 reduced-motion dihormati",
+     "lulus": true,
+     "ket": "data-reduced-motion=1 · elemen beranimasi/transisi 0"
+    }
+   ],
+   "lulus": 8,
+   "total": 8
+  }
+ ],
+ "ringkas": {
+  "lulus": 16,
+  "total": 16
+ }
+}
