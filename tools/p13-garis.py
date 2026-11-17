@@ -131,7 +131,7 @@ def splat(buf, xs, ys, w, r, g, b):
                 buf[y0 + dy, x0 + dx, k] += ww * c
 
 
-def render_medan(mk, pal, H, W, jarak=6.5, lantai=24.0, ramp=(2.0, 8.0, 1.4), partikel=0.55, kuat_p=1.0, core_buka=26, balik=False):
+def render_medan(mk, pal, H, W, jarak=6.5, lantai=24.0, ramp=(2.0, 8.0, 1.4), partikel=0.55, kuat_p=1.0, core_buka=26, balik=False, medial=0.0):
     """gambar plate dari model bentuk `mk` — semua parameter dari palet & aturan, bukan piksel asli."""
     ys = np.where(mk.any(1))[0]
     y0, y1 = int(ys.min()), int(ys.max())
@@ -166,7 +166,13 @@ def render_medan(mk, pal, H, W, jarak=6.5, lantai=24.0, ramp=(2.0, 8.0, 1.4), pa
     vv = v[:, None, None]
     dasar = atas[None, None, :] * (1 - vv) + bawah[None, None, :] * vv
     tepi_redam_c = np.clip(Dc / 24.0, 0, 1)[..., None] ** 0.7
-    isi = dasar * (0.075 + 0.11 * tepi_redam_c) * vig[:, None, None] * fc[..., None]
+    # ---- aturan 2: bobot medial — makin dekat sumbu massa, makin terang (otot/tulang punggung)
+    if medial > 0:
+        sumbu = np.exp(-(Dc / (0.22 * Dc.max() + 1e-3)) ** 2)
+        bobot_m = 1.0 + medial * sumbu
+    else:
+        bobot_m = np.ones_like(Dc)
+    isi = dasar * (0.075 + 0.11 * tepi_redam_c) * vig[:, None, None] * fc[..., None] * bobot_m[..., None]
 
     # ---- elips wajah (dingin -> hangat)
     yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
@@ -193,9 +199,10 @@ def render_medan(mk, pal, H, W, jarak=6.5, lantai=24.0, ramp=(2.0, 8.0, 1.4), pa
             ycl = np.clip(yv.astype(int), 0, H - 1)
             xcl = np.clip(xs.astype(int), 0, W - 1)
             hp = hangat[ycl, xcl]
-            cr = (garis[0] * (1 - hp) + inti[0] * hp) * (taper * kuat * kyt)
-            cg = (garis[1] * (1 - hp) + inti[1] * hp) * (taper * kuat * kyt)
-            cb = (garis[2] * (1 - hp) + inti[2] * hp) * (taper * kuat * kyt)
+            bm = 1.0 + medial * np.exp(-(Dc[ycl, xcl] / (0.22 * Dc.max() + 1e-3)) ** 2)
+            cr = (garis[0] * (1 - hp) + inti[0] * hp) * (taper * kuat * kyt * bm)
+            cg = (garis[1] * (1 - hp) + inti[1] * hp) * (taper * kuat * kyt * bm)
+            cb = (garis[2] * (1 - hp) + inti[2] * hp) * (taper * kuat * kyt * bm)
             for dyk, wk in ((-1.0, 0.18), (0.0, 1.0), (1.0, 0.18)):
                 splat(lap, xs, yv + dyk, np.full(len(xs), wk, np.float32), cr, cg, cb)
         iy += 1
@@ -307,8 +314,8 @@ for app, rel, name, mode, thr in PLATES:
     target = float(a[..., :3].mean(2)[msrc].mean())
     alfa = (mk.astype(np.uint8) * 255) if (app == 'mira' and mode == 'alpha') else None
 
-    def coba(balik, lantai, ramp=(2.0, 8.0, 1.4)):
-        im = render_medan(mk, pal, H, W, lantai=lantai, balik=balik, ramp=ramp)
+    def coba(balik, lantai, ramp=(2.0, 8.0, 1.4), medial=0.0):
+        im = render_medan(mk, pal, H, W, lantai=lantai, balik=balik, ramp=ramp, medial=medial)
         sk = float(np.clip(target / max(1e-3, float(im.mean(2)[msrc].mean())), 0.15, 4.0))
         return np.clip(im * sk, 0, 255), sk
 
@@ -322,13 +329,15 @@ for app, rel, name, mode, thr in PLATES:
     _, balik_p, img, skala = pilih
     # lantai & lebar tepi: dipilih dari IoU siluet (bentuk tepi menyesuaikan ketebalan bentuk)
     pilih2 = None
-    for lantai in (6.0, 12.0, 18.0, 26.0, 34.0):
-        for ramp in ((2.0, 8.0, 1.4), (1.0, 5.0, 1.2), (0.5, 3.0, 1.0)):
-            im, sk = coba(balik_p, lantai, ramp)
-            iou0, _, _, _ = meter(a, msrc, im, mode, thr, alfa)
-            if pilih2 is None or iou0 > pilih2[0]:
-                pilih2 = (iou0, lantai, ramp, im, sk)
-    _, lantai_p, ramp_p, img, skala = pilih2
+    for lantai in (6.0, 12.0, 18.0, 26.0):
+        for ramp in ((2.0, 8.0, 1.4), (0.5, 3.0, 1.0)):
+            for medial in (0.0, 0.6, 1.2):
+                im, sk = coba(balik_p, lantai, ramp, medial)
+                iou0, _, kor0, _ = meter(a, msrc, im, mode, thr, alfa)
+                skor = iou0 + 0.02 * kor0          # IoU utama, korelasi sebagai pengimbang tipis
+                if pilih2 is None or skor > pilih2[0]:
+                    pilih2 = (skor, lantai, ramp, medial, im, sk)
+    _, lantai_p, ramp_p, medial_p, img, skala = pilih2
     iou_render, impit, kor, rasio = meter(a, msrc, img, mode, thr, alfa)
     alfa_out = (mk.astype(np.uint8) * 255) if (app == 'mira' and mode == 'alpha') else np.full((H, W), 255, np.uint8)
     Image.fromarray(np.dstack([img.astype(np.uint8), alfa_out]), 'RGBA').save(
@@ -342,7 +351,7 @@ for app, rel, name, mode, thr in PLATES:
     rows.append({'aplikasi': app, 'berkas': name, 'iou_model_vs_siluet_asli': round(iou_model, 4),
                  'iou_model_vs_render': round(iou_render, 4), 'impitan_ridge_persen': round(impit, 2),
                  'korelasi_profil_luma': round(kor, 3), 'rasio_luma': round(rasio, 3),
-                 'skala_kalibrasi': round(skala, 3), 'vig_terbalik': bool(balik_p), 'lantai': lantai_p, 'ramp_tepi': list(ramp_p)})
+                 'skala_kalibrasi': round(skala, 3), 'vig_terbalik': bool(balik_p), 'lantai': lantai_p, 'ramp_tepi': list(ramp_p), 'bobot_medial': medial_p})
     print(f'{tag:<28} IoU model {iou_model:.4f} · render {iou_render:.4f} · impit {impit:5.1f}% · '
           f'korelasi {kor:5.3f} · rasio {rasio:4.2f} · skala {skala:.2f}')
 

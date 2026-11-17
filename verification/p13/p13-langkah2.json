@@ -7,8 +7,8 @@
  "ringkas": {
   "plate": 9,
   "lulus": 9,
-  "iou_render_min": 0.9851,
-  "korelasi_min": 0.077
+  "iou_render_min": 0.9921,
+  "korelasi_min": 0.998
  },
  "palet": {
   "apex": {
@@ -72,155 +72,164 @@
   {
    "aplikasi": "apex",
    "berkas": "apex-idle-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9969,
-   "iou_model_vs_render": 0.9877,
-   "impitan_ridge_persen": 67.61,
-   "korelasi_profil_luma": 0.779,
+   "iou_model_vs_siluet_asli": 0.9988,
+   "iou_model_vs_render": 0.994,
+   "impitan_ridge_persen": 87.39,
+   "korelasi_profil_luma": 0.999,
    "rasio_luma": 1.005,
-   "skala_kalibrasi": 0.892,
-   "vig_terbalik": false,
-   "lantai": 26.0,
-   "ramp_tepi": [
-    0.5,
-    3.0,
-    1.0
-   ]
-  },
-  {
-   "aplikasi": "apex",
-   "berkas": "apex-listening-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9992,
-   "iou_model_vs_render": 0.9948,
-   "impitan_ridge_persen": 51.49,
-   "korelasi_profil_luma": 0.59,
-   "rasio_luma": 1.0,
-   "skala_kalibrasi": 0.654,
-   "vig_terbalik": true,
-   "lantai": 34.0,
-   "ramp_tepi": [
-    2.0,
-    8.0,
-    1.4
-   ]
-  },
-  {
-   "aplikasi": "apex",
-   "berkas": "apex-speaking-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9968,
-   "iou_model_vs_render": 0.9879,
-   "impitan_ridge_persen": 67.25,
-   "korelasi_profil_luma": 0.87,
-   "rasio_luma": 1.009,
-   "skala_kalibrasi": 0.921,
-   "vig_terbalik": false,
-   "lantai": 26.0,
-   "ramp_tepi": [
-    0.5,
-    3.0,
-    1.0
-   ]
-  },
-  {
-   "aplikasi": "apex",
-   "berkas": "apex-speaking-strong-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9966,
-   "iou_model_vs_render": 0.9865,
-   "impitan_ridge_persen": 73.85,
-   "korelasi_profil_luma": 0.918,
-   "rasio_luma": 0.993,
-   "skala_kalibrasi": 1.268,
-   "vig_terbalik": false,
-   "lantai": 18.0,
-   "ramp_tepi": [
-    2.0,
-    8.0,
-    1.4
-   ]
-  },
-  {
-   "aplikasi": "apex",
-   "berkas": "apex-thinking-v1.webp",
-   "iou_model_vs_siluet_asli": 0.996,
-   "iou_model_vs_render": 0.988,
-   "impitan_ridge_persen": 58.59,
-   "korelasi_profil_luma": 0.766,
-   "rasio_luma": 1.015,
-   "skala_kalibrasi": 0.721,
-   "vig_terbalik": false,
-   "lantai": 34.0,
-   "ramp_tepi": [
-    0.5,
-    3.0,
-    1.0
-   ]
-  },
-  {
-   "aplikasi": "apex",
-   "berkas": "apex-assembly-25-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9961,
-   "iou_model_vs_render": 0.9853,
-   "impitan_ridge_persen": 61.15,
-   "korelasi_profil_luma": 0.077,
-   "rasio_luma": 0.941,
-   "skala_kalibrasi": 0.729,
-   "vig_terbalik": true,
-   "lantai": 34.0,
-   "ramp_tepi": [
-    0.5,
-    3.0,
-    1.0
-   ]
-  },
-  {
-   "aplikasi": "apex",
-   "berkas": "apex-assembly-60-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9963,
-   "iou_model_vs_render": 0.9851,
-   "impitan_ridge_persen": 65.87,
-   "korelasi_profil_luma": 0.617,
-   "rasio_luma": 0.978,
-   "skala_kalibrasi": 0.888,
+   "skala_kalibrasi": 0.889,
    "vig_terbalik": false,
    "lantai": 26.0,
    "ramp_tepi": [
     1.0,
     5.0,
     1.2
-   ]
+   ],
+   "bobot_medial": 0.0
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-listening-v1.webp",
+   "iou_model_vs_siluet_asli": 0.9997,
+   "iou_model_vs_render": 0.9964,
+   "impitan_ridge_persen": 99.75,
+   "korelasi_profil_luma": 1.0,
+   "rasio_luma": 1.001,
+   "skala_kalibrasi": 0.649,
+   "vig_terbalik": true,
+   "lantai": 34.0,
+   "ramp_tepi": [
+    2.0,
+    8.0,
+    1.4
+   ],
+   "bobot_medial": 0.0
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-speaking-v1.webp",
+   "iou_model_vs_siluet_asli": 0.9988,
+   "iou_model_vs_render": 0.9935,
+   "impitan_ridge_persen": 83.71,
+   "korelasi_profil_luma": 1.0,
+   "rasio_luma": 1.002,
+   "skala_kalibrasi": 0.906,
+   "vig_terbalik": false,
+   "lantai": 26.0,
+   "ramp_tepi": [
+    0.5,
+    3.0,
+    1.0
+   ],
+   "bobot_medial": 0.0
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-speaking-strong-v1.webp",
+   "iou_model_vs_siluet_asli": 0.9986,
+   "iou_model_vs_render": 0.9921,
+   "impitan_ridge_persen": 91.22,
+   "korelasi_profil_luma": 0.999,
+   "rasio_luma": 0.992,
+   "skala_kalibrasi": 1.234,
+   "vig_terbalik": false,
+   "lantai": 18.0,
+   "ramp_tepi": [
+    2.0,
+    8.0,
+    1.4
+   ],
+   "bobot_medial": 0.0
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-thinking-v1.webp",
+   "iou_model_vs_siluet_asli": 0.9992,
+   "iou_model_vs_render": 0.9941,
+   "impitan_ridge_persen": 78.2,
+   "korelasi_profil_luma": 0.998,
+   "rasio_luma": 1.002,
+   "skala_kalibrasi": 0.68,
+   "vig_terbalik": false,
+   "lantai": 34.0,
+   "ramp_tepi": [
+    2.0,
+    8.0,
+    1.4
+   ],
+   "bobot_medial": 1.1
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-assembly-25-v1.webp",
+   "iou_model_vs_siluet_asli": 0.9987,
+   "iou_model_vs_render": 0.9932,
+   "impitan_ridge_persen": 98.84,
+   "korelasi_profil_luma": 0.999,
+   "rasio_luma": 1.002,
+   "skala_kalibrasi": 0.682,
+   "vig_terbalik": true,
+   "lantai": 34.0,
+   "ramp_tepi": [
+    0.5,
+    3.0,
+    1.0
+   ],
+   "bobot_medial": 0.5
+  },
+  {
+   "aplikasi": "apex",
+   "berkas": "apex-assembly-60-v1.webp",
+   "iou_model_vs_siluet_asli": 0.9988,
+   "iou_model_vs_render": 0.9933,
+   "impitan_ridge_persen": 79.8,
+   "korelasi_profil_luma": 0.999,
+   "rasio_luma": 1.0,
+   "skala_kalibrasi": 0.904,
+   "vig_terbalik": false,
+   "lantai": 26.0,
+   "ramp_tepi": [
+    2.0,
+    8.0,
+    1.4
+   ],
+   "bobot_medial": 0.0
   },
   {
    "aplikasi": "mira",
    "berkas": "mira-idle-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9989,
-   "iou_model_vs_render": 0.9989,
-   "impitan_ridge_persen": 47.13,
-   "korelasi_profil_luma": 0.261,
-   "rasio_luma": 0.96,
-   "skala_kalibrasi": 1.476,
+   "iou_model_vs_siluet_asli": 1.0,
+   "iou_model_vs_render": 1.0,
+   "impitan_ridge_persen": 99.96,
+   "korelasi_profil_luma": 1.0,
+   "rasio_luma": 0.971,
+   "skala_kalibrasi": 1.406,
    "vig_terbalik": false,
    "lantai": 6.0,
    "ramp_tepi": [
     2.0,
     8.0,
     1.4
-   ]
+   ],
+   "bobot_medial": 0.0
   },
   {
    "aplikasi": "mira",
    "berkas": "mira-hair-v1.webp",
-   "iou_model_vs_siluet_asli": 0.9979,
-   "iou_model_vs_render": 0.9895,
-   "impitan_ridge_persen": 59.21,
-   "korelasi_profil_luma": 0.857,
-   "rasio_luma": 0.834,
-   "skala_kalibrasi": 1.491,
+   "iou_model_vs_siluet_asli": 0.9986,
+   "iou_model_vs_render": 0.993,
+   "impitan_ridge_persen": 98.54,
+   "korelasi_profil_luma": 0.999,
+   "rasio_luma": 0.929,
+   "skala_kalibrasi": 1.475,
    "vig_terbalik": false,
    "lantai": 6.0,
    "ramp_tepi": [
-    0.5,
-    3.0,
-    1.0
-   ]
+    2.0,
+    8.0,
+    1.4
+   ],
+   "bobot_medial": 0.0
   }
  ]
 }

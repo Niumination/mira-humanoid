@@ -1,104 +1,104 @@
 {
  "judul": "Audit asal-usul aset publik (gerbang hukum rebranding)",
  "total_berkas": 12,
- "salinan_verbatim": 1,
- "bukan_salinan": 11,
- "lulus_gerbang_E_aset": false,
+ "salinan_verbatim": 0,
+ "bukan_salinan": 12,
+ "lulus_gerbang_E_aset": true,
  "catatan": "Gerbang E (kelayakan rebranding) mensyaratkan salinan_verbatim == 0. Selama masih ada salinan, aset itu milik pihak lain dan TIDAK boleh dipakai dengan merek NIU/MIRAI.",
  "baris": [
   {
    "aplikasi": "mira-humanoid-rebuild",
    "berkas": "mira-hair-v1.webp",
-   "byte": 101168,
-   "sha256_kita": "2d66543d1adbad85",
+   "byte": 93344,
+   "sha256_kita": "6c5e6791e3a5b9db",
    "sha256_asli": "8dc958e1750ee348",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "mira-humanoid-rebuild",
    "berkas": "mira-idle-v1.webp",
-   "byte": 210148,
-   "sha256_kita": "894c90d7b4b51561",
+   "byte": 205698,
+   "sha256_kita": "8409aa77647ed8d5",
    "sha256_asli": "35911d6e8517ca75",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "apex-assembly-25-v1.webp",
-   "byte": 127124,
-   "sha256_kita": "17a241158dddfa3d",
+   "byte": 125088,
+   "sha256_kita": "b1028f45c4f0e559",
    "sha256_asli": "907c6623913c051e",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "apex-assembly-60-v1.webp",
-   "byte": 136252,
-   "sha256_kita": "40111dfb7f940572",
+   "byte": 132652,
+   "sha256_kita": "7bfabb2e46ca8da1",
    "sha256_asli": "6847445a5828af54",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "apex-idle-v1.webp",
-   "byte": 132370,
-   "sha256_kita": "305d4a3d37542982",
+   "byte": 128238,
+   "sha256_kita": "9f7ee35b7a61462d",
    "sha256_asli": "ba1a6d93f39ce84e",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "apex-listening-v1.webp",
-   "byte": 173904,
-   "sha256_kita": "fcac1fd893573bbf",
+   "byte": 172594,
+   "sha256_kita": "d1257bc024d03bf0",
    "sha256_asli": "333ded16e7244316",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "apex-speaking-strong-v1.webp",
-   "byte": 158314,
-   "sha256_kita": "8a2a42cc359ae9b8",
+   "byte": 155554,
+   "sha256_kita": "fed08d9fc7708db8",
    "sha256_asli": "836c193d917f2039",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "apex-speaking-v1.webp",
-   "byte": 129444,
-   "sha256_kita": "48a90b44827c46a6",
+   "byte": 127382,
+   "sha256_kita": "589043740046a2fc",
    "sha256_asli": "5433add40a7b4ee2",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "apex-thinking-v1.webp",
-   "byte": 107698,
-   "sha256_kita": "acfc79cca2e72dbe",
+   "byte": 106020,
+   "sha256_kita": "5c52933a80a10421",
    "sha256_asli": "64f805cc2f9b95a8",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "backdrop-v1.webp",
-   "byte": 312166,
-   "sha256_kita": "9c5aeae2f11ea1db",
+   "byte": 447002,
+   "sha256_kita": "35539292a3b90dbd",
    "sha256_asli": "9c5aeae2f11ea1db",
-   "putusan": "SALINAN"
+   "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "mira-hair-v1.webp",
-   "byte": 101168,
-   "sha256_kita": "2d66543d1adbad85",
+   "byte": 93344,
+   "sha256_kita": "6c5e6791e3a5b9db",
    "sha256_asli": "8dc958e1750ee348",
    "putusan": "beda/baru"
   },
   {
    "aplikasi": "apex-humanoid-rebuild",
    "berkas": "mira-idle-v1.webp",
-   "byte": 210148,
-   "sha256_kita": "894c90d7b4b51561",
+   "byte": 205698,
+   "sha256_kita": "8409aa77647ed8d5",
    "sha256_asli": "35911d6e8517ca75",
    "putusan": "beda/baru"
   }
