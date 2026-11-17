@@ -1,0 +1,18 @@
+PASS  MIRA A1 bahasa dokumen  lang="en"
+PASS  MIRA A2 judul dokumen  "MIRA Humanoid"
+PASS  MIRA A3 nama aksesibel semua kontrol  9 kontrol · tanpa nama 0
+PASS  MIRA A4 landmark main  ada
+PASS  MIRA A6 kontras teks ≥ 4,5:1  9 sampel · terburuk 9.74:1 "ENABLE CAMERA" (12 px)
+PASS  MIRA A8 zoom tidak dikunci  viewport="width=device-width, initial-scale=1.0"
+PASS  MIRA A5 fokus terlihat saat Tab  BUTTON "Turn the camera (hand tr" · outline auto 1px
+PASS  MIRA A7 reduced-motion dihormati  data-reduced-motion=1 · elemen beranimasi/transisi 0
+PASS  APEX A1 bahasa dokumen  lang="en"
+PASS  APEX A2 judul dokumen  "Apex Humanoid"
+PASS  APEX A3 nama aksesibel semua kontrol  9 kontrol · tanpa nama 0
+PASS  APEX A4 landmark main  ada
+PASS  APEX A6 kontras teks ≥ 4,5:1  10 sampel · terburuk 12.22:1 "EXIT" (12 px)
+PASS  APEX A8 zoom tidak dikunci  viewport="width=device-width, initial-scale=1.0"
+PASS  APEX A5 fokus terlihat saat Tab  BUTTON "Exit humanoid view" · outline auto 1px
+PASS  APEX A7 reduced-motion dihormati  data-reduced-motion=1 · elemen beranimasi/transisi 0
+
+GERBANG A11Y: 16/16 → /home/user/Kerja-Arena/verification/gate-a11y-2026-11-17.json

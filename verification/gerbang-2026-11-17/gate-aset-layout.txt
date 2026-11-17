@@ -1,0 +1,36 @@
+PASS  MIRA S1 mira-idle-v1.webp  halaman 8409aa77647e · disk 8409aa77647e
+PASS  MIRA S1 mira-hair-v1.webp  halaman 6c5e6791e3a5 · disk 6c5e6791e3a5
+PASS  MIRA S2 MIRA 1440x900 panggung  lebar 1440/1440
+PASS  MIRA S2 MIRA 1440x900 tanpa gulir mendatar  scrollWidth 1440 ≤ 1440+1
+PASS  MIRA S2 MIRA 1440x900 panggung lebar  100.0 % lebar viewport
+PASS  MIRA S2 MIRA 1440x900 tanpa elemen keluar  0 elemen
+PASS  MIRA S2 MIRA 414x896 panggung  lebar 414/414
+PASS  MIRA S2 MIRA 414x896 tanpa gulir mendatar  scrollWidth 414 ≤ 414+1
+PASS  MIRA S2 MIRA 414x896 panggung lebar  100.0 % lebar viewport
+PASS  MIRA S2 MIRA 414x896 tanpa elemen keluar  0 elemen
+PASS  MIRA S2 MIRA 390x844 panggung  lebar 390/390
+PASS  MIRA S2 MIRA 390x844 tanpa gulir mendatar  scrollWidth 390 ≤ 390+1
+PASS  MIRA S2 MIRA 390x844 panggung lebar  100.0 % lebar viewport
+PASS  MIRA S2 MIRA 390x844 tanpa elemen keluar  0 elemen
+PASS  APEX S1 apex-idle-v1.webp  halaman 9f7ee35b7a61 · disk 9f7ee35b7a61
+PASS  APEX S1 apex-listening-v1.webp  halaman d1257bc024d0 · disk d1257bc024d0
+PASS  APEX S1 apex-speaking-v1.webp  halaman 589043740046 · disk 589043740046
+PASS  APEX S1 apex-speaking-strong-v1.webp  halaman fed08d9fc770 · disk fed08d9fc770
+PASS  APEX S1 apex-thinking-v1.webp  halaman 5c52933a80a1 · disk 5c52933a80a1
+PASS  APEX S1 apex-assembly-25-v1.webp  halaman b1028f45c4f0 · disk b1028f45c4f0
+PASS  APEX S1 apex-assembly-60-v1.webp  halaman 7bfabb2e46ca · disk 7bfabb2e46ca
+PASS  APEX S1 backdrop-v1.webp  halaman 35539292a3b9 · disk 35539292a3b9
+PASS  APEX S2 APEX 1440x900 panggung  lebar 1440/1440
+PASS  APEX S2 APEX 1440x900 tanpa gulir mendatar  scrollWidth 1440 ≤ 1440+1
+PASS  APEX S2 APEX 1440x900 panggung lebar  100.0 % lebar viewport
+PASS  APEX S2 APEX 1440x900 tanpa elemen keluar  0 elemen
+PASS  APEX S2 APEX 414x896 panggung  lebar 414/414
+PASS  APEX S2 APEX 414x896 tanpa gulir mendatar  scrollWidth 414 ≤ 414+1
+PASS  APEX S2 APEX 414x896 panggung lebar  100.0 % lebar viewport
+PASS  APEX S2 APEX 414x896 tanpa elemen keluar  0 elemen
+PASS  APEX S2 APEX 390x844 panggung  lebar 390/390
+PASS  APEX S2 APEX 390x844 tanpa gulir mendatar  scrollWidth 390 ≤ 390+1
+PASS  APEX S2 APEX 390x844 panggung lebar  100.0 % lebar viewport
+PASS  APEX S2 APEX 390x844 tanpa elemen keluar  0 elemen
+
+GERBANG ASET & TATA LETAK: 34/34 → /home/user/Kerja-Arena/verification/gate-aset-layout-2026-11-17.json

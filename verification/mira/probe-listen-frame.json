@@ -1,0 +1,166 @@
+{
+ "judul": "Bukti kelaparan frame pada pemeriksaan LISTENING (gate-step5 bagian B)",
+ "lingkungan": "Chromium headless-shell + SwiftShader (tanpa GPU), dt dibatasi 0,05 s/frame",
+ "awal": {
+  "t": 0.156,
+  "listen": 0
+ },
+ "jendela_gate_ms": 2500,
+ "nilai_dalam_jendela_gate": {
+  "ms": 2833,
+  "t": 0.866,
+  "listen": 0.6437,
+  "frame_kira": 14
+ },
+ "listen_lewat_0_05_pada": {
+  "ms": 2833,
+  "frame": 14,
+  "listen": 0.6437
+ },
+ "jejak": [
+  {
+   "ms": 2833,
+   "t": 0.866,
+   "listen": 0.6437,
+   "frame_kira": 14
+  },
+  {
+   "ms": 5669,
+   "t": 0.932,
+   "listen": 0.7862,
+   "frame_kira": 16
+  },
+  {
+   "ms": 8494,
+   "t": 1.002,
+   "listen": 0.8717,
+   "frame_kira": 17
+  },
+  {
+   "ms": 11282,
+   "t": 1.074,
+   "listen": 0.923,
+   "frame_kira": 18
+  },
+  {
+   "ms": 14029,
+   "t": 1.147,
+   "listen": 0.9538,
+   "frame_kira": 20
+  },
+  {
+   "ms": 16868,
+   "t": 1.221,
+   "listen": 0.9723,
+   "frame_kira": 21
+  },
+  {
+   "ms": 19661,
+   "t": 1.295,
+   "listen": 0.9834,
+   "frame_kira": 23
+  },
+  {
+   "ms": 22443,
+   "t": 1.37,
+   "listen": 0.99,
+   "frame_kira": 24
+  },
+  {
+   "ms": 25226,
+   "t": 1.444,
+   "listen": 0.994,
+   "frame_kira": 26
+  },
+  {
+   "ms": 28182,
+   "t": 1.519,
+   "listen": 0.9964,
+   "frame_kira": 27
+  },
+  {
+   "ms": 31031,
+   "t": 1.594,
+   "listen": 0.9978,
+   "frame_kira": 29
+  },
+  {
+   "ms": 33861,
+   "t": 1.669,
+   "listen": 0.9987,
+   "frame_kira": 30
+  },
+  {
+   "ms": 36713,
+   "t": 1.744,
+   "listen": 0.9992,
+   "frame_kira": 32
+  },
+  {
+   "ms": 39528,
+   "t": 1.819,
+   "listen": 0.9995,
+   "frame_kira": 33
+  },
+  {
+   "ms": 42333,
+   "t": 1.894,
+   "listen": 0.9997,
+   "frame_kira": 35
+  },
+  {
+   "ms": 45109,
+   "t": 1.969,
+   "listen": 0.9998,
+   "frame_kira": 36
+  },
+  {
+   "ms": 47948,
+   "t": 2.044,
+   "listen": 0.9999,
+   "frame_kira": 38
+  },
+  {
+   "ms": 50884,
+   "t": 2.119,
+   "listen": 0.9999,
+   "frame_kira": 39
+  },
+  {
+   "ms": 53732,
+   "t": 2.194,
+   "listen": 1,
+   "frame_kira": 41
+  },
+  {
+   "ms": 56540,
+   "t": 2.269,
+   "listen": 1,
+   "frame_kira": 42
+  },
+  {
+   "ms": 59367,
+   "t": 2.344,
+   "listen": 1,
+   "frame_kira": 44
+  },
+  {
+   "ms": 62189,
+   "t": 2.419,
+   "listen": 1,
+   "frame_kira": 45
+  },
+  {
+   "ms": 64988,
+   "t": 2.494,
+   "listen": 1,
+   "frame_kira": 47
+  },
+  {
+   "ms": 67790,
+   "t": 2.569,
+   "listen": 1,
+   "frame_kira": 48
+  }
+ ]
+}

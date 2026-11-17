@@ -1,0 +1,26 @@
+PASS  MIRA 1440x900 P1 MAE diri ≤ 1,5 × acuan  MAE 6.95 ≤ 45.98 (acuan 30.65)
+PASS  MIRA 1440x900 P2 cakupan 0,5–70 %  19.6 % (acuan 20.0 %)
+PASS  MIRA 1440x900 P2 pusat horizontal 0,30–0,70  cx 0.479 (acuan 0.480)
+PASS  MIRA 1440x900 P2 kotak siluet  tinggi 98.0 % · lebar 99.1 %
+PASS  MIRA 414x896 P1 MAE diri ≤ 1,5 × acuan  MAE 21.72 ≤ 49.12 (acuan 32.74)
+PASS  MIRA 414x896 P2 cakupan 0,5–70 %  4.1 % (acuan 23.5 %)
+PASS  MIRA 414x896 P2 pusat horizontal 0,30–0,70  cx 0.433 (acuan 0.485)
+PASS  MIRA 414x896 P2 kotak siluet  tinggi 83.6 % · lebar 94.9 %
+PASS  MIRA 390x844 P1 MAE diri ≤ 1,5 × acuan  MAE 12.14 ≤ 50.73 (acuan 33.82)
+PASS  MIRA 390x844 P2 cakupan 0,5–70 %  25.3 % (acuan 24.9 %)
+PASS  MIRA 390x844 P2 pusat horizontal 0,30–0,70  cx 0.458 (acuan 0.494)
+PASS  MIRA 390x844 P2 kotak siluet  tinggi 97.9 % · lebar 100.0 %
+PASS  APEX 1440x900 P1 MAE diri ≤ 1,5 × acuan  MAE 9.05 ≤ 13.20 (acuan 8.80)
+PASS  APEX 1440x900 P2 cakupan 0,5–70 %  30.4 % (acuan 9.9 %)
+PASS  APEX 1440x900 P2 pusat horizontal 0,30–0,70  cx 0.564 (acuan 0.455)
+PASS  APEX 1440x900 P2 kotak siluet  tinggi 99.8 % · lebar 100.0 %
+PASS  APEX 414x896 P1 MAE diri ≤ 1,5 × acuan  MAE 4.07 ≤ 24.09 (acuan 16.06)
+PASS  APEX 414x896 P2 cakupan 0,5–70 %  30.5 % (acuan 7.4 %)
+PASS  APEX 414x896 P2 pusat horizontal 0,30–0,70  cx 0.490 (acuan 0.451)
+PASS  APEX 414x896 P2 kotak siluet  tinggi 100.0 % · lebar 100.0 %
+PASS  APEX 390x844 P1 MAE diri ≤ 1,5 × acuan  MAE 14.67 ≤ 24.06 (acuan 16.04)
+PASS  APEX 390x844 P2 cakupan 0,5–70 %  24.6 % (acuan 7.4 %)
+PASS  APEX 390x844 P2 pusat horizontal 0,30–0,70  cx 0.502 (acuan 0.459)
+PASS  APEX 390x844 P2 kotak siluet  tinggi 98.9 % · lebar 100.0 %
+
+GERBANG PARITAS v2: 24/24 → /home/user/Kerja-Arena/verification/gate-paritas-2026-11-17.json

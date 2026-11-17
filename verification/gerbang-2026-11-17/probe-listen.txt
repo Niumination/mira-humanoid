@@ -1,0 +1,2 @@
+awal listen 0 · dalam jendela gate 2,5 s: 0.6437 (≈14 frame) · lewat 0,05 pada { ms: 2833, frame: 14, listen: 0.6437 }
+JSON: /home/user/Kerja-Arena/verification/mira/probe-listen-frame.json

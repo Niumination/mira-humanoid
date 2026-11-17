@@ -1,5 +1,5 @@
 {
- "base": "https://mira-humanoid-niu.vercel.app",
+ "base": "http://127.0.0.1:8804",
  "checks": [
   {
    "n": "jumlah slider = 82",

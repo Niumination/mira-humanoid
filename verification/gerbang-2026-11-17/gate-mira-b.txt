@@ -1,0 +1,19 @@
+✅ jumlah slider = 82
+✅ jumlah seksi = 20
+✅ urutan nama seksi
+✅ jumlah baris per seksi
+✅ key/label/min/max/step/default 82/82
+✅ jumlah alias `stands` = 7
+   · hum.fog.spread = 1 → field.spread = 1
+   · hum.fog.amount = 0 → field.alpha = 0
+   · hum.waves.opacity = 1 → waves.opacity = 1
+   · hum.waves.speed = 3 → waves.speed = 3
+   · hum.glow.strength = 3 → bloom.strength = 3
+   · hum.glow.threshold = 1 → bloom.threshold = 1
+   · hum.glow.radius = 1 → bloom.radius = 1
+✅ alias propagate 7/7
+✅ ?dial.lines.count=14
+✅ ?dial.hum.glow.threshold=.25 (tanpa menyentuh bloom.threshold)
+✅ localStorage bertahan setelah reload
+
+10/10 lolos → verification/mira/gate-b.json
