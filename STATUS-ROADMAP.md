@@ -91,7 +91,7 @@ rebranding. Lihat `docs/LISENSI-BRANDING.md`.
 | P11 | APEX paritas latar & tonal | 1440 **≤ 6,0** ✓ (**3,96**) · 390 **≤ 2,3** ✗ (**4,35**) · 12 penyebab dieliminasi; lead baru: pita gelap kita +10 % (sampel tekstur sprite titik) | sisa: sprite sampling + kepadatan siluet |
 | P12 | MIRA pola per-filamen (geometri, bukan citra) | galat torso **10,4 → ≤ 7,0** · `|Δbias|` tiap pita ≤ 2 · paritas ≤ 2,5 | **DITUTUP DENGAN PLATO (sesi 57)**: paritas **2,747** · torso **10,07** · pita 0–20 **+7,40** — target tak tercapai. 17 sebab ditutup berangka (afin · per-blok · geser global & per baris · ridge · 7 keluarga knob · geometri-sebagai-pengganti · tambalan filamen). Sebab plato: 76–90 % galat = struktur HF <16 px dari mesh 3D. Bahan ke P13: 179 rantai filamen + 3 alat | selesai |
 | P13 | plate milik kita + latar milik kita | langkah 1–4 ✅ IoU render 0,9921–1,0000 · korelasi luma 0,998–1,000 · **Gerbang E aset LULUS (0 salinan)** · sisa: gerbang Chromium BELUM DIUJI di sandbox (`tools/gerbang-semua.sh`) | 1 sesi (uji gerbang) |
-| P14 | fitur "satu langkah di depan" | ≥ 3 dari 5 (E1 avatar kustom · E2 fps ≥1,5× · E3 aksesibilitas · E4 pemulihan konteks · E5 PWA) | 2–3 sesi |
+| P14 | fitur "satu langkah di depan" | **E3 aksesibilitas ✅ (16/16)** · gerbang nyata Chromium ✅ · gerbang piksel-vs-produksi dipensiunkan (kalibrasi) · sisa: E1 avatar kustom · E2 fps ≥1,5× · E4 pemulihan konteks · E5 PWA | 2 sesi |
 | P15 | cut-over merek **NIU & MIRAI** | Gerbang E lengkap (checklist di `LISENSI-BRANDING.md` §5) | 1 sesi |
 
 Tidak ada lagi pekerjaan "belum terencana". Yang ada hanya pekerjaan yang belum dikerjakan.
@@ -104,3 +104,4 @@ Tidak ada lagi pekerjaan "belum terencana". Yang ada hanya pekerjaan yang belum 
 | 2026-11-11 | tabel P0–P10 pertama, angka build37 |
 | 2026-11-12 (54–55) | Gerbang C ditutup dengan bukti; W-7 ditutup; verifikasi 5 lapis |
 | **2026-11-12 (56)** | **ditulis ulang**: §3 & §4 yang menyebut langkah 4/5/6 belum ada **dihapus** karena sudah usang; angka diganti hasil ukur produksi; rujukan ke P11–P15, lisensi, dan mesin produksi avatar ditambahkan |
+| **2026-11-17 (58)** | **P14 dibuka**: gerbang fase dijalankan dengan Chromium headless-shell di sandbox (A 8/8 · B 10/10 · D 7/7 · step4c 9/9 · step5 12/12) · gerbang piksel-vs-produksi **dipensiunkan** karena acuannya sendiri tidak lulus (MAE diri 8,80–33,82; korelasi antar viewport 0,33–0,59) · pengganti `gate-paritas` v2 + `gate-aset-layout` (34/34) + `gate-a11y` (16/16) · perbaikan: 3 tombol APEX keluar layar di 390 px, landmark `<main>`, judul `sr-only`, `prefers-reduced-motion` |

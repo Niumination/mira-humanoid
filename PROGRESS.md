@@ -16,6 +16,15 @@ Terakhir diperbarui: **2026-10-29**. Rujukan rencana: `RENCANA-EKSEKUSI.md`.
 | **P9** | Fase 4: Gerbang A/B/C/D | ⬜ | — |
 | **P10** | Deliverable + deploy | ⬜ | — |
 
+## P11–P14 (rencana lanjutan, setelah P0–P10 selesai)
+
+| fase | isi | status | artefak |
+|---|---|---|---|
+| P11 | paritas latar & tonal APEX | ditutup dengan plato: MAE 1440 **3,96** · 390 **4,35** | `docs/P11-PARITAS-LATAR.md` |
+| P12 | pola per-filamen MIRA | ditutup dengan plato: paritas **2,747** · torso **10,07** | `docs/langkah6/` |
+| P13 | plate & latar milik sendiri | langkah 1–4 ✅ · Gerbang E aset **LULUS** (0 salinan) | `verification/p13/`, `docs/p13/` |
+| **P14** | **gerbang nyata + memutus ketergantungan pada piksel produksi + E3 aksesibilitas** | berjalan: gerbang Chromium **bisa dijalankan** (A 8/8 · B 10/10 · D 7/7 · step4c 9/9 · step5 12/12) · gerbang piksel-vs-produksi **dipensiunkan dengan bukti kalibrasi** · aset & tata letak **34/34** · a11y **16/16** | `docs/p14/`, `verification/gerbang-*`, `verification/kalibrasi/` |
+
 ## Yang sudah bisa dipegang sekarang
 
 1. **`recon/verify-spec.py` → 193/193, exit 0** (`python3 verify-spec.py`).
