@@ -1,0 +1,135 @@
+{
+ "gerbang": "provenance aset",
+ "akar": "public/humanoid",
+ "live": "https://niu-humanoid.vercel.app",
+ "syarat": {
+  "min_byte": 1024,
+  "larangan": 0
+ },
+ "berkas": [
+  {
+   "berkas": "apex-assembly-25-v1.webp",
+   "sha256": "b1028f45c4f0e559",
+   "byte": 125088,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "b1028f45c4f0e559",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "apex-assembly-60-v1.webp",
+   "sha256": "7bfabb2e46ca8da1",
+   "byte": 132652,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "7bfabb2e46ca8da1",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "apex-idle-v1.webp",
+   "sha256": "9f7ee35b7a61462d",
+   "byte": 128238,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "9f7ee35b7a61462d",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "apex-listening-v1.webp",
+   "sha256": "d1257bc024d03bf0",
+   "byte": 172594,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "d1257bc024d03bf0",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "apex-speaking-strong-v1.webp",
+   "sha256": "fed08d9fc7708db8",
+   "byte": 155554,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "fed08d9fc7708db8",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "apex-speaking-v1.webp",
+   "sha256": "589043740046a2fc",
+   "byte": 127382,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "589043740046a2fc",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "apex-thinking-v1.webp",
+   "sha256": "5c52933a80a10421",
+   "byte": 106020,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "5c52933a80a10421",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "backdrop-v1.webp",
+   "sha256": "35539292a3b90dbd",
+   "byte": 447002,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "35539292a3b90dbd",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "mira-hair-v1.webp",
+   "sha256": "6c5e6791e3a5b9db",
+   "byte": 93344,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "6c5e6791e3a5b9db",
+    "asal": "kita"
+   }
+  },
+  {
+   "berkas": "mira-idle-v1.webp",
+   "sha256": "8409aa77647ed8d5",
+   "byte": 205698,
+   "asal": "kita",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "8409aa77647ed8d5",
+    "asal": "kita"
+   }
+  }
+ ],
+ "ringkas": {
+  "gagal": 0,
+  "total": 10
+ }
+}

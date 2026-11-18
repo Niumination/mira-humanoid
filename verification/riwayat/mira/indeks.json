@@ -1,0 +1,15 @@
+{
+ "aplikasi": "mira",
+ "sampel": [
+  {
+   "tanggal": "2026-11-18",
+   "sha8": "17fc09d8",
+   "aset": "index-BiuEEVDg.js",
+   "mentah": 533885,
+   "gzip": 129917,
+   "berkas_js": 1,
+   "sumber": "upstream",
+   "commit": "b5110a3"
+  }
+ ]
+}

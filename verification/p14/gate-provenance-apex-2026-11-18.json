@@ -1,0 +1,115 @@
+{
+ "gerbang": "provenance aset",
+ "akar": "public/humanoid",
+ "live": null,
+ "syarat": {
+  "min_byte": 1024,
+  "larangan": 0
+ },
+ "berkas": [
+  {
+   "berkas": "apex-assembly-25-v1.webp",
+   "sha256": "907c6623913c051e",
+   "byte": 312814,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=apex-assembly-25-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "apex-assembly-60-v1.webp",
+   "sha256": "6847445a5828af54",
+   "byte": 322748,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=apex-assembly-60-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "apex-idle-v1.webp",
+   "sha256": "ba1a6d93f39ce84e",
+   "byte": 300084,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=apex-idle-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "apex-listening-v1.webp",
+   "sha256": "333ded16e7244316",
+   "byte": 350160,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=apex-listening-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "apex-speaking-strong-v1.webp",
+   "sha256": "836c193d917f2039",
+   "byte": 327680,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=apex-speaking-strong-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "apex-speaking-v1.webp",
+   "sha256": "5433add40a7b4ee2",
+   "byte": 286100,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=apex-speaking-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "apex-thinking-v1.webp",
+   "sha256": "64f805cc2f9b95a8",
+   "byte": 275616,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=apex-thinking-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "backdrop-v1.webp",
+   "sha256": "9c5aeae2f11ea1db",
+   "byte": 312166,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=backdrop-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "mira-hair-v1.webp",
+   "sha256": "8dc958e1750ee348",
+   "byte": 159716,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=mira-hair-v1.webp)"
+   ]
+  },
+  {
+   "berkas": "mira-idle-v1.webp",
+   "sha256": "35911d6e8517ca75",
+   "byte": 364544,
+   "asal": "asli",
+   "lulus": false,
+   "alasan": [
+    "salinan asli produksi (=mira-idle-v1.webp)"
+   ]
+  }
+ ],
+ "ringkas": {
+  "gagal": 10,
+  "total": 10
+ }
+}
