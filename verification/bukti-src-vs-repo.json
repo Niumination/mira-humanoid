@@ -1,0 +1,168 @@
+{
+ "tanggal": "2026-11-18",
+ "repo_upstream": "Niumination/Niu-Humanoid@49e011dd15",
+ "catatan": "sha256 berkas src+konfig: lokal vs repo sesudah (harus sama semua)",
+ "berkas": [
+  {
+   "berkas": "package.json",
+   "lokal": "d8a23b792434e965",
+   "repo": "4f9d28cc5d3694a7",
+   "status": "beda"
+  },
+  {
+   "berkas": "src/App.tsx",
+   "lokal": "115a465a333d453d",
+   "repo": "a5b53f7f5bb3cc5f",
+   "status": "beda"
+  },
+  {
+   "berkas": "src/components/Backdrop.tsx",
+   "lokal": "760d44f8e7cc8278",
+   "repo": "df48b37d8e59af47",
+   "status": "beda"
+  },
+  {
+   "berkas": "src/components/EntryScreen.tsx",
+   "lokal": "81597551286616ef",
+   "repo": "81597551286616ef",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/components/Figure.tsx",
+   "lokal": "de3eb5e403ab6225",
+   "repo": "de3eb5e403ab6225",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/components/HandTracker.tsx",
+   "lokal": "694a851eebd36c0e",
+   "repo": "694a851eebd36c0e",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/components/HumanoidMode.tsx",
+   "lokal": "313807d2f3846fb2",
+   "repo": "96556263e45e9dc6",
+   "status": "beda"
+  },
+  {
+   "berkas": "src/index.css",
+   "lokal": "50c8547b4f6c1479",
+   "repo": "5fb4bccac68818da",
+   "status": "beda"
+  },
+  {
+   "berkas": "src/lib/a11y.ts",
+   "lokal": "3299185516c50ef5",
+   "repo": null,
+   "status": "hanya-lokal"
+  },
+  {
+   "berkas": "src/lib/assets.ts",
+   "lokal": "3aa2efe87a0cd797",
+   "repo": "3aa2efe87a0cd797",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/audio.ts",
+   "lokal": "fc94efb3e1b6fef5",
+   "repo": "fc94efb3e1b6fef5",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/backdrop.ts",
+   "lokal": "43e9759659316347",
+   "repo": "43e9759659316347",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/birth.ts",
+   "lokal": "911fe7298230979b",
+   "repo": "911fe7298230979b",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/bloomGL.ts",
+   "lokal": "e3b527ef2a7ec3c6",
+   "repo": "65948addef78d3ac",
+   "status": "beda"
+  },
+  {
+   "berkas": "src/lib/core.ts",
+   "lokal": "37a4d70de1763aba",
+   "repo": "37a4d70de1763aba",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/cues.ts",
+   "lokal": "6df2cb7a12a524b0",
+   "repo": "6df2cb7a12a524b0",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/edge.ts",
+   "lokal": "580800a3826e6c38",
+   "repo": "580800a3826e6c38",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/fig.ts",
+   "lokal": "8398c919a065b0b5",
+   "repo": "8398c919a065b0b5",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/handTracking.ts",
+   "lokal": "f698b44c416defbb",
+   "repo": "f698b44c416defbb",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/hooks.ts",
+   "lokal": "8f48726a02f86cc5",
+   "repo": "8f48726a02f86cc5",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/humTuning.ts",
+   "lokal": "5a7a218945732f11",
+   "repo": "5a7a218945732f11",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/mic.ts",
+   "lokal": "bc20fd4f394bb356",
+   "repo": "bc20fd4f394bb356",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/plate.ts",
+   "lokal": "f421963bfcb863ab",
+   "repo": "f421963bfcb863ab",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/lib/render.ts",
+   "lokal": "c62bea94364b6097",
+   "repo": "d50a9c186d3e73a3",
+   "status": "beda"
+  },
+  {
+   "berkas": "src/lib/veins.ts",
+   "lokal": "dc40716b6eacb977",
+   "repo": "dc40716b6eacb977",
+   "status": "sama"
+  },
+  {
+   "berkas": "src/main.tsx",
+   "lokal": "3b28e040ea54e97b",
+   "repo": "4bf761d45806db86",
+   "status": "beda"
+  }
+ ],
+ "ringkas": {
+  "berkas": 26,
+  "sama_sebelum_paket": 17,
+  "beda_atau_hilang": 9
+ }
+}
