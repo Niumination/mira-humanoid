@@ -19,7 +19,7 @@ import sys
 import tempfile
 
 JS = r'''
-const { chromium } = require(process.env.PW || '/tmp/gates/pw-shim.cjs')
+const { chromium } = require(process.env.PW || '/home/user/tools/pw-shim.js')
 const { execFileSync } = require('child_process')
 const fs = require('fs')
 const BASE = process.argv[2]
@@ -106,7 +106,7 @@ def main():
     url, nama = sys.argv[1], sys.argv[2]
     out = sys.argv[sys.argv.index('--json') + 1] if '--json' in sys.argv else 'ukur.json'
     env = dict(os.environ)
-    env.setdefault('PW', '/tmp/gates/pw-shim.cjs')
+    env.setdefault('PW', '/home/user/tools/pw-shim.js')
     if not os.path.exists(env['PW']):
         json.dump({'tersedia': False, 'alasan': 'PW/shim tidak ada'}, open(out, 'w'))
         print('Chromium tidak tersedia → metrik render dilewati'); sys.exit(0)

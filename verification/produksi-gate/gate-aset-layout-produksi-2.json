@@ -1,0 +1,163 @@
+{
+ "judul": "Gerbang aset & tata letak (pengganti piksel-vs-produksi)",
+ "waktu": "2026-11-18T14:38:37.006Z",
+ "sumber": "produksi",
+ "syarat": {
+  "S1": "sha256 di halaman == sidik P13 milik kita",
+  "S2_scroll": "scrollWidth ≤ innerWidth+1",
+  "S2_lebar": "panggung ≥ 90 % lebar viewport",
+  "S2_luar": "tidak ada elemen keluar viewport > 2 px"
+ },
+ "aplikasi": [
+  {
+   "aplikasi": "MIRA",
+   "base": "https://mira-humanoid-niu.vercel.app/",
+   "aset": [
+    {
+     "berkas": "mira-idle-v1.webp",
+     "halaman": "8409aa77647ed8d5",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "mira-hair-v1.webp",
+     "halaman": "6c5e6791e3a5b9db",
+     "asal": "kita",
+     "sama": true
+    }
+   ],
+   "layout": [
+    {
+     "vp": "1440x900",
+     "ada_panggung": true,
+     "panggung_terlihat": true,
+     "lebar_panggung": 1440,
+     "lebar_viewport": 1440,
+     "scroll_w": 1440,
+     "inner_w": 1440,
+     "elemen_keluar": 0,
+     "judul": "MIRA Humanoid"
+    },
+    {
+     "vp": "414x896",
+     "ada_panggung": true,
+     "panggung_terlihat": true,
+     "lebar_panggung": 414,
+     "lebar_viewport": 414,
+     "scroll_w": 414,
+     "inner_w": 414,
+     "elemen_keluar": 0,
+     "judul": "MIRA Humanoid"
+    },
+    {
+     "vp": "390x844",
+     "ada_panggung": true,
+     "panggung_terlihat": true,
+     "lebar_panggung": 390,
+     "lebar_viewport": 390,
+     "scroll_w": 390,
+     "inner_w": 390,
+     "elemen_keluar": 0,
+     "judul": "MIRA Humanoid"
+    }
+   ],
+   "lulus": 14,
+   "total": 14
+  },
+  {
+   "aplikasi": "APEX",
+   "base": "https://niu-humanoid.vercel.app/",
+   "aset": [
+    {
+     "berkas": "apex-idle-v1.webp",
+     "halaman": "9f7ee35b7a61462d",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "apex-listening-v1.webp",
+     "halaman": "d1257bc024d03bf0",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "apex-speaking-v1.webp",
+     "halaman": "589043740046a2fc",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "apex-speaking-strong-v1.webp",
+     "halaman": "fed08d9fc7708db8",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "apex-thinking-v1.webp",
+     "halaman": "5c52933a80a10421",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "apex-assembly-25-v1.webp",
+     "halaman": "b1028f45c4f0e559",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "apex-assembly-60-v1.webp",
+     "halaman": "7bfabb2e46ca8da1",
+     "asal": "kita",
+     "sama": true
+    },
+    {
+     "berkas": "backdrop-v1.webp",
+     "halaman": "35539292a3b90dbd",
+     "asal": "kita",
+     "sama": true
+    }
+   ],
+   "layout": [
+    {
+     "vp": "1440x900",
+     "ada_panggung": true,
+     "panggung_terlihat": true,
+     "lebar_panggung": 1440,
+     "lebar_viewport": 1440,
+     "scroll_w": 1440,
+     "inner_w": 1440,
+     "elemen_keluar": 0,
+     "judul": "Apex Humanoid"
+    },
+    {
+     "vp": "414x896",
+     "ada_panggung": true,
+     "panggung_terlihat": true,
+     "lebar_panggung": 414,
+     "lebar_viewport": 414,
+     "scroll_w": 414,
+     "inner_w": 414,
+     "elemen_keluar": 0,
+     "judul": "Apex Humanoid"
+    },
+    {
+     "vp": "390x844",
+     "ada_panggung": true,
+     "panggung_terlihat": true,
+     "lebar_panggung": 390,
+     "lebar_viewport": 390,
+     "scroll_w": 390,
+     "inner_w": 390,
+     "elemen_keluar": 0,
+     "judul": "Apex Humanoid"
+    }
+   ],
+   "lulus": 20,
+   "total": 20
+  }
+ ],
+ "ringkas": {
+  "lulus": 34,
+  "total": 34
+ }
+}
