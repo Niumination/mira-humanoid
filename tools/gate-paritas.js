@@ -25,6 +25,22 @@
  * P3 sengaja diagnostik: setelah P13 aset adalah karya kita sendiri, jadi kesamaan bentuk dengan
  * acuan bukan lagi sasaran; yang wajib adalah panggung hadir & terbaca di semua viewport.
  *
+ * ## v3 (2026-11-18) — menunggu adegan stabil, bukan "tunggu 2,6 detik"
+ * Diukur: pada 414×896, tangkapan setelah 2,6 s memberi cakupan 0,042 sementara setelah 3,5 s memberi
+ * 0,236 — animasi kelahiran belum selesai di sandbox SwiftShader (±2,5 fps). Itu sumber angka goyah
+ * (cakupan MIRA 414: 0,041 → 0,264 hanya karena waktu tunggu), **bukan** bug tata letak.
+ * Sekarang: tunggu sampai cakupan dua tangkapan berurutan selisihnya ≤ 0,5 % (maks 6 tangkapan, tunggu
+ * awal 5 s, jeda 1,6 s — tangkapan 414 px di sandbox ini mahal, ± puluhan detik).
+ * Hasil sesudah perbaikan: sebaran cakupan 3 run ≤ 0,0019.
+ *
+ * ## v4 (2026-11-18) — jangkar deterministik, bukan "tunggu lalu tembak"
+ * Diukur di sandbox ini (SwiftShader ±2,5 fps), setelah 9 s:
+ *   MIRA `?t=11.5`  → MAE diri 0,00–3,33 · cakupan antar run Δ ≤ 0,0028
+ *   APEX `?t=9`     → MAE diri 6,19–6,47 · cakupan Δ 0,0048 (sebelumnya `?auto=1`: Δ 0,0475)
+ * Sebelumnya (`?auto=1` untuk MIRA) cakupan berayun 0,042 ↔ 0,507 karena tangkapan jatuh di fase animasi
+ * berbeda. `?t=` memaku waktu adegan (parameter yang memang ada di aplikasi), jadi yang diukur adalah
+ * keadaan yang sama, bukan detik yang berbeda. Menunggu-stabil dipertahankan hanya sebagai laporan.
+ *
  * Pakai: PW=/home/user/tools/pw-shim.js node tools/gate-paritas.js [--json keluar.json]
  */
 const { chromium } = require(process.env.PW || '/home/user/tools/pw-shim.js')
@@ -36,15 +52,25 @@ const ARG = process.argv.slice(2)
 const JSON_OUT = ARG.includes('--json') ? ARG[ARG.indexOf('--json') + 1] : null
 const MIRA = process.env.MIRA || 'http://127.0.0.1:8804/'
 const APEX = process.env.APEX || 'http://127.0.0.1:8805/'
-const SHOTS = '/tmp/gateparitas'
-const KAL = '/home/user/Kerja-Arena/verification/kalibrasi'
+// JANGKAR: kueri yang memaku waktu adegan. MIRA punya `?t=<detik>` (idle penuh ±11,5 s);
+// APEX memakai `?auto=1` (deterministik setelah 9 s: Δ cakupan antar run 0,0000).
+// P15-B: APEX kini punya `?t=` juga (jangkar waktu), jadi kedua aplikasi dipaku dengan cara yang sama.
+const JANGKAR = {
+  MIRA: process.env.MIRA_JANGKAR || '?t=11.5',
+  APEX: process.env.APEX_JANGKAR || '?t=9',
+}
+const TUNGGU_MS = Number(process.env.TUNGGU_MS || 9000)
+const SHOTS = process.env.SHOTS_DIR || '/tmp/gateparitas'
+const KAL = process.env.KAL_DIR || '/home/user/Kerja-Arena/verification/kalibrasi'
 const ARGS = ['--no-sandbox', '--enable-unsafe-swiftshader', '--use-gl=angle',
   '--use-angle=swiftshader', '--disable-dev-shm-usage', '--mute-audio']
-const VPS = [
+const SEMUA_VP = [
   { tag: '1440x900', w: 1440, h: 900 },
   { tag: '414x896', w: 414, h: 896 },
   { tag: '390x844', w: 390, h: 844 },
 ]
+// HANYA=414x896 → ukur satu viewport saja (untuk diagnosis cepat; gerbang penuh memakai ketiganya)
+const VPS = process.env.HANYA ? SEMUA_VP.filter((v) => v.tag === process.env.HANYA) : SEMUA_VP
 
 const pyUkur = `
 import sys, json
@@ -74,6 +100,37 @@ function ukur(f, f2) {
   const args = ['-c', pyUkur, f]
   if (f2) args.push(f2)
   return JSON.parse(execFileSync('python3', args).toString())
+}
+
+/**
+ * Tunggu sampai adegan STABIL: cakupan piksel terang dua tangkapan berurutan selisih ≤ 0,5 %.
+ * Mengembalikan { cakupan, tangkapan, ms } — dipakai sebelum tangkapan resmi.
+ */
+async function tungguStabil(p, ukurFn, maks = 8, jedaMs = 1500, minimumMs = 8000) {
+  // Dua syarat, bukan satu:
+  //   1. sudah lewat `minimumMs` sejak mulai (animasi kelahiran ±11,5 s; di SwiftShader lebih lama) —
+  //      mencegah "stabil" palsu ketika renderer membeku di satu bingkai karena kelaparan frame;
+  //   2. cakupan 3 pembacaan BERURUTAN selisih ≤ 0,5 % (dua delta berturut-turut) → minimal 4 tangkapan.
+  //      Versi pertama (2 tangkapan) pernah meloloskan cakupan 0,507 yang sebenarnya tak stabil.
+  const mulai = Date.now()
+  const riwayat = []
+  for (let i = 1; i <= maks; i++) {
+    const lewat = Date.now() - mulai
+    const jeda = i === 1 ? Math.max(5000, minimumMs - lewat) : jedaMs
+    if (jeda > 0) await p.waitForTimeout(jeda)
+    const f = path.join(SHOTS, `stabil-${process.pid}-${i}.png`)
+    await p.screenshot({ path: f, timeout: 300000 })
+    const m = ukurFn(f)
+    fs.unlinkSync(f)
+    riwayat.push(+m.cakupan.toFixed(4))
+    const n = riwayat.length
+    if (n >= 4 && Date.now() - mulai >= minimumMs) {
+      const d1 = Math.abs(riwayat[n - 1] - riwayat[n - 2])
+      const d2 = Math.abs(riwayat[n - 2] - riwayat[n - 3])
+      if (d1 <= 0.005 && d2 <= 0.005) return { cakupan: m.cakupan, tangkapan: i, stabil: true, riwayat }
+    }
+  }
+  return { cakupan: riwayat[riwayat.length - 1], tangkapan: maks, stabil: false, riwayat }
 }
 
 function bacaAcuan(nama, berkas) {
@@ -111,15 +168,17 @@ const hasil = {
     for (const vp of VPS) {
       const ctx = await browser.newContext({ viewport: { width: vp.w, height: vp.h }, deviceScaleFactor: 1 })
       const p = await ctx.newPage()
-      await p.goto(base + '?auto=1', { waitUntil: 'networkidle', timeout: 120000 })
-      await p.waitForTimeout(2600)
+      await p.goto(base + JANGKAR[nama], { waitUntil: 'networkidle', timeout: 120000 })
+      await p.waitForTimeout(TUNGGU_MS)
+      const stab = { cakupan: null, tunggu_ms: TUNGGU_MS, jangkar: JANGKAR[nama] }
       const f1 = path.join(SHOTS, `${nama}-${vp.tag}-a.png`)
       const f2 = path.join(SHOTS, `${nama}-${vp.tag}-b.png`)
-      await p.screenshot({ path: f1, timeout: 120000 })
+      await p.screenshot({ path: f1, timeout: 300000 })
       await p.waitForTimeout(700)
-      await p.screenshot({ path: f2, timeout: 120000 })
+      await p.screenshot({ path: f2, timeout: 300000 })
       const m = ukur(f1, f2)
       m.vp = vp.tag
+      m.stabil = stab
       app.viewport.push(m)
       if (m.kosong) { cek(`${vp.tag} siluet hadir`, false, 'tidak ada piksel terang'); await p.close(); await ctx.close(); continue }
 

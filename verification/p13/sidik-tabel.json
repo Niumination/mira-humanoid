@@ -1,0 +1,28 @@
+{
+ "tanggal": "2026-11-18",
+ "asli": {
+  "apex-assembly-25-v1.webp": "907c6623913c051e10ca9c9af31a01b3923d651d2670135caa0518b05bda3c9b",
+  "apex-assembly-60-v1.webp": "6847445a5828af54cb1077926b4db0b4914edac2e53bd57848501c8d56550cfe",
+  "apex-idle-v1.webp": "ba1a6d93f39ce84ead857be91111e5f6157b5c33552998e859e5574a22b05dc4",
+  "apex-listening-v1.webp": "333ded16e7244316f79145731cd86a6c386c07cf4ca6644ee04150a3977ee1af",
+  "apex-speaking-strong-v1.webp": "836c193d917f2039d328a62bfa26291befb30e755f2bc6759f20d6883ab279b3",
+  "apex-speaking-v1.webp": "5433add40a7b4ee2835fb9926742fb8266c29b3c0563f31a47355c69e25a91a5",
+  "apex-thinking-v1.webp": "64f805cc2f9b95a8feb9c8f934ef24a2dc676f3910629a4b8f34a233811674f5",
+  "backdrop-v1.webp": "9c5aeae2f11ea1db0860a0397a5127d7ae9326511f2210ec655cbc9df21210d3",
+  "mira-hair-v1.webp": "8dc958e1750ee348c5eb9ffb3813d42279fcd404ad4cd102bbfeba7b8c474999",
+  "mira-idle-v1.webp": "35911d6e8517ca755524f630363d99fcadbbaa6457cd92d12603739a1309ffe1"
+ },
+ "baru": {
+  "apex-assembly-25-v1.webp": "b1028f45c4f0e559ddb96b278b5abc36712f663c78f41c84ad905df20f1727f1",
+  "apex-assembly-60-v1.webp": "7bfabb2e46ca8da169d4b58883bc316cf17a1eea4e5ec6504f2ae6536ae26f94",
+  "apex-idle-v1.webp": "9f7ee35b7a61462d6300dc375f0cc45237aa67da6ecaaeea89d23ba72580f4c3",
+  "apex-listening-v1.webp": "d1257bc024d03bf06ea31e641782d74de81129eb2494b7325d10a62df01d5ace",
+  "apex-speaking-strong-v1.webp": "fed08d9fc7708db87f928c8147f5806884a6939ac32b24eff3c4d9aaa9ded073",
+  "apex-speaking-v1.webp": "589043740046a2fca0577ee787e34aeca158bfe770925abea67589061b78ed46",
+  "apex-thinking-v1.webp": "5c52933a80a10421a168765d92022e8fb6452276d30cc9eb53f87257af4b4991",
+  "backdrop-v1.webp": "35539292a3b90dbdab5d034990c85321aa7695cfc8e4f9e2ab6903165c6b80ef",
+  "mira-hair-v1.webp": "6c5e6791e3a5b9db33332a2b1c51f72c592dc1da70a8d27b1dfdeb178c6d1c52",
+  "mira-idle-v1.webp": "8409aa77647ed8d5f4fee304ebfa9f5c381f9400c61b8c10c18b514fc2871a29"
+ },
+ "catatan": "asli = Niumination/Niu-Humanoid@49e011dd15 public/humanoid (aset produksi ORISINAL) \u00b7 baru = plate kita (arsip P13 + MIRA lokal), yang juga disajikan produksi sekarang"
+}

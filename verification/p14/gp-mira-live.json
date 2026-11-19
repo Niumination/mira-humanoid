@@ -1,0 +1,53 @@
+{
+ "gerbang": "provenance aset",
+ "akar": "public/humanoid",
+ "live": "https://mira-humanoid-niu.vercel.app/",
+ "syarat": {
+  "min_byte": 1024,
+  "larangan": 0
+ },
+ "berkas": [
+  {
+   "berkas": "mira-hair-v1.webp",
+   "sha256": null,
+   "byte": 0,
+   "asal": "(tak ada berkas lokal)",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "6c5e6791e3a5b9db",
+    "asal": "kita",
+    "sama_dengan_disk": null
+   }
+  },
+  {
+   "berkas": "mira-idle-v1.webp",
+   "sha256": null,
+   "byte": 0,
+   "asal": "(tak ada berkas lokal)",
+   "lulus": true,
+   "alasan": [],
+   "live": {
+    "sha256": "8409aa77647ed8d5",
+    "asal": "kita",
+    "sama_dengan_disk": null
+   }
+  }
+ ],
+ "live_ringkas": {
+  "lulus": 2,
+  "total": 2
+ },
+ "ringkas": {
+  "gagal": 0,
+  "total": 2,
+  "repo": {
+   "lulus": 2,
+   "total": 2
+  },
+  "produksi": {
+   "lulus": 2,
+   "total": 2
+  }
+ }
+}

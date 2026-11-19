@@ -1,6 +1,7 @@
 {
- "keterangan": "Sidik asli produksi (hash penuh) — dibangkitkan dari verification/penerapan/penerapan-2026-11-18b.json · pulihkan[].dari_repo. Dipakai gate-provenance.py sebagai cadangan bila verification/p13/asli/ tak ada berkas.",
+ "keterangan": "Sidik asli produksi (sha256 penuh 64 hex) \u2014 dibangkitkan dari public/humanoid repo Niu-Humanoid@49e011dd15 (aset ORISINAL). Dipakai gate-provenance.py sebagai tabel pembanding.",
  "tanggal": "2026-11-18",
+ "jumlah": 10,
  "sidik_asli": {
   "apex-assembly-25-v1.webp": "907c6623913c051e10ca9c9af31a01b3923d651d2670135caa0518b05bda3c9b",
   "apex-assembly-60-v1.webp": "6847445a5828af54cb1077926b4db0b4914edac2e53bd57848501c8d56550cfe",

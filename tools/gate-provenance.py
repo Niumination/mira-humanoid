@@ -80,7 +80,9 @@ def tabel_sidik():
 
 
 def main():
+    import fnmatch
     akar = arg('--akar', AKAR_BAWAAN)
+    pola = arg('--pola', '*')          # mis. 'mira-*' untuk MIRA, 'apex-*' + backdrop untuk APEX
     json_out = arg('--json')
     live = arg('--live')
     larang_path = arg('--larang-dari')
@@ -95,40 +97,58 @@ def main():
     if larang_path and os.path.isfile(larang_path):
         larangan = json.load(open(larang_path)).get('sha256', {})
 
-    if not os.path.isdir(akar):
+    # mode --live saja tidak memerlukan folder lokal: berkas diambil dari halaman.
+    if not live and not os.path.isdir(akar):
         print(f'FATAL: {akar} tidak ada')
         sys.exit(2)
 
     hasil = {'gerbang': 'provenance aset', 'akar': akar, 'live': live,
              'syarat': {'min_byte': MIN_BYTE, 'larangan': len(larangan)}, 'berkas': []}
+    # daftar berkas: dari folder lokal bila ada; kalau tidak (mode --live saja), dari tabel sidik.
+    # Tanpa ini, mode live tanpa --akar memeriksa 0 berkas dan melaporkan "LULUS" — lulus palsu.
+    if os.path.isdir(akar):
+        nama_periksa = sorted(os.listdir(akar))
+    else:
+        nama_periksa = sorted({v['contoh'] for v in sidik.values()})
+    nama_periksa = [f for f in nama_periksa if fnmatch.fnmatch(f, pola)]
+
     gagal = 0
-    for f in sorted(os.listdir(akar)):
+    gagal_repo = 0
+    for f in nama_periksa:
         p = os.path.join(akar, f)
-        if not os.path.isfile(p):
+        ada_lokal = os.path.isfile(p)
+        if not ada_lokal and os.path.isdir(akar):
             continue
-        ukuran = os.path.getsize(p)
-        h = sha(p)
-        info = sidik.get(h)
-        asal = info['asal'] if info else 'tak dikenal'
+        ukuran = os.path.getsize(p) if ada_lokal else 0
+        h = sha(p) if ada_lokal else None
+        info = sidik.get(h) if h else None
+        asal = info['asal'] if info else ('(tak ada berkas lokal)' if not ada_lokal else 'tak dikenal')
         alasan = []
         if asal == 'asli':
             alasan.append(f'salinan asli produksi (={info["contoh"]})')
         elif asal == 'tak dikenal':
             alasan.append('tidak ada di tabel sidik P13')
-        if ukuran < MIN_BYTE:
+        if ada_lokal and ukuran < MIN_BYTE:
             alasan.append(f'placeholder {ukuran} B < {MIN_BYTE} B')
         if h in larangan:
             alasan.append(f'ada di daftar larangan ({larangan[h].get("alasan", "salinan asli")})')
+        # mode live-saja (tanpa folder lokal): ketiadaan berkas lokal BUKAN kegagalan repo,
+        # yang dinilai adalah apa yang disajikan halaman.
+        mode_live_saja = bool(live) and not os.path.isdir(akar)
+        if not ada_lokal and not mode_live_saja:
+            alasan = ['berkas tidak ada di folder yang diperiksa']
         ok = not alasan
         if not ok:
             gagal += 1
-        hasil['berkas'].append({'berkas': f, 'sha256': h[:16], 'byte': ukuran,
+            gagal_repo += 1
+        hasil['berkas'].append({'berkas': f, 'sha256': (h[:16] if h else None), 'byte': ukuran,
                                 'asal': asal, 'lulus': ok, 'alasan': alasan})
-        print(f'{"PASS" if ok else "FAIL"}  {f:34s} {h[:12]} {ukuran:>8} B  {asal}'
+        print(f'{"PASS" if ok else "FAIL"}  {f:34s} {(h[:12] if h else "—"):12s} {ukuran:>8} B  {asal}'
               + ('' if ok else '  ← ' + '; '.join(alasan)))
 
     # mode live: buktikan yang DISAJIKAN juga milik kita — ini butir gerbang, bukan sekadar catatan
     live_ringkas = None
+    gagal_live = 0
     if live:
         try:
             import urllib.request
@@ -142,7 +162,8 @@ def main():
                 hl = hashlib.sha256(data).hexdigest()
                 info = sidik.get(hl)
                 asal_live = info['asal'] if info else 'tak dikenal'
-                sama = hl == sha(os.path.join(akar, b['berkas']))
+                sama = (hl == hashlib.sha256(open(os.path.join(akar, b['berkas']), 'rb').read()).hexdigest()
+                        if os.path.isfile(os.path.join(akar, b['berkas'])) else None)
                 b['live'] = {'sha256': hl[:16], 'asal': asal_live, 'sama_dengan_disk': sama}
                 # DUA hal berbeda, jangan dicampur:
                 #   (a) produksi menyajikan aset MILIK KITA  → butir gerbang
@@ -150,6 +171,7 @@ def main():
                 status = 'PASS' if asal_live == 'kita' else 'FAIL'
                 if asal_live != 'kita':
                     gagal += 1
+                    gagal_live += 1
                 print(f'{status}  live {b["berkas"]:28s} {hl[:12]} {asal_live}'
                       + ('' if sama else '  (isi ≠ berkas lokal: repo belum memuat paket aset)'))
             live_ok = sum(1 for b in hasil['berkas'] if b.get('live', {}).get('asal') == 'kita')
@@ -176,10 +198,15 @@ def main():
 
     repo_lulus = hasil['ringkas']['repo']['lulus']
     total_berkas = len(hasil['berkas'])
-    print(f'\nGERBANG E ASET — repo     : {repo_lulus}/{total_berkas} lulus')
+    if total_berkas == 0:
+        print('FATAL: 0 berkas diperiksa — bukan lulus')
+        sys.exit(2)
+    mode_live_saja = bool(live) and not os.path.isdir(akar)
+    if not mode_live_saja:
+        print(f'GERBANG E ASET — repo     : {repo_lulus}/{total_berkas} lulus')
     if live_ringkas:
         print(f'GERBANG E ASET — produksi : {live_ringkas["lulus"]}/{live_ringkas["total"]} lulus')
-    print('PUTUSAN: ' + ('LULUS' if gagal == 0 else f'GAGAL ({gagal} butir)'))
+    print(f'PUTUSAN: ' + ('LULUS' if gagal == 0 else f'GAGAL (repo {gagal_repo} · produksi {gagal_live})'))
     sys.exit(0 if gagal == 0 else 1)
 
 
