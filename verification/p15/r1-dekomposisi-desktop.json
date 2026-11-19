@@ -1,0 +1,30 @@
+{
+ "judul": "R-1 APEX: dekomposisi \"bingkai desktop terlalu penuh\"",
+ "tanggal": "2026-11-18",
+ "aplikasi": "APEX",
+ "url_lokal": "http://127.0.0.1:8807/?t=9",
+ "syarat_cakupan": "piksel dengan L>20 dari 255",
+ "hasil": {
+  "bawaan_1440x900": {
+   "cakupan": 0.3919,
+   "pita_atas_150px": 0.1109,
+   "pita_bawah_150px": 0.2603
+  },
+  "tanpa_backdrop_NO_BG": {
+   "cakupan": 0.1828,
+   "pita_atas": 0.0888,
+   "pita_bawah": 0.0787
+  },
+  "selisih_karena_backdrop": {
+   "cakupan": 0.2091,
+   "pita_bawah": 0.1816,
+   "pita_atas": 0.0221
+  },
+  "acuan_asli_1440x900": {
+   "cakupan": 0.0021,
+   "catatan": "WebGL gagal di sandbox (kanvas kosong) \u2014 acuan tidak terukur di sini"
+  }
+ },
+ "putusan": "Kelebihan 0,091 di pita bawah hampir seluruhnya berasal dari pendar lantai plate backdrop (0,260 \u2192 0,079 saat backdrop dimatikan); figur sendiri menyumbang 0,183. Angka acuan 0,099 setara dengan kondisi TANPA backdrop, jadi selisih \"terlalu penuh\" = pilihan seni plate backdrop kita, bukan cacat tata letak. Tidak diubah (aturan: knob tanpa diagnosis gugur; diagnosis di sini mengatakan bukan regresi).",
+ "tindakan": "dibiarkan; dicatat sebagai sifat desain. Perubahan menuntut knob bernomor + gerbang sebelum/sesudah."
+}

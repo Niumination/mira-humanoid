@@ -1,0 +1,12 @@
+{
+ "tanggal": "2026-11-19",
+ "sumber": "produksi",
+ "lulus": 1,
+ "gagal": 0,
+ "total": 1,
+ "putusan": "LULUS",
+ "gerbang": [
+  "provenance"
+ ],
+ "catatan": "gerbang yang tidak bisa dijalankan dihitung GAGAL, bukan dilewati"
+}

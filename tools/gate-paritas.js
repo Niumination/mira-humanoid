@@ -99,7 +99,7 @@ print(json.dumps(out))
 function ukur(f, f2) {
   const args = ['-c', pyUkur, f]
   if (f2) args.push(f2)
-  return JSON.parse(execFileSync('python3', args).toString())
+  return JSON.parse(execFileSync(process.env.PY || 'python3', args).toString())
 }
 
 /**

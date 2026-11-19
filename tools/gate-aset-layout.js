@@ -25,11 +25,11 @@ const ARG = process.argv.slice(2)
 const JSON_OUT = ARG.includes('--json') ? ARG[ARG.indexOf('--json') + 1] : null
 const MIRA = process.env.MIRA || 'http://127.0.0.1:8804/'
 const APEX = process.env.APEX || 'http://127.0.0.1:8805/'
-const ROOT = '/home/user'
+const ROOT = process.env.REBUILD_ROOT || '/home/user'
 const APPS = [
-  { nama: 'MIRA', base: MIRA, dir: `${ROOT}/mira-humanoid-rebuild/public/humanoid`,
+  { nama: 'MIRA', base: MIRA, dir: process.env.MIRA_DIR || `${ROOT}/mira-humanoid-rebuild/public/humanoid`,
     plate: ['mira-idle-v1.webp', 'mira-hair-v1.webp'] },
-  { nama: 'APEX', base: APEX, dir: `${ROOT}/apex-humanoid-rebuild/public/humanoid`,
+  { nama: 'APEX', base: APEX, dir: process.env.APEX_DIR || `${ROOT}/apex-humanoid-rebuild/public/humanoid`,
     plate: ['apex-idle-v1.webp', 'apex-listening-v1.webp', 'apex-speaking-v1.webp',
       'apex-speaking-strong-v1.webp', 'apex-thinking-v1.webp', 'apex-assembly-25-v1.webp',
       'apex-assembly-60-v1.webp', 'backdrop-v1.webp'] },

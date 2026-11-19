@@ -1,0 +1,25 @@
+{
+ "judul": "R-3 APEX 414x896 \u2014 sekarang TERUKUR",
+ "tanggal": "2026-11-18",
+ "alat": "PW_TIMEOUT=300000 + ?t=9",
+ "hasil": {
+  "414x896": {
+   "cakupan": 0.3389,
+   "pita_atas": 0.0873,
+   "pita_bawah": 0.5819,
+   "cx": 0.492
+  },
+  "390x844": {
+   "cakupan": 0.3407,
+   "pita_atas": 0.0884,
+   "pita_bawah": 0.5831
+  },
+  "1440x900": {
+   "cakupan": 0.3778,
+   "pita_atas": 0.0997,
+   "pita_bawah": 0.2304
+  }
+ },
+ "putusan": "Terukur dan stabil; tidak diperlukan pengecualian alat lagi. Ponsel (390/414) memang lebih penuh di pita bawah (+0,35 vs desktop) karena figur mengisi tinggi penuh \u2014 sama seperti acuan yang juga \u00d71,25 lebih penuh di ponsel.",
+ "tindakan": "R-3 DITUTUP."
+}

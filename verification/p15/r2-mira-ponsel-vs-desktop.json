@@ -1,0 +1,13 @@
+{
+ "judul": "R-2 MIRA: ponsel vs desktop \u2014 angka diperbarui",
+ "tanggal": "2026-11-18",
+ "sumber": "verification/p14/gate-paritas-2026-11-18c.json",
+ "hasil": {
+  "1440x900": 0.4874,
+  "414x896": 0.506,
+  "390x844": 0.5088,
+  "selisih_ponsel_vs_desktop_relatif": 4.4
+ },
+ "putusan": "Angka lama (+30 %, 0,264 vs 0,195) TIDAK terulang pada pengukuran sekarang: selisih +4,4 %. Angka lama dianggap usang/dari metrik berbeda; yang dipakai sekarang angka di atas.",
+ "tindakan": "R-2 dicatat sebagai sifat desain; angka lama dibatalkan."
+}

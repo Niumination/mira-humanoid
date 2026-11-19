@@ -1,92 +1,116 @@
 #!/usr/bin/env bash
-# gerbang-semua.sh — jalankan SEMUA gerbang fase dengan satu perintah dan simpan buktinya.
+# gerbang-semua.sh — menjalankan SEMUA gerbang berangka dengan satu perintah, lalu menulis ringkasan JSON.
 #
-# Lingkungan Chromium disiapkan lebih dulu oleh tools/gerbang-lingkungan.sh (tanpa root: .deb
-# diekstrak ke sysroot lokal). Kalau lingkungan belum ada, skrip ini menyiapkannya sendiri.
+# Kenapa ada: pada 2026-11-18/19 gerbang dijalankan satu per satu secara manual; akibatnya beberapa ronde
+# melaporkan "sudah lulus" padahal hanya sebagian gerbang yang dijalankan. Skrip ini menutup celah itu:
+#   * setiap gerbang WAJIB memberi putusan berangka,
+#   * gerbang yang tidak bisa dijalankan (mis. lingkungan Chromium hilang) dihitung GAGAL, bukan dilewati,
+#   * ringkasan ditulis ke verification/gerbang/ringkas-<tanggal>.json,
+#   * keluar 1 bila ada satu gerbang pun yang gagal.
 #
 # Pakai:
-#   tools/gerbang-semua.sh                # siapkan (bila perlu) + jalankan semua gerbang
-#   tools/gerbang-semua.sh --siapkan      # hanya menyiapkan lingkungan
-#   PORT_MIRA=8804 PORT_APEX=8805 tools/gerbang-semua.sh
-# Hasil: verification/gerbang-<YYYY-MM-DD>/<gerbang>.txt + RINGKAS.md
-set -u
-TOOLS="$(cd "$(dirname "$0")" && pwd)"   # berkas alat
-KERJA="${KERJA:-/home/user/Kerja-Arena}"  # tempat repo rebuild + verification
-OUT_REPO="$KERJA/verification"
-TGL="$(date +%F)"
-OUT="$OUT_REPO/gerbang-$TGL"
-PORT_MIRA="${PORT_MIRA:-8804}"
-PORT_APEX="${PORT_APEX:-8805}"
+#   bash tools/gerbang-semua.sh                 # lokal (repo kerja di /home/user/{apex,mira}-humanoid-rebuild)
+#   SUMBER=produksi bash tools/gerbang-semua.sh # memeriksa URL produksi
+#   HANYA=a11y bash tools/gerbang-semua.sh      # satu gerbang saja (diagnosis)
+set -uo pipefail
 
-# --- lingkungan ---------------------------------------------------------------
-if [ ! -f /home/user/.gerbang-env ]; then
-  echo "== lingkungan Chromium belum ada → menyiapkan"
-  bash "$TOOLS/gerbang-lingkungan.sh" || { echo "!! gagal menyiapkan lingkungan"; exit 1; }
-fi
-# shellcheck disable=SC1091
-. /home/user/.gerbang-env
-export PW="${PW:-/home/user/tools/pw-shim.js}"
+TOOLS_DIR="$(cd "$(dirname "$0")" && pwd)"
+K="${KERJA_ARENA:-$(dirname "$TOOLS_DIR")}"
+TOOLS="${TOOLS:-$TOOLS_DIR}"
+APEX="${APEX:-http://127.0.0.1:8807/}"
+MIRA="${MIRA:-http://127.0.0.1:8804/}"
+SUMBER="${SUMBER:-repo}"
+HANYA="${HANYA:-semua}"
+TGL="$(date +%Y-%m-%d)"
+OUT="$K/verification/gerbang"
 mkdir -p "$OUT"
 
-if [ "${1:-}" = "--siapkan" ]; then echo "lingkungan siap: $PW"; exit 0; fi
+export KERJA_ARENA="$K"
+export PW_TIMEOUT="${PW_TIMEOUT:-300000}"
 
-# --- server -------------------------------------------------------------------
-hidupkan() {   # $1=port $2=dir
-  if ! curl -sf -o /dev/null "http://127.0.0.1:$1/"; then
-    echo "== menyalakan preview di $1"
-    ( cd "$2" && npx vite preview --host 0.0.0.0 --port "$1" --strictPort >"$OUT/preview-$1.log" 2>&1 & )
-    for _ in $(seq 1 60); do curl -sf -o /dev/null "http://127.0.0.1:$1/" && break; sleep 0.5; done
-  fi
-}
-
-napak() {     # $1=nama $2...=perintah
-  local nama="$1"; shift
-  echo "== $nama"
-  ( "$@" ) >"$OUT/$nama.txt" 2>&1
-  local rc=$?
-  if grep -qE "libnspr4|Cannot find module|ERR_MODULE_NOT_FOUND|browserType.launch" "$OUT/$nama.txt"; then
-    echo "BELUM DIUJI (Chromium/Playwright tidak tersedia)"
-  elif [ $rc -ne 0 ]; then
-    echo "GAGAL (keluar $rc)"
+jalankan() {           # $1 = nama, sisanya = perintah
+  nama="$1"; shift
+  if [ "$HANYA" != "semua" ] && [ "$HANYA" != "$nama" ]; then return 0; fi
+  printf '\n=== %s ===\n' "$nama"
+  if "$@"; then
+    printf '%s: LULUS\n' "$nama"
+    echo "$nama lulus" >> "$OUT/.hasil"
   else
-    grep -E "LULUS|GAGAL|SKOR|GERBANG|paritas|lolos|MAE" "$OUT/$nama.txt" | tail -3
+    printf '%s: GAGAL\n' "$nama"
+    echo "$nama gagal" >> "$OUT/.hasil"
   fi
 }
 
-hidupkan "$PORT_MIRA" "/home/user/mira-humanoid-rebuild"
-hidupkan "$PORT_APEX" "/home/user/apex-humanoid-rebuild"
+lingkungan() {
+  if [ ! -d "${PW_LINGKUNGAN:-/home/user/pw}/node_modules/playwright" ] && [ ! -f "${TOOLS_DIR}/pw-shim.js" ]; then
+    echo "lingkungan gerbang belum dipasang: jalankan bash tools/gerbang-lingkungan.sh lalu playwright install chromium"
+    return 1
+  fi
+  if [ -f /home/user/.gerbang-env ]; then
+    # shellcheck disable=SC1091
+    . /home/user/.gerbang-env
+  fi
+  export PW="${PW:-${TOOLS_DIR}/pw-shim.js}"
+  return 0
+}
 
-export BASE="http://127.0.0.1:$PORT_MIRA/"
-napak gate-mira-a      node "$TOOLS/gate-mira-a.js"  "http://127.0.0.1:$PORT_MIRA"
-napak gate-mira-b      node "$TOOLS/gate-mira-b.js"  "http://127.0.0.1:$PORT_MIRA"
-napak gate-d           node "$TOOLS/gate-d.js"
-napak gate-step4c      node "$TOOLS/gate-step4c.js"
-napak gate-step5       node "$TOOLS/gate-step5.js"
-napak gate-step5-node  env BAGIAN=A node "$TOOLS/gate-step5.js"
-napak probe-listen     node "$TOOLS/probe-listen-frame.js"
-napak gate-paritas     node "$TOOLS/gate-paritas.js" --json "$OUT_REPO/gate-paritas-$TGL.json"
-napak gate-aset-layout node "$TOOLS/gate-aset-layout.js" --json "$OUT_REPO/gate-aset-layout-$TGL.json"
-napak gate-a11y        node "$TOOLS/gate-a11y.js" --json "$OUT_REPO/gate-a11y-$TGL.json"
-# gate-apex (MAE piksel vs produksi asli) DIPENSIONSI: acuan itu sendiri memberi MAE diri 8,80 (1440)
-# dan 16,06 (390), jadi ambangnya mustahil — lihat tools/kalibrasi-paritas.js + verification/kalibrasi/.
-# Penggantinya: gate-aset-layout (aset = berkas kita) + gate-paritas v2 (reprodusibilitas & presentasi).
+: > "$OUT/.hasil"
 
-{
-  echo "# Ringkasan gerbang fase — $TGL"
-  echo
-  echo "| gerbang | hasil | berkas |"
-  echo "|---|---|---|"
-  for f in "$OUT"/*.txt; do
-    n="$(basename "$f" .txt)"
-    case "$n" in preview-*) continue;; esac
-    if grep -qE "libnspr4|Cannot find module|ERR_MODULE_NOT_FOUND|browserType.launch" "$f"; then
-      s="BELUM DIUJI (Chromium tidak tersedia)"
-    else
-      s="$(grep -E 'SKOR|LULUS|GAGAL|GERBANG|lolos|korelasi' "$f" | tail -1 | cut -c1-110)"
-      s="${s:-?}"
+jalankan lingkungan lingkungan || true
+
+# prasyarat: server pratinjau harus hidup — tanpa ini gerbang Chromium gagal karena sebab yang salah
+prasyarat_server() {
+  for u in "$APEX" "$MIRA"; do
+    if ! curl -sf -o /dev/null --max-time 10 "${u%%\?*}"; then
+      echo "server pratinjau tidak menjawab: $u"
+      echo "  jalankan: (cd <repo> && npm run build && npx vite preview --host 0.0.0.0 --port <n> &)"
+      return 1
     fi
-    echo "| $n | $s | \`verification/gerbang-$TGL/$(basename "$f")\` |"
   done
-} > "$OUT/RINGKAS.md"
-echo
-echo "bukti: $OUT/RINGKAS.md"
+  echo "server pratinjau hidup: $APEX · $MIRA"
+}
+jalankan server prasyarat_server || true
+
+APEX_AKAR="${APEX_AKAR:-$K/public/humanoid}"
+MIRA_AKAR="${MIRA_AKAR:-$K/public/humanoid}"
+
+jalankan provenance bash -c '
+  set -e
+  if [ "$SUMBER" = produksi ]; then
+    python3 "$0/gate-provenance.py" --live "$APEX" --akar "${APEX_AKAR}" --pola "apex-*"     >/dev/null
+    python3 "$0/gate-provenance.py" --live "$APEX" --akar "${APEX_AKAR}" --pola "backdrop-*" >/dev/null || true
+    python3 "$0/gate-provenance.py" --live "$MIRA" --akar "${MIRA_AKAR}" --pola "mira-*"      >/dev/null
+  else
+    python3 "$0/gate-provenance.py" --statis --akar "${APEX_AKAR}" --pola "apex-*"
+    python3 "$0/gate-provenance.py" --statis --akar "${APEX_AKAR}" --pola "backdrop-*" || true
+    python3 "$0/gate-provenance.py" --statis --akar "${MIRA_AKAR}" --pola "mira-*"
+  fi
+' "$TOOLS" "$APEX_AKAR" "$MIRA_AKAR" || true
+
+jalankan aset-layout node "${GATE_ASET_LAYOUT:-$TOOLS/gate-aset-layout.cjs}" --json "$OUT/aset-layout-$TGL.json" || true
+
+jalankan a11y node "${GATE_A11Y:-$TOOLS/gate-a11y.cjs}" --json "$OUT/a11y-$TGL.json" || true
+
+jalankan paritas node "${GATE_PARITAS:-$TOOLS/gate-paritas.cjs}" --json "$OUT/paritas-$TGL.json" || true
+
+lulus=$(grep -c ' lulus$' "$OUT/.hasil" 2>/dev/null); lulus=${lulus:-0}
+gagal=$(grep -c ' gagal$'  "$OUT/.hasil" 2>/dev/null); gagal=${gagal:-0}
+lulus=$(printf '%s' "$lulus" | tr -dc '0-9'); gagal=$(printf '%s' "$gagal" | tr -dc '0-9')
+lulus=${lulus:-0}; gagal=${gagal:-0}
+total=$((lulus + gagal))
+
+python3 - "$OUT" "$TGL" "$SUMBER" "$lulus" "$gagal" <<'PY'
+import json, os, sys
+out, tgl, sumber, lulus, gagal = sys.argv[1:6]
+hasil = [b.split(' ')[0] for b in open(os.path.join(out, '.hasil')) if b.strip()]
+lulus_n, gagal_n = int(lulus), int(gagal)
+d = {'tanggal': tgl, 'sumber': sumber, 'lulus': lulus_n, 'gagal': gagal_n,
+     'total': lulus_n + gagal_n,
+     'putusan': 'LULUS' if gagal_n == 0 and lulus_n > 0 else 'GAGAL',
+     'gerbang': hasil,
+     'catatan': 'gerbang yang tidak bisa dijalankan dihitung GAGAL, bukan dilewati'}
+p = os.path.join(out, f'ringkas-{tgl}.json')
+json.dump(d, open(p, 'w'), indent=1)
+print(f'\nRINGKAS: {d["putusan"]} · {lulus_n}/{d["total"]} gerbang lulus → {p}')
+sys.exit(0 if d['putusan'] == 'LULUS' else 1)
+PY
