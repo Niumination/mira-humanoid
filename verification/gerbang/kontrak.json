@@ -1,0 +1,41 @@
+{
+ "judul": "KONTRAK GERBANG \u2014 angka minimum yang harus tetap benar",
+ "tanggal": "2026-11-19",
+ "aturan": "Setiap gerbang punya janji berangka. Bila bukti terakhir di bawah janji, itu REGRESI dan harus dilaporkan, bukan diabaikan. Angka di bawah adalah hasil terukur 2026-11-19 (repo & produksi).",
+ "janji": {
+  "aset-layout": {
+   "minimal": 34,
+   "bukti": "aset-layout-2026-11-19.json",
+   "arti": "34/34 = 3 viewport \u00d7 2 aplikasi"
+  },
+  "a11y": {
+   "minimal": 16,
+   "bukti": "a11y-2026-11-19.json",
+   "arti": "16/16 = 8 butir \u00d7 2 aplikasi"
+  },
+  "paritas": {
+   "minimal": 24,
+   "bukti": "paritas-2026-11-19.json",
+   "arti": "24/24 = 4 butir \u00d7 3 viewport \u00d7 2 aplikasi"
+  },
+  "paritas-fase": {
+   "minimal": 4,
+   "bukti": [
+    "paritas-fase-apex-2026-11-19.json",
+    "paritas-fase-mira-2026-11-19.json"
+   ],
+   "arti": "4 butir \u00d7 2 aplikasi; tiap berkas minimal 4/4"
+  }
+ },
+ "provenance": {
+  "apex": 7,
+  "apex_backdrop": 1,
+  "mira": 2,
+  "bukti": [
+   "verification/p14/gp-apex-repo.json",
+   "verification/p14/gp-apex-live.json",
+   "verification/p14/gp-mira-live.json"
+  ]
+ },
+ "catatan": "Angka provenance tidak disimpan sebagai \"minimal\" di JSON ringkas karena alat provenance menulis berkas sendiri; uji-gerbang.py memeriksa tiga berkas itu secara terpisah (G3)."
+}

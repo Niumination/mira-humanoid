@@ -1,0 +1,20 @@
+{
+ "judul": "gerbang 8 butir \u2014 MIRA produksi (6k, gabungan run 2026-11-21)",
+ "tanggal": "2026-11-21",
+ "sumber": "produksi",
+ "catatan": "lingkaran/server/uji-alat/aset-layout/a11y/paritas dari /tmp/g6k-mira.log (LULUS); provenance & paritas-fase rerun manual pasca-fix backdrop-v1 (p13/baru) + MAE_F1=12",
+ "butir": {
+  "lingkaran": "lulus",
+  "server": "lulus",
+  "uji-alat": "lulus",
+  "provenance": "lulus",
+  "aset-layout": "lulus",
+  "a11y": "lulus",
+  "paritas": "lulus",
+  "paritas-fase": "lulus"
+ },
+ "ringkas": {
+  "lulus": 8,
+  "total": 8
+ }
+}

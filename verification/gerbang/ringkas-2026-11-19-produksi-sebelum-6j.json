@@ -1,0 +1,19 @@
+{
+ "tanggal": "2026-11-19",
+ "sumber": "produksi",
+ "lulus": 7,
+ "gagal": 1,
+ "total": 8,
+ "putusan": "GAGAL",
+ "gerbang": [
+  "lingkaran",
+  "server",
+  "uji-alat",
+  "provenance",
+  "aset-layout",
+  "a11y",
+  "paritas",
+  "paritas-fase"
+ ],
+ "catatan": "Dijalankan terhadap URL produksi SEBELUM paket 6j diterapkan. Butir paritas-fase GAGAL pada APEX karena bundel produksi (index-ffx1NC0u.js 7daca178a692f337) masih memakai `?t=` versi lama yang melewati seluruh kelahiran: cakupan 0,3383 identik di t=3,5,7,9,11 (rentang 0,0000). Ini BUKAN kegagalan gerbang, melainkan bukti bahwa perbaikan B-1..B-3 di paket 6j memang diperlukan. MIRA 4/4 (beku sempurna)."
+}

@@ -175,7 +175,14 @@ def main():
                 print(f'{status}  live {b["berkas"]:28s} {hl[:12]} {asal_live}'
                       + ('' if sama else '  (isi ≠ berkas lokal: repo belum memuat paket aset)'))
             live_ok = sum(1 for b in hasil['berkas'] if b.get('live', {}).get('asal') == 'kita')
-            live_ringkas = {'lulus': live_ok, 'total': len(hasil['berkas'])}
+            live_gagal = sum(1 for b in hasil['berkas'] if 'galat' in b.get('live', {}))
+            live_ringkas = {'lulus': live_ok, 'total': len(hasil['berkas']), 'galat_unduh': live_gagal}
+            # BUG yang ditemukan uji-gerbang G2: bila SEMUA unduhan gagal, dulu tetap "LULUS" karena
+            # tidak ada satu pun yang dinilai gagal. Halaman tak terjangkau = bukti tidak sah → gagal.
+            if live_gagal == len(hasil['berkas']) and len(hasil['berkas']) > 0:
+                print('FATAL: semua unduhan gagal — bukti produksi tidak sah')
+                gagal += 1
+                gagal_live += 1
             hasil['live_ringkas'] = live_ringkas
         except Exception as e:  # noqa: BLE001
             print(f'WARN mode live dilewati: {e}')

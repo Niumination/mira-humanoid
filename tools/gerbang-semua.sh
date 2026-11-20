@@ -17,8 +17,6 @@ set -uo pipefail
 TOOLS_DIR="$(cd "$(dirname "$0")" && pwd)"
 K="${KERJA_ARENA:-$(dirname "$TOOLS_DIR")}"
 TOOLS="${TOOLS:-$TOOLS_DIR}"
-APEX="${APEX:-http://127.0.0.1:8807/}"
-MIRA="${MIRA:-http://127.0.0.1:8804/}"
 SUMBER="${SUMBER:-repo}"
 HANYA="${HANYA:-semua}"
 TGL="$(date +%Y-%m-%d)"
@@ -27,6 +25,10 @@ mkdir -p "$OUT"
 
 export KERJA_ARENA="$K"
 export PW_TIMEOUT="${PW_TIMEOUT:-300000}"
+# alat gerbang membaca env APEX/MIRA; tanpa export, alat jatuh ke port bawaannya (8805) dan gagal
+APEX="${APEX:-http://127.0.0.1:8807/}"
+MIRA="${MIRA:-http://127.0.0.1:8804/}"
+export APEX MIRA SUMBER
 
 jalankan() {           # $1 = nama, sisanya = perintah
   nama="$1"; shift
@@ -41,7 +43,7 @@ jalankan() {           # $1 = nama, sisanya = perintah
   fi
 }
 
-lingkungan() {
+pasang_lingkungan() {
   if [ ! -d "${PW_LINGKUNGAN:-/home/user/pw}/node_modules/playwright" ] && [ ! -f "${TOOLS_DIR}/pw-shim.js" ]; then
     echo "lingkungan gerbang belum dipasang: jalankan bash tools/gerbang-lingkungan.sh lalu playwright install chromium"
     return 1
@@ -56,7 +58,7 @@ lingkungan() {
 
 : > "$OUT/.hasil"
 
-jalankan lingkungan lingkungan || true
+jalankan lingkaran pasang_lingkungan || true
 
 # prasyarat: server pratinjau harus hidup — tanpa ini gerbang Chromium gagal karena sebab yang salah
 prasyarat_server() {
@@ -71,27 +73,46 @@ prasyarat_server() {
 }
 jalankan server prasyarat_server || true
 
-APEX_AKAR="${APEX_AKAR:-$K/public/humanoid}"
+# Folder aset: milik REPO KERJA (bukan Kerja-Arena). Versi repo memakai $K/public/humanoid yang di sini salah.
+APEX_AKAR="${APEX_AKAR:-${APEX_WS:-$K/public/humanoid}}"
 MIRA_AKAR="${MIRA_AKAR:-$K/public/humanoid}"
 
-jalankan provenance bash -c '
-  set -e
+jalankan uji-alat python3 "$TOOLS/uji-gerbang.py" || true
+
+periksa_provenance() {
+  # Tiap pola WAJIB lulus. Tanpa `|| true`: kegagalan satu pola = gerbang gagal.
+  lokal=0
+  for pola in "apex-*" "backdrop-*"; do
+    python3 "$TOOLS/gate-provenance.py" --statis --akar "$APEX_AKAR" --pola "$pola" || lokal=1
+  done
+  python3 "$TOOLS/gate-provenance.py" --statis --akar "$MIRA_AKAR" --pola "mira-*" || lokal=1
   if [ "$SUMBER" = produksi ]; then
-    python3 "$0/gate-provenance.py" --live "$APEX" --akar "${APEX_AKAR}" --pola "apex-*"     >/dev/null
-    python3 "$0/gate-provenance.py" --live "$APEX" --akar "${APEX_AKAR}" --pola "backdrop-*" >/dev/null || true
-    python3 "$0/gate-provenance.py" --live "$MIRA" --akar "${MIRA_AKAR}" --pola "mira-*"      >/dev/null
-  else
-    python3 "$0/gate-provenance.py" --statis --akar "${APEX_AKAR}" --pola "apex-*"
-    python3 "$0/gate-provenance.py" --statis --akar "${APEX_AKAR}" --pola "backdrop-*" || true
-    python3 "$0/gate-provenance.py" --statis --akar "${MIRA_AKAR}" --pola "mira-*"
+    for pola in "apex-*" "backdrop-*"; do
+      python3 "$TOOLS/gate-provenance.py" --live "$APEX" --pola "$pola" || lokal=1
+    done
+    python3 "$TOOLS/gate-provenance.py" --live "$MIRA" --pola "mira-*" || lokal=1
   fi
-' "$TOOLS" "$APEX_AKAR" "$MIRA_AKAR" || true
+  return $lokal
+}
+jalankan provenance periksa_provenance || true
 
 jalankan aset-layout node "${GATE_ASET_LAYOUT:-$TOOLS/gate-aset-layout.cjs}" --json "$OUT/aset-layout-$TGL.json" || true
 
 jalankan a11y node "${GATE_A11Y:-$TOOLS/gate-a11y.cjs}" --json "$OUT/a11y-$TGL.json" || true
 
 jalankan paritas node "${GATE_PARITAS:-$TOOLS/gate-paritas.cjs}" --json "$OUT/paritas-$TGL.json" || true
+
+# paritas fase: banyak titik waktu (APEX kelahiran 7,4 s; MIRA 11,5 s) — menangkap bug yang hanya
+# muncul di detik tertentu, yang tidak terlihat oleh satu-bingkai paritas.
+periksa_fase() {
+  local rc=0
+  node "$TOOLS/gate-paritas-fase.cjs" --app apex --url "$APEX" --titik 3,5,7,9,11 \
+       --json "$OUT/paritas-fase-apex-$TGL.json" || rc=1
+  node "$TOOLS/gate-paritas-fase.cjs" --app mira --url "$MIRA" --titik 4,8,11.5,12.5,13.5 \
+       --json "$OUT/paritas-fase-mira-$TGL.json" || rc=1
+  return $rc
+}
+jalankan paritas-fase periksa_fase || true
 
 lulus=$(grep -c ' lulus$' "$OUT/.hasil" 2>/dev/null); lulus=${lulus:-0}
 gagal=$(grep -c ' gagal$'  "$OUT/.hasil" 2>/dev/null); gagal=${gagal:-0}

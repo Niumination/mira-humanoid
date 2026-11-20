@@ -1,0 +1,90 @@
+{
+ "judul": "paritas fase — banyak titik waktu",
+ "aplikasi": "apex",
+ "url": "http://127.0.0.1:8807/",
+ "viewport": "1440x900",
+ "titik": [
+  3,
+  5,
+  7,
+  9,
+  11
+ ],
+ "tunggu_ms": 2500,
+ "total_timeline": 7.4,
+ "kelas_titik": [
+  {
+   "t": 3,
+   "kelas": "kelahiran"
+  },
+  {
+   "t": 5,
+   "kelas": "kelahiran"
+  },
+  {
+   "t": 7,
+   "kelas": "kelahiran"
+  },
+  {
+   "t": 9,
+   "kelas": "mantap"
+  },
+  {
+   "t": 11,
+   "kelas": "mantap"
+  }
+ ],
+ "kurva": [
+  {
+   "t": 3,
+   "cakupan": 0.3055,
+   "mae_diri": 3.22
+  },
+  {
+   "t": 5,
+   "cakupan": 0.2925,
+   "mae_diri": 3.3
+  },
+  {
+   "t": 7,
+   "cakupan": 0.3599,
+   "mae_diri": 3.22
+  },
+  {
+   "t": 9,
+   "cakupan": 0.3383,
+   "mae_diri": 3.32
+  },
+  {
+   "t": 11,
+   "cakupan": 0.3383,
+   "mae_diri": 3.36
+  }
+ ],
+ "butir": [
+  {
+   "id": "F1 repro tiap titik (MAE diri ≤ 8)",
+   "lulus": true,
+   "keterangan": "terburuk 3.36 pada t=11"
+  },
+  {
+   "id": "F2 cakupan mantap 0,05–0,70",
+   "lulus": true,
+   "keterangan": "titik mantap t=9:0.3383 · t=11:0.3383"
+  },
+  {
+   "id": "F3 animasi bergerak (rentang cakupan ≥ 0,01)",
+   "lulus": true,
+   "keterangan": "rentang 0.0674 (semua titik)"
+  },
+  {
+   "id": "F4 tanpa lompatan antar titik mantap (>0,25)",
+   "lulus": true,
+   "keterangan": "terbesar 0.0000 · 1 pasangan"
+  }
+ ],
+ "ringkas": {
+  "lulus": 4,
+  "total": 4
+ }
+}

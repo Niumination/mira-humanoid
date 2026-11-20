@@ -1,0 +1,37 @@
+{
+ "judul": "uji-diri alat gerbang",
+ "lulus": 6,
+ "total": 6,
+ "hasil": [
+  {
+   "uji": "G1 tabel sidik kosong = FATAL",
+   "lulus": true,
+   "keterangan": "kode 2"
+  },
+  {
+   "uji": "G2 live tanpa hasil unduh \u2260 LULUS",
+   "lulus": true,
+   "keterangan": "kode 1 \u00b7 tidak lulus"
+  },
+  {
+   "uji": "G3 --pola hanya mira-*",
+   "lulus": true,
+   "keterangan": "2 berkas diperiksa (harus 2)"
+  },
+  {
+   "uji": "G4 kontrak gerbang terpenuhi",
+   "lulus": true,
+   "keterangan": "3 janji cocok"
+  },
+  {
+   "uji": "G5 salinan asli ditolak",
+   "lulus": true,
+   "keterangan": "kode 1"
+  },
+  {
+   "uji": "G6 paket terakhir terbaca",
+   "lulus": true,
+   "keterangan": "niu-update-langkah6i.zip \u00b7 24 berkas"
+  }
+ ]
+}
