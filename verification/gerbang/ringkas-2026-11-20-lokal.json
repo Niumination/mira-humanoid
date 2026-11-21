@@ -1,0 +1,19 @@
+{
+ "tanggal": "2026-11-20",
+ "sumber": "repo",
+ "lulus": 8,
+ "gagal": 0,
+ "total": 8,
+ "putusan": "LULUS",
+ "gerbang": [
+  "lingkaran",
+  "server",
+  "uji-alat",
+  "provenance",
+  "aset-layout",
+  "a11y",
+  "paritas",
+  "paritas-fase"
+ ],
+ "catatan": "gerbang yang tidak bisa dijalankan dihitung GAGAL, bukan dilewati"
+}

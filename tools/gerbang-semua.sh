@@ -15,11 +15,24 @@
 set -uo pipefail
 
 TOOLS_DIR="$(cd "$(dirname "$0")" && pwd)"
-K="${KERJA_ARENA:-$(dirname "$TOOLS_DIR")}"
+# Akar Kerja-Arena (tempat verification/). Di repo, alat tinggal di <repo>/tools sehingga induknya sudah
+# benar; di workspace kerja, alat tinggal di /home/user/tools sedangkan verification/ ada di
+# /home/user/Kerja-Arena. Tanpa deteksi ini seluruh gerbang berbasis tabel sidik gagal karena mencari
+# /home/user/verification/p13 (2026-11-20: uji-alat 3/7, provenance FATAL — salah alamat, bukan salah kode).
+if [ -n "${KERJA_ARENA:-}" ]; then
+  K="$KERJA_ARENA"
+elif [ -d "$(dirname "$TOOLS_DIR")/Kerja-Arena/verification" ]; then
+  # workspace kerja: /home/user/tools + /home/user/Kerja-Arena/verification
+  K="$(dirname "$TOOLS_DIR")/Kerja-Arena"
+elif [ -d "$(dirname "$TOOLS_DIR")/verification" ]; then
+  K="$(dirname "$TOOLS_DIR")"
+else
+  K="$(dirname "$TOOLS_DIR")"
+fi
 TOOLS="${TOOLS:-$TOOLS_DIR}"
 SUMBER="${SUMBER:-repo}"
 HANYA="${HANYA:-semua}"
-TGL="$(date +%Y-%m-%d)"
+TGL="${TGL:-$(date +%Y-%m-%d)}"
 OUT="$K/verification/gerbang"
 mkdir -p "$OUT"
 
@@ -28,7 +41,11 @@ export PW_TIMEOUT="${PW_TIMEOUT:-300000}"
 # alat gerbang membaca env APEX/MIRA; tanpa export, alat jatuh ke port bawaannya (8805) dan gagal
 APEX="${APEX:-http://127.0.0.1:8807/}"
 MIRA="${MIRA:-http://127.0.0.1:8804/}"
-export APEX MIRA SUMBER
+# TOOLS harus di-export: `uji-gerbang.py` membaca env TOOLS (bawaan /home/user/tools). Tanpa export, saat
+# gerbang dijalankan pada SALINAN repo hasil penerapan paket, uji G7 membandingkan alat di workspace kita
+# dengan zip — bukan alat yang benar-benar ada di repo yang diuji (2026-11-20: laporan "beda:
+# gerbang-semua.sh" padahal yang diperiksa bukan berkas repo).
+export APEX MIRA SUMBER TOOLS
 
 jalankan() {           # $1 = nama, sisanya = perintah
   nama="$1"; shift
@@ -58,7 +75,13 @@ pasang_lingkungan() {
 
 : > "$OUT/.hasil"
 
-jalankan lingkaran pasang_lingkungan || true
+# `lingkaran` = prasyarat lingkungan (Playwright + shim + pustaka sistem). Ia diperiksa di luar hitungan,
+# lalu dicatat sebagai baris pada ringkasan JSON (butir `lingkungan`) supaya lingkungan yang belum siap
+# tidak tampil sebagai "8/8 lulus".
+LINGKUNGAN="belum diperiksa"
+if pasang_lingkungan; then LINGKUNGAN="siap"; else LINGKUNGAN="belum siap"; fi
+echo "lingkungan: $LINGKUNGAN"
+export LINGKUNGAN
 
 # prasyarat: server pratinjau harus hidup — tanpa ini gerbang Chromium gagal karena sebab yang salah
 prasyarat_server() {
@@ -75,7 +98,7 @@ jalankan server prasyarat_server || true
 
 # Folder aset: milik REPO KERJA (bukan Kerja-Arena). Versi repo memakai $K/public/humanoid yang di sini salah.
 APEX_AKAR="${APEX_AKAR:-${APEX_WS:-$K/public/humanoid}}"
-MIRA_AKAR="${MIRA_AKAR:-$K/public/humanoid}"
+MIRA_AKAR="${MIRA_AKAR:-${MIRA_WS:-$K/public/humanoid}}"
 
 jalankan uji-alat python3 "$TOOLS/uji-gerbang.py" || true
 
@@ -96,6 +119,8 @@ periksa_provenance() {
 }
 jalankan provenance periksa_provenance || true
 
+# AKAR_* mengarahkan S1 ke folder aset repo yang SEDANG diuji (salinan penerapan), bukan repo kerja kita.
+export AKAR_APEX="${AKAR_APEX:-$APEX_AKAR}" AKAR_MIRA="${AKAR_MIRA:-$MIRA_AKAR}"
 jalankan aset-layout node "${GATE_ASET_LAYOUT:-$TOOLS/gate-aset-layout.cjs}" --json "$OUT/aset-layout-$TGL.json" || true
 
 jalankan a11y node "${GATE_A11Y:-$TOOLS/gate-a11y.cjs}" --json "$OUT/a11y-$TGL.json" || true
@@ -125,7 +150,8 @@ import json, os, sys
 out, tgl, sumber, lulus, gagal = sys.argv[1:6]
 hasil = [b.split(' ')[0] for b in open(os.path.join(out, '.hasil')) if b.strip()]
 lulus_n, gagal_n = int(lulus), int(gagal)
-d = {'tanggal': tgl, 'sumber': sumber, 'lulus': lulus_n, 'gagal': gagal_n,
+d = {'tanggal': tgl, 'sumber': sumber, 'lingkungan': os.environ.get('LINGKUNGAN', 'belum diperiksa'),
+     'lulus': lulus_n, 'gagal': gagal_n,
      'total': lulus_n + gagal_n,
      'putusan': 'LULUS' if gagal_n == 0 and lulus_n > 0 else 'GAGAL',
      'gerbang': hasil,
