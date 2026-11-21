@@ -922,3 +922,11 @@ Catatan jujur: beberapa nama berkas tangkapan lama yang disebut di log sesi sebe
 - **Alat baru:** `tools/audit-provenance.py` (gerbang hukum otomatis) · `tools/avatar-baru.py` (scaffold +
   validator manifest avatar; sudah dicoba: `python3 tools/avatar-baru.py mirai` → 0 masalah).
 - Tanpa regresi: build MIRA tetap `e215b5a7…` (byte-identik produksi) sesudah LICENSE/NOTICE/package.json.
+
+## Sesi 57–63 — 2026-11-18..21 · paket 5z–6k: MIRA selaras penuh dengan APEX
+
+- **5z–6c (57–58):** audit penerapan MIRA selesai 45/45; `gate-provenance` (Gerbang E bisa menggagalkan), riwayat/anggaran build, `gate-paritas` v4 jangkar `?t=11.5`, `BINGKAI-RESPONSIF.md`; a11y 16/16, aset-layout 34/34, paritas 24/24.
+- **6d–6h (59–62):** docs p14 + alat v4/v5 portabel + `asli-sidik.json` 10 sha penuh upstream + lisensi `SEE LICENSE IN LICENSE`; build tetap `index-BiuEEVDg.js` `17fc09d82f4fd52c` = produksi.
+- **6i (63):** P-2 ternyata sudah tertutup (5 konfigurasi deploy identik — audit paket pakai snapshot lama); P-3 `gerbang-semua.sh` v6i + `.cjs` CommonJS + env-aware; gerbang LULUS 6/6 ×4.
+- **6j–6k (63, 20–21 Nov):** APEX deploy `index-DeDMCu_9.js` (fix timeline beku); MIRA terima alat paritas-fase + uji-gerbang (6/6) + gerbang 8 butir; koreksi: `p13/baru/` kekurangan `backdrop-v1.webp` (disalin dari APEX, hash sama); kalibrasi `MAE_F1=12` (rasio 1,5× sejajar paritas v4; MAE diri APEX 6,19–6,47 terdokumentasi SwiftShader).
+- **Keadaan akhir:** gerbang produksi **8/8** di kedua app; MIRA `b9761d2` = remote; sisa P15 hanya **P-4** (lisensi akhir + cut-over merek NIU/MIRAI).

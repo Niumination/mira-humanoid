@@ -1,6 +1,6 @@
 # PETA DOKUMEN — satu halaman untuk tahu "berkas mana menjawab pertanyaan apa"
 
-Diperbarui: **2026-11-12** (sesi 56). Semua dokumen di `Kerja-Arena/` dan isinya konsisten dengan
+Diperbarui: **2026-11-21** (sesi 63). Semua dokumen di `Kerja-Arena/` dan isinya konsisten dengan
 angka terakhir yang **diukur**, bukan yang diingat. Kalau kamu hanya punya waktu membaca satu berkas,
 baca tabel di bawah lalu pilih.
 
@@ -19,7 +19,7 @@ baca tabel di bawah lalu pilih.
 
 | dokumen | peran |
 |---|---|
-| `PROGRESS.md` (72 KB) | log **keputusan & temuan** per sesi; tempat pertama mencari "kenapa dulu diputuskan begitu" |
+| `PROGRESS.md` | log **keputusan & temuan** per sesi; tempat pertama mencari "kenapa dulu diputuskan begitu" |
 | `REBUILD-LOG.md` (72 KB) | log **eksekusi** per sesi: perintah, hasil, jebakan |
 | `docs/RENCANA-EKSEKUSI.md` | rencana asli **P0–P10** (dari artefak `recon/`) — historis, jangan diedit lagi |
 | `docs/MANIFEST.md` | daftar berkas `recon/` di Google Drive (27 berkas, ukuran, peran) — **arsip asli ada di repo `Niu-Humanoid/docs/recon/`**, workspace hanya menyimpan turunannya |
@@ -51,3 +51,13 @@ baca tabel di bawah lalu pilih.
    `docs/RENCANA-LANJUTAN.md` supaya jejak keputusan tetap terbaca.
 4. **Dokumen hukum (`LICENSE`, `NOTICE`, `docs/LISENSI-BRANDING.md`) hanya diubah bersama**, karena
    ketiganya saling merujuk.
+
+## 3. Dokumen baru sesi 57–63 (2026-11-18..21)
+
+| dokumen | peran |
+|---|---|
+| `docs/p14/AUDIT-PENERAPAN-3.md` | audit ketiga: repo vs produksi per kolom, bukti aset APEX 0/10 → 10/10 |
+| `docs/p14/MEMBACA-GERBANG.md` | arti tiap angka gerbang & cara angka bisa menipu |
+| `docs/PETA-KESENJANGAN-P15.md` | sisa kerja P15 (R-1/R-2/R-3 ditutup; P-2/P-3 ditutup 6i; **P-4 tersisa**) |
+| `docs/paket/BACA-DULU-6*.md` + `TERAPAN-6*.md` | isi & bukti terapan tiap paket 6a–6k |
+| `verification/gerbang/ringkas-2026-11-21.json` | gerbang 8 butir produksi 8/8 (kedua app) |
