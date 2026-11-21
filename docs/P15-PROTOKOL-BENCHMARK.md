@@ -111,3 +111,11 @@ tidak menjadi bukti permanen). Run berikutnya harus menambah 3 cold-run serta ma
 
 **Status sekarang:** protokol disepakati sebagai v1; baseline baru belum sah karena run eksplorasi memakai alat yang
 belum mengunci waktu. Jangan menyebut “setara/di depan” sampai butir 4 dan bukti Gerbang E dipenuhi.
+
+
+## Keputusan pemilik (2026-11-21, mengikat)
+
+1. `mira-humanoid.vercel.app` = **kandidat pembanding visual saja**, bukan deploy resmi; label `legacy`
+   **dipertahankan** sampai statusnya dikonfirmasi lebih lanjut.
+2. **Lisensi: proprietary/internal** (sementara). Rebranding **ditunda**.
+3. Ambang Gerbang E tetap **3/5** (E1–E5).
