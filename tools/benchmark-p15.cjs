@@ -47,7 +47,7 @@ async function sceneReady(page) {
     // sampling: 8 frame x 250ms
     const sampel=[];
     for (let i=0;i<8;i++){
-      const f = path.join(SHOTS, `${APP}-a${ANCHOR}-r${run}-f${i}.png`);
+      const f = path.join(SHOTS, `${APP}-a${ANCHOR}-${VW}x${VH}-r${run}-f${i}.png`);
       await page.screenshot({path:f, timeout:60000});
       sampel.push(f);
       await page.waitForTimeout(250);

@@ -1,0 +1,62 @@
+{
+ "target": "apex-rekon",
+ "url": "https://niu-humanoid.vercel.app/?auto=1&t=9",
+ "anchor": "9",
+ "viewport": "414x896",
+ "exact_frame": true,
+ "runs": [
+  {
+   "run": 0,
+   "siap": true,
+   "http": 200,
+   "waktu_muat_ms": 35235,
+   "sampel": [
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f0.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f1.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f2.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f3.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f4.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f5.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f6.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r0-f7.png"
+   ],
+   "konsol": []
+  },
+  {
+   "run": 1,
+   "siap": true,
+   "http": 200,
+   "waktu_muat_ms": 35087,
+   "sampel": [
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f0.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f1.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f2.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f3.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f4.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f5.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f6.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r1-f7.png"
+   ],
+   "konsol": []
+  },
+  {
+   "run": 2,
+   "siap": true,
+   "http": 200,
+   "waktu_muat_ms": 33750,
+   "sampel": [
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f0.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f1.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f2.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f3.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f4.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f5.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f6.png",
+    "/tmp/p15/shots/apex-rekon-a9-414x896-r2-f7.png"
+   ],
+   "konsol": []
+  }
+ ],
+ "metode": "exact-anchor",
+ "catatan": "run dengan siap=false = INVALID"
+}

@@ -1,0 +1,130 @@
+{
+ "apex-asli": {
+  "1440x900": {
+   "median_akhir": 0.1453,
+   "rentang_run": [
+    0.1441,
+    0.1461
+   ],
+   "animasi_maks": 0.1163,
+   "muat_ms_median": 6236,
+   "scene_ready": "3/3"
+  },
+  "414x896": {
+   "median_akhir": 0.1119,
+   "rentang_run": [
+    0.1104,
+    0.1138
+   ],
+   "animasi_maks": 0.0739,
+   "muat_ms_median": 5423,
+   "scene_ready": "3/3"
+  },
+  "390x844": {
+   "median_akhir": 0.113,
+   "rentang_run": [
+    0.1121,
+    0.1188
+   ],
+   "animasi_maks": 0.0799,
+   "muat_ms_median": 5370,
+   "scene_ready": "3/3"
+  }
+ },
+ "apex-rekon": {
+  "1440x900": {
+   "median_akhir": 0.3423,
+   "rentang_run": [
+    0.3422,
+    0.3423
+   ],
+   "animasi_maks": 0.005,
+   "muat_ms_median": 57532,
+   "scene_ready": "3/3"
+  },
+  "414x896": {
+   "median_akhir": 0.2744,
+   "rentang_run": [
+    0.2743,
+    0.2744
+   ],
+   "animasi_maks": 0.0379,
+   "muat_ms_median": 35087,
+   "scene_ready": "3/3"
+  },
+  "390x844": {
+   "median_akhir": 0.2766,
+   "rentang_run": [
+    0.2766,
+    0.2766
+   ],
+   "animasi_maks": 0.0356,
+   "muat_ms_median": 35151,
+   "scene_ready": "3/3"
+  }
+ },
+ "mira-legacy": {
+  "1440x900": {
+   "median_akhir": 0.4731,
+   "rentang_run": [
+    0.4723,
+    0.4731
+   ],
+   "animasi_maks": 0.0197,
+   "muat_ms_median": 103024,
+   "scene_ready": "3/3"
+  },
+  "414x896": {
+   "median_akhir": 0.449,
+   "rentang_run": [
+    0.447,
+    0.449
+   ],
+   "animasi_maks": 0.0185,
+   "muat_ms_median": 45844,
+   "scene_ready": "3/3"
+  },
+  "390x844": {
+   "median_akhir": 0.4496,
+   "rentang_run": [
+    0.4476,
+    0.4496
+   ],
+   "animasi_maks": 0.0136,
+   "muat_ms_median": 43316,
+   "scene_ready": "3/3"
+  }
+ },
+ "mira-rekon": {
+  "1440x900": {
+   "median_akhir": 0.4844,
+   "rentang_run": [
+    0.4844,
+    0.4844
+   ],
+   "animasi_maks": 0.0,
+   "muat_ms_median": 63556,
+   "scene_ready": "3/3"
+  },
+  "414x896": {
+   "median_akhir": 0.5019,
+   "rentang_run": [
+    0.5019,
+    0.5019
+   ],
+   "animasi_maks": 0.0,
+   "muat_ms_median": 31790,
+   "scene_ready": "3/3"
+  },
+  "390x844": {
+   "median_akhir": 0.5043,
+   "rentang_run": [
+    0.5043,
+    0.5043
+   ],
+   "animasi_maks": 0.0,
+   "muat_ms_median": 28348,
+   "scene_ready": "3/3"
+  }
+ }
+}

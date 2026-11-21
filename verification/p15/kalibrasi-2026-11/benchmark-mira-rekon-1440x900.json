@@ -1,0 +1,62 @@
+{
+ "target": "mira-rekon",
+ "url": "https://mira-humanoid-niu.vercel.app/?auto=1&t=11.5",
+ "anchor": "11.5",
+ "viewport": "1440x900",
+ "exact_frame": true,
+ "runs": [
+  {
+   "run": 0,
+   "siap": true,
+   "http": 200,
+   "waktu_muat_ms": 63556,
+   "sampel": [
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f0.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f1.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f2.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f3.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f4.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f5.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f6.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r0-f7.png"
+   ],
+   "konsol": []
+  },
+  {
+   "run": 1,
+   "siap": true,
+   "http": 200,
+   "waktu_muat_ms": 61763,
+   "sampel": [
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f0.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f1.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f2.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f3.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f4.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f5.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f6.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r1-f7.png"
+   ],
+   "konsol": []
+  },
+  {
+   "run": 2,
+   "siap": true,
+   "http": 200,
+   "waktu_muat_ms": 122663,
+   "sampel": [
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f0.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f1.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f2.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f3.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f4.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f5.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f6.png",
+    "/tmp/p15/shots/mira-rekon-a11.5-1440x900-r2-f7.png"
+   ],
+   "konsol": []
+  }
+ ],
+ "metode": "exact-anchor",
+ "catatan": "run dengan siap=false = INVALID"
+}
