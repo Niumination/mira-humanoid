@@ -1,0 +1,31 @@
+{
+  "tanggal": "2026-11-21",
+  "repo": {
+    "url": "https://github.com/Niumination/mira-humanoid",
+    "branch": "main",
+    "commit": "cb895519eb3b5b6dfbf4ec98ccd3b32f6aa7c477",
+    "public_humanoid_assets": {
+      "mira-idle-v1.webp": {"bytes": 205698, "sha256": "8409aa77647ed8d5f4fee304ebfa9f5c381f9400c61b8c10c18b514fc2871a29"},
+      "mira-hair-v1.webp": {"bytes": 93344, "sha256": "6c5e6791e3a5b9db33332a2b1c51f72c592dc1da70a8d27b1dfdeb178c6d1c52"},
+      "backdrop-v1.webp": null
+    }
+  },
+  "produksi": {
+    "url": "https://mira-humanoid.vercel.app/",
+    "http": 200,
+    "bundle": {"path": "/assets/index-xg1U0Foi.js", "bytes": 1201961, "sha256_prefix_16": "ab1c4fbb0fb0e0cb"},
+    "assets": {
+      "mira-idle-v1.webp": {"http": 200, "bytes": 364544, "sha256": "35911d6e8517ca75"},
+      "mira-hair-v1.webp": {"http": 200, "bytes": 159716, "sha256": "8dc958e1750ee348"},
+      "backdrop-v1.webp": {"http": 404, "bytes": 79}
+    }
+  },
+  "clean_build": {
+    "npm_ci": "exit 0",
+    "npm_run_build": "exit 0",
+    "asset": "index-BiuEEVDg.js",
+    "bytes": 533885,
+    "sha256_prefix_16": "17fc09d82f4fd52c"
+  },
+  "putusan": "MIRA repository assets match P13; production still serves older MIRA plates. This package re-sends only the two owned plates. The runtime backdrop is shader-rendered; no static backdrop asset is added."
+}

@@ -1,0 +1,37 @@
+{
+  "tanggal": "2026-11-21",
+  "target": "APEX production https://niu-humanoid.vercel.app/",
+  "html_http": 200,
+  "bundle": {
+    "url": "/assets/index-DeDMCu_9.js",
+    "bytes": 235260,
+    "sha256_prefix_16": "873d3b54ea222267",
+    "cocok_build_6l": true
+  },
+  "aset": {
+    "mira-idle-v1.webp": {
+      "http": 200,
+      "bytes": 205698,
+      "sha256_prefix_16": "8409aa77647ed8d5",
+      "milik_kita": true
+    },
+    "mira-hair-v1.webp": {
+      "http": 200,
+      "bytes": 93344,
+      "sha256_prefix_16": "6c5e6791e3a5b9db",
+      "milik_kita": true
+    },
+    "backdrop-v1.webp": {
+      "http": 200,
+      "bytes": 447002,
+      "sha256_prefix_16": "35539292a3b90dbd",
+      "milik_kita": true
+    }
+  },
+  "git_main": {
+    "commit_prefix": "49e011dd15",
+    "menerima_6l": false,
+    "catatan": "Produksi telah menerima build 6l; GitHub main masih pada commit dasar ketika diperiksa."
+  },
+  "lingkup": "pemeriksaan HTTP produksi; bukan bukti perubahan masuk GitHub main"
+}
