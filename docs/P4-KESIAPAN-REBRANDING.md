@@ -27,8 +27,10 @@ hash kita). Sudah diganti dengan tabel yang benar; ini pelajaran: **tabel pemban
 | paritas fase | 4/4 | 4/4 | |
 | dokumen deploy | `README-DEPLOY.md`, `vercel.json` ada | sama | |
 
-**Putusan:** syarat teknis **gagal di satu butir** — repo APEX belum bisa membangun sendiri. Selama itu benar,
-cut-over merek berarti memberi merek baru pada artefak yang sumbernya tidak ada di repo. **Belum boleh.**
+**Putusan (diperbarui 21 Nov, pasca-6n):** semua syarat teknis §2 kini ✅ di kedua repo. Penghalang build
+sudah hilang. Cut-over merek kini menunggu: (a) hasil benchmark setara/di-depan sesuai
+`docs/P15-STATUS-SETARA-DI-DEPAN-2026-11-21.md` (belum final — 1/5 kemampuan E terbukti), dan
+(b) keputusan lisensi §4 dari pemilik.
 
 ## 3. Nama merek: yang harus berubah pada saat cut-over
 
