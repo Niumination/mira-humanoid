@@ -894,7 +894,11 @@ export function MiraStage({
       const quadMv = () => {
         const dx = tune('qdx', 0) * S
         const dy = tune('qdy', 0) * S
-        return new Float32Array([S, 0, 0, 0, 0, S, 0, 0, 0, 0, 1, 0, dx, QUAD_TY + dy, -4.8, 1])
+        // live: scale(X.k·sx, −X.k·sy) + geseran yang menahan tepi bawah → napas menaikkan dada/kepala
+        return new Float32Array([
+          S * bSx, 0, 0, 0, 0, S * bSy, 0, 0, 0, 0, 1, 0,
+          dx, QUAD_TY + dy + S * (fh / 2) * (bSy - 1), -4.8, 1,
+        ])
       }
       const mkPointsMv = () =>
         new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, PTS_OFF_X * FIT_T, TY, -4.8, 1])
@@ -915,18 +919,56 @@ export function MiraStage({
           return null
         }
       })()
-      // F-141: jam medan saat `?t=` dipin bisa disapu lewat `?ft=` — dugaan awal 0,150 mungkin salah;
-      // live menambah jam medan tiap frame (`_ += dt`), jadi nilainya bergantung kapan tangkapan diambil.
-      const fieldPin = tune('ft', 0.15)
-      // live memakai jam terpisah untuk rambut/helai/bintik/percikan/wajah: saat `?t=` dipin harganya
-      // 0,045–0,2 (terukur); jadi jam ini SELALU berjalan sendiri, tidak ikut dipin.
-      let animT = 0
+      // P15: di live HANYA jam build yang dipin oleh `?t=`. Jam sekunder punya akumulatornya
+      // sendiri dan terus berjalan dengan dt nyata:
+      //   medan   `L.current += min(dt,0,05) · speed · touchRate(ht)`
+      //   rambut  `a.current += min(dt,0,05) · hum.hair.swaySpeed · pace`   (helai + sway)
+      //   bintik  `u.current += min(dt,0,05) · pace`
+      //   wajah   `$.current += min(dt,0,05)`
+      // Nilai tetap 0,15 / 0,1 yang dipakai sebelumnya hanya potret satu tangkapan, bukan
+      // perilaku live — itulah sumber sisa selisih di puncak rambut dan tepi figur.
+      let fieldT = 0
+      let hairT = 0
+      let twinkT = 0
+      let faceT = 0
+      let breathT = 0          // live: D.current += min(dt,0,05) · (1+(speed−1)/2) · hum.breath.speed / 5
+      // faktor napas live `Oe` (dihitung ulang tiap frame, dipakai kuad gambar + gain-nya)
+      let bSx = 1
+      let bSy = 1
+      let bGlow = 1
+      // `?ft=` / `?ac=` tetap tersedia untuk diagnosa: hanya dipakai bila ditulis eksplisit di URL.
+      const urlNum = (k: string) => {
+        try {
+          const raw = new URLSearchParams(window.location.search).get(k)
+          if (raw === null || raw === '') return null
+          const v = Number(raw)
+          return Number.isFinite(v) ? v : null
+        } catch {
+          return null
+        }
+      }
+      const fieldFix = urlNum('ft')
+      const animFix = urlNum('ac')
+      const dialVal = (k: string, d: number) => {
+        const dl = live.current.dial
+        const v = dl ? dl.get(k) : NaN
+        return Number.isFinite(v) ? (v as number) : d
+      }
+      const swaySpeed = () => dialVal('hum.hair.swaySpeed', 0.45)
+      const breathSpeed = () => Math.max(0.1, dialVal('hum.breath.speed', 1))
+      const breathDepth = () => dialVal('hum.breath.depth', 1)
       const tick = () => {
-        if (pin !== null && Number.isFinite(pin)) return pin
         const now = performance.now()
         const dt = Math.min(0.05, (now - lastNow) / 1000)
         lastNow = now
+        const pace = Ee.speed || 1
         // live: `L.current += Fe · aura.speed · Kk(touchT0)`; `Y = (now − start)/1e3 · speed`
+        fieldT += dt * Ee.speed * touchRate(-1e9)
+        hairT += dt * swaySpeed() * pace
+        twinkT += dt * pace
+        faceT += dt
+        breathT += dt * (1 + (Ee.speed - 1) * 0.5) * breathSpeed() / 5
+        if (pin !== null && Number.isFinite(pin)) return pin
         clockT += dt * Ee.speed * touchRate(-1e9)
         return clockT * live.current.speed
       }
@@ -1019,13 +1061,24 @@ export function MiraStage({
         ;(window as unknown as Record<string, unknown>).__MIRA_HEAD = { ...headState, on: headOn, x: rr.x, y: rr.y, idle: rr.idle }
         // live `Rw({waves, matter, orb})` — sumber nilai sama dengan `rampAt` (port verbatimnya)
         setPresence({ waves: ramp.waves, matter: ramp.matterN, orb: ramp.orb })
-        const fieldClock = pin !== null && Number.isFinite(pin) ? fieldPin : t
-        animT += 0.016
-        // W-8: saat `?t=` dipin, jam sekunder (rambut/helai/bintik) dulu = min(animT, 0,2) — yaitu
-        // DIHITUNG DARI JUMLAH FRAME. Karena fps mesin berubah-ubah, dua tangkapan pada `?t` yang sama
-        // bisa berbeda (terukur D5 t=11,5: MAE 0,1165 · 20.432 piksel; D9 414: 0,3181). Di live nilainya
-        // praktis tetap (0,0098–0,0303), jadi jam ini harus KONSTAN saat dipin. `?ac=` untuk menyapu.
-        const animClock = pin !== null && Number.isFinite(pin) ? tune('ac', 0.1) : animT
+        // P15: jam medan & jam sekunder memakai akumulator dt nyata, pin `?t=` tidak menyentuhnya.
+        const fieldClock = fieldFix !== null ? fieldFix : fieldT
+        const animClock = animFix !== null ? animFix : hairT
+        const twinkClock = animFix !== null ? animFix : twinkT
+        const faceClock = animFix !== null ? animFix : faceT
+        // ── napas (port live `CN(RN(j, ignite, 5/breathSpeed, D.current), breathDepth)`) ──
+        // ramp ikut jam build (dipin oleh `?t=`), FASE ikut jam napas yang berjalan sendiri.
+        // `?bs=0` mematikan napas untuk pembanding A/B.
+        {
+          const ph = ((breathT % 1) + 1) % 1
+          const ramp = xs(t, reveal[2] + 0.4, reveal[2] + 2.4)
+          const tri = ph < 0.45 ? xs(ph, 0, 0.45) : ph < 0.85 ? 1 - xs(ph, 0.45, 0.85) : 0
+          const v = ramp * tri * tune('bs', 1)
+          const dep = breathDepth()
+          bSx = 1 + 0.0025 * dep * v
+          bSy = 1 + 0.0045 * dep * v
+          bGlow = 1 + 0.08 * dep * v
+        }
         ;(window as any).__MIRA_RAMP = { t, ...ramp }
         const proj = perspective(FOV, pw / ph, NEAR, FAR)
         gl.disable(gl.DEPTH_TEST)
@@ -1258,7 +1311,7 @@ export function MiraStage({
         gl.uniformMatrix4fv(U(P.pic, 'modelViewMatrix'), false, quadMv())
         gl.uniformMatrix4fv(U(P.pic, 'projectionMatrix'), false, proj)
         gl.uniform1f(U(P.pic, 'uFill'), 1)
-        gl.uniform1f(U(P.pic, 'uGain'), Ee.bright * tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1) * tune('obk', 1))
+        gl.uniform1f(U(P.pic, 'uGain'), Ee.bright * bGlow * tune('fg', 1.15) * tune('pg', 1) * tune('hg', 1) * tune('obk', 1))
         // F-143: lengkung tonal gambar. Disapu pada 12 fase (0,3 … 13): `pgg` 1,25 menurunkan MAE
         // pada SEMUA fase sesudah ignition (t=8: 5,89→5,53 · 10: 6,79→5,16 · 11: 6,91→4,94 ·
         // 11,5: 7,42→5,43 · 12: 7,28→5,16 · 13: 7,96→5,88) dan tidak menyentuh fase sebelum ignition
@@ -1374,7 +1427,7 @@ export function MiraStage({
           gl.uniformMatrix4fv(U(P.twinkles, 'modelViewMatrix'), false,
             new Float32Array([S, 0, 0, 0, 0, -S, 0, 0, 0, 0, 1, 0, HAIR_OFF[0] * FIT_T, fitY(HAIR_OFF[1]), -4.8, 1]))
           gl.uniformMatrix4fv(U(P.twinkles, 'projectionMatrix'), false, proj)
-          gl.uniform1f(U(P.twinkles, 'uTime'), animClock)
+          gl.uniform1f(U(P.twinkles, 'uTime'), twinkClock)
           gl.uniform1f(U(P.twinkles, 'uPx'), 1)
           gl.uniform1f(U(P.twinkles, 'uOn'), 1)
           gl.uniform1f(U(P.twinkles, 'uSpark'), 0.6)
@@ -1558,7 +1611,7 @@ export function MiraStage({
         gl.uniform3f(U(P.wire, 'uHzSkull'), hzSkull[0], hzSkull[1], hzSkull[2])
         gl.uniform3f(U(P.wire, 'uHzInner'), hzInner[0], hzInner[1], hzInner[2])
         gl.uniform4f(U(P.wire, 'uFace'), face[0], face[1], face[2], face[3])
-        gl.uniform4f(U(P.wire, 'uFaceA'), 0, 0, animClock, 0)
+        gl.uniform4f(U(P.wire, 'uFaceA'), 0, 0, faceClock, 0)
         gl.uniform1f(U(P.wire, 'uFaceSize'), 1)
         gl.uniform4f(U(P.wire, 'uHeadPose'), pose[0], pose[1], pose[2], 0)
         gl.uniform3f(U(P.wire, 'uHeadPivot'), head.model.pivot[0], head.model.pivot[1], head.model.pivot[2])
